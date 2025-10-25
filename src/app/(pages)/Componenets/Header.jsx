@@ -33,13 +33,15 @@ export default function Header() {
       submenu: [
         { name: "All Plans", href: "/plans/all" },
         { name: "Yahoo Press Release", href: "/plans/yahoo-press-release" },
-        { name: "Bloomberg Press Release + Yahoo Finance", href: "/plans/bloomberg-press-release" },
+        { name: "Insider Press Release + Yahoo Finance", href: "/plans/insider-press-release" },
         { name: "Business Insider", href: "/plans/business-insider" },
         { name: "Benzinga PR", href: "/plans/benzinga-pr" },
         { name: "Digital Journal PR", href: "/plans/digital-journal-pr" },
-        { name: "US Times Now Pr", href: "/plans/us-times-now-pr" },
+        { name: "Bignewsnetwork PR", href: "/plans/bingnewsnetwork-pr" },
         { name: "AP News (Associated Press) Press Release", href: "/plans/ap-news-press-release" },
-        { name: "Yahoo Finance + Ap News Press Release", href: "/plans/yahoo-finance-ap-news-press-release" },
+        { name: "Khaleejtimes Press Release", href: "/plans/khaleejtimes-press-release" },
+        { name: "GulfNews Press Release", href: "/plans/gulfnews-press-release" },
+        // { name: "Yahoo Finance + Ap News Press Release", href: "/plans/yahoo-finance-ap-news-press-release" },
         { name: "Street Insider PR", href: "/plans/street-insider-pr" },
         { name: "MSN News Press Release", href: "/plans/msn-news-press-release" }
       ]

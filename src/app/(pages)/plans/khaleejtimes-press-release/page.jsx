@@ -1,13 +1,13 @@
 "use client";
 import React , {useState} from 'react'
-import CallToAction from '../../Componenets/CallToAction';
+import CallToAction from '../../Componenets/CallToAction'
 import { FaStar } from 'react-icons/fa6';
 import { BiCheck } from 'react-icons/bi';
 import Image from 'next/image';
 
 
-function BloombergPressRelease() {
-  const [plan, setPlan] = useState({
+function KhaleejtimesPressRelease() {
+    const [plan, setPlan] = useState({
       "pr": 100,
       "image": "/imgs/resellers-plan/yahoo business insider.png",
       "name": "Basic Package",
@@ -92,4 +92,4 @@ function BloombergPressRelease() {
     )
 }
 
-export default BloombergPressRelease;
+export default KhaleejtimesPressRelease;

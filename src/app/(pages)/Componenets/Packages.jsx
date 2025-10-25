@@ -198,6 +198,15 @@ const PricingSection = () => {
               </div>
             ))}
           </Slider>
+
+          <div className="text-center">
+            <Link
+              href="/plans/all"
+              className="inline-block max-w-[220px] !mx-auto mt-7 text-center w-full bg-gradient-to-r from-blue-500 to-purple-700 text-white py-2 rounded font-semibold hover:bg-blue-700 transition"
+            >
+              Buy Now
+            </Link>
+          </div>
         </div>
       </div>
     </section>

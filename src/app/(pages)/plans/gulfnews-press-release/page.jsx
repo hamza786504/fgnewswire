@@ -6,7 +6,7 @@ import { BiCheck } from 'react-icons/bi';
 import Image from 'next/image';
 
 
-function YahooFinanceAPNewsPressRelease() {
+function GulfnewsPressRelease() {
     const [plan, setPlan] = useState({
       "pr": 100,
       "image": "/imgs/resellers-plan/yahoo business insider.png",
@@ -92,4 +92,4 @@ function YahooFinanceAPNewsPressRelease() {
     )
 }
 
-export default YahooFinanceAPNewsPressRelease
+export default GulfnewsPressRelease;

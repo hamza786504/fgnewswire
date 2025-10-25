@@ -3,6 +3,26 @@ import React, { useEffect, useRef } from "react";
 
 const WavyCarousel = () => {
   const images = [
+     {
+      one: "/imgs/live-mint-logo.png",
+      two: "/imgs/us time now.png",
+      animation: "bubbleUpDown", // Animation for bubble 13
+    },
+       {
+      one: "/imgs/khaleejtimes-logo.png",
+      two: "/imgs/enterpreneur-logo.webp",
+      animation: "", // Animation for bubble 13
+    },
+       {
+      one: "/imgs/Forbes-logo.png",
+      two: "/imgs/arabianbusiness-logo.png",
+      animation: "bubbleUpDown", // Animation for bubble 13
+    },
+       {
+      one: "/imgs/usa-today-logo.png",
+      two: "/imgs/metro-logo.png",
+      animation: "", // Animation for bubble 13
+    },
     {
       one: "/imgs/bloomberg.png",
       two: "/imgs/yahoo-finance.png",
