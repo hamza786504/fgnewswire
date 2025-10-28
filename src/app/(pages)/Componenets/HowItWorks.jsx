@@ -6,22 +6,22 @@ const steps = [
   {
     id: "1",
     icon: "/imgs/press-icon.jpg",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur, laboriosam.",
+    text: "Choose Your Service",
   },
   {
     id: "2",
     icon: "/imgs/position-icon.png",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur, laboriosam.",
+    text: "Share Your Details",
   },
   {
     id: "3",
     icon: "/imgs/campaign-icon.png",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur, laboriosam.",
+    text: "We Create & Publish",
   },
   {
     id: "4",
     icon: "/imgs/upload-press-release-icon.png",
-    text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur, laboriosam.",
+    text: "Get Results",
   },
 ];
 
@@ -30,7 +30,7 @@ export default function HowItWorks() {
     <section className="bg-[#f8faff] py-16 px-4 md:px-10">
       <div className="md:max-w-3xl lg:max-w-5xl mx-auto text-center">
         <h2 className="mb-14 text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-800 wow animate__animated animate__fadeIn">
-          How it Works
+          Our Process
         </h2>
 
         <div className="relative">
@@ -71,7 +71,7 @@ export default function HowItWorks() {
                     />
                   </div>
                   <h3 className="font-medium text-gray-800 mb-1 wow animate__animated animate__fadeIn" data-wow-delay={`${index * 0.6}s`}>
-                    {step.text.substr(0, 17)}
+                    {step.text}
                   </h3>
                   <p className="text-sm text-gray-600 wow animate__animated animate__fadeIn" data-wow-delay={`${index * 0.7}s`}>
                     Step {step.id} details

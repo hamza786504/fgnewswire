@@ -105,10 +105,10 @@ export default function CaseStudiesSection() {
     <section className="w-full bg-white py-12 px-4 md:px-8">
       <div className="text-center max-w-4xl mx-auto">
         <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
-          Revenue & Beyond: <span className="text-blue-600">Proven Results</span> For Clients
+          Choose From <span className="text-blue-600">Flexible Plans</span> Made For Every Need
         </h2>
         <p className="text-sm md:text-base text-gray-600 mt-2">
-          See how WebFX improves the KPIs that drive actual business growth.
+          Whether you&apos;re a startup or a growing brand, we&apos;ve got you covered.
         </p>
       </div>
 

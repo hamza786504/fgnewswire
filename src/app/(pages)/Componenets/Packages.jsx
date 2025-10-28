@@ -113,7 +113,7 @@ const PricingSection = () => {
     <section className="bg-gray-50 py-12 px-4">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-center text-2xl md:text-3xl font-bold mb-10">
-          Choose a plan when you’re ready
+          Select a plan whenever you&apos;re ready
         </h1>
 
         <div className="relative px-6">

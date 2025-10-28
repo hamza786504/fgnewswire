@@ -133,17 +133,15 @@ const WavyCarousel = () => {
         {/* Headings */}
         <div className="text-center mb-8">
           <p className="text-xl md:text-4xl font-semibold tracking-widest text-gray-700">
-            • 300K+ PUBLISHERS •
+            Your News. Your Voice. Your Reach.
           </p>
           <p className="mt-2 text-gray-600 text-base md:text-lg max-w-3xl mx-auto">
-            Ensure that your press release reaches top-tier media platforms.
-            Our services for assured media publication begin at just{" "}
-            <span className="font-semibold">$99</span>.
+            Whether you&apos;re a startup, business, or individual, we make it easy for you to get noticed through press releases and guest posting on trusted websites.
           </p>
         </div>
 
         <h2 className="text-lg md:text-2xl font-bold text-center mb-10 text-gray-900">
-          Get Your Story on the News Radar
+          Grow your visibility and connect with a wider audience.
         </h2>
 
         <div ref={carouselRef} className="carousel-container w-full">

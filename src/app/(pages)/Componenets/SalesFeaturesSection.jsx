@@ -4,63 +4,63 @@ import { MdOutlineTaskAlt, MdOutlineEmail, MdSms } from "react-icons/md";
 import Button from "./Elements/Button";
 const features = [
   {
-    title: "Lorem Ipsum Dolor",
+    title: "Reach Your Audience",
     icon: <BsFillPersonBadgeFill className="text-white text-xl" />,
     color: "bg-[#6b5bff]",
     points: [
-      "Lorem ipsum dolor sit amet consectetur",
-      "Adipisicing elit sed do eiusmod tempor",
-      "Incididunt ut labore et dolore magna aliqua",
+      "Share your news across trusted sites",
+      "Connect with real readers",
+      "Grow your online visibility",
     ],
   },
   {
-    title: "Consectetur Adipiscing",
+    title: "Build Brand Trust",
     icon: <BsPersonLinesFill className="text-white text-xl" />,
     color: "bg-[#2971f5]",
     points: [
-      "Ut enim ad minim veniam quis nostrud",
-      "Exercitation ullamco laboris nisi ut aliquip",
-      "Ex ea commodo consequat duis aute",
+      "Get featured on reputable platforms",
+      "Show your authority",
+      "Earn audience confidence",
     ],
   },
   {
-    title: "Sed Do Eiusmod",
+    title: "Boost SEO Performance",
     icon: <BsGraphUp className="text-white text-xl" />,
     color: "bg-[#00b341]",
     points: [
-      "Tempor incididunt ut labore et dolore",
-      "Magna aliqua ut enim ad minim veniam",
-      "Quis nostrud exercitation ullamco laboris",
+      "Gain high-quality backlinks",
+      "Improve search rankings",
+      "Drive more organic traffic",
     ],
   },
   {
-    title: "Tempor Incididunt",
+    title: "Fast & Easy Process",
     icon: <MdOutlineTaskAlt className="text-white text-xl" />,
     color: "bg-[#ff5e3a]",
     points: [
-      "Duis aute irure dolor in reprehenderit",
-      "In voluptate velit esse cillum dolore",
-      "Eu fugiat nulla pariatur excepteur",
+      "Choose your package",
+      "Send your details",
+      "See your story go live quickly",
     ],
   },
   {
-    title: "Dolore Magna Aliqua",
+    title: "Affordable Packages",
     icon: <MdOutlineEmail className="text-white text-xl" />,
     color: "bg-[#00e09d]",
     points: [
-      "Velit esse cillum dolore eu fugiat",
-      "Nulla pariatur excepteur sint occaecat",
-      "Cupidatat non proident sunt in culpa",
+      "Plans for every business size",
+      "No hidden charges",
+      "Pay only for real results",
     ],
   },
   {
-    title: "Minim Veniam Quis",
+    title: "Real Results, Every Time",
     icon: <MdSms className="text-white text-xl" />,
     color: "bg-[#ff8f2f]",
     points: [
-      "Officia deserunt mollit anim id est laborum",
-      "Lorem ipsum dolor sit amet consectetur",
-      "Adipisicing elit sed do eiusmod tempor",
+      "Increase reach and traffic",
+      "Strengthen brand image",
+      "Make your news stand out",
     ],
   },
 ];
@@ -71,10 +71,10 @@ export default function SalesFeaturesSection() {
       <div className="md:max-w-3xl lg:max-w-5xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl sm:text-4xl capitalize font-bold text-gray-900">
-            Streamlined solutions for <span className="text-[#2563eb]">modern businesses</span>
+            Your News Deserves the <span className="text-[#2563eb]">Spotlight</span>
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Efficient tools designed to simplify your workflow and boost productivity
+            Everything You Need to Get Your News Seen and Heard
           </p>
         </div>
 

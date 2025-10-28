@@ -2,75 +2,93 @@
 
 import React, { useState } from "react";
 const faqData = [
-    {
-        question: "What is the definition of a press release?",
-        answer: "A press release is a documented communication sent to news media members to inform them of newsworthy information.",
-    },
-    {
-        question: "Can my press release include photographs, video, or sound recordings?",
-        answer: "You can add up to 5 images per release. You can also add more images according to the plan you selected.",
-    },
-    {
-        question: "What is the procedure for distributing press releases?",
-        answer: "Our distribution process involves submitting your press release through our platform, after which our team reviews it for quality and then distributes it to our network of media outlets and journalists based on your selected package."
-    },
-    {
-        question: "What are the advantages of distributing press releases?",
-        answer: "Press release distribution helps increase brand visibility, improve SEO through backlinks, establish credibility, reach target audiences, and potentially get media coverage from journalists who monitor press release services."
-    },
-    {
-        question: "What's the best way to get started?",
-        answer: "The easiest way to get started is to select a package that fits your needs, prepare your press release content, and submit it through our platform. Our team will guide you through the process."
-    },
-    {
-        question: "What is the procedure for submitting a press release?",
-        answer: "You can submit a press release by creating an account on our platform, selecting a distribution package, uploading your content (text, images, etc.), and completing the submission process with payment."
-    },
-    {
-        question: "How can I improve my press release writing skills?",
-        answer: "We provide writing guidelines and templates to help you craft effective press releases. Focus on newsworthy angles, clear headlines, concise writing, and including all essential information (who, what, when, where, why)."
-    },
-    {
-        question: "Do you have any samples of effective press releases?",
-        answer: "Yes, we can provide sample press releases that demonstrate effective structure, content, and formatting. These samples showcase how to present information in a way that attracts media attention."
-    },
-    {
-        question: "What is the maximum amount of traffic that one Press Release can generate?",
-        answer: "Traffic results vary depending on the newsworthiness of your content and the distribution package selected. Some releases generate hundreds of visits, while particularly newsworthy ones can generate thousands."
-    },
-    {
-        question: "How long would it take to distribute the press release?",
-        answer: "Standard distribution typically begins within 24 hours of submission and completes within 2-3 business days. Expedited options are available for faster distribution."
-    },
-    {
-        question: "Do photos, videos, and music come at an extra cost?",
-        answer: "Basic packages include a limited number of images. Additional multimedia elements or higher quantities may require premium packages or additional fees."
-    },
-    {
-        question: "How can I know when my press release has been distributed entirely?",
-        answer: "You'll receive email notifications at key stages of the distribution process, and a final report when distribution is complete showing all placements."
-    },
-    {
-        question: "Will I receive a distribution report?",
-        answer: "Yes, all packages include a detailed distribution report showing where your press release was placed, including links to online coverage when available."
-    },
-    {
-        question: "What is the significance of the 'Company Logo' attachment in the Agency Submission?",
-        answer: "Including your company logo helps with brand recognition in the distributed release and increases the chances of media outlets using it when covering your story."
-    },
-    {
-        question: "How do I include my company's logo in a branded report?",
-        answer: "You can upload your logo during the submission process. We recommend high-resolution logos in standard formats (JPEG, PNG) for best results."
-    },
-    {
-        question: "Can you help me write a press release?",
-        answer: "Yes, we offer professional press release writing services at an additional cost. Our writers can help craft an effective release based on your information."
-    },
-    {
-        question: "Can I provide your services to my clients as a resale? Will there be any discounts available for resellers?",
-        answer: "We do offer reseller programs with discounted rates for agencies and professionals who regularly distribute press releases for clients. Please contact our sales team for reseller program details."
-    }
+  {
+    question: "What is FG Newswire?",
+    answer:
+      "FG Newswire is a platform that helps businesses and individuals share their news, press releases, and guest posts on trusted websites.",
+  },
+  {
+    question: "How does guest posting work?",
+    answer:
+      "You provide your content or topic, and we publish it on high-quality websites relevant to your niche.",
+  },
+  {
+    question: "What is a press release service?",
+    answer:
+      "We write and distribute your news to media outlets and online platforms to increase visibility and credibility.",
+  },
+  {
+    question: "Who can use FG Newswire?",
+    answer:
+      "Startups, small businesses, established brands, and even individuals looking to share news can use our services.",
+  },
+  {
+    question: "Are the websites real and high-quality?",
+    answer:
+      "Yes, we only publish on trusted, high-traffic websites that add real value.",
+  },
+  {
+    question: "Do I need to pay upfront?",
+    answer:
+      "No credit card is required to get started, and you can cancel anytime.",
+  },
+  {
+    question: "How long does it take to publish my content?",
+    answer:
+      "Most guest posts and press releases go live within a few days, depending on the package.",
+  },
+  {
+    question: "Can I choose the websites for my guest posts?",
+    answer:
+      "Yes, we work with you to select websites that match your niche and goals.",
+  },
+  {
+    question: "How many links can I include in a guest post?",
+    answer:
+      "Each post typically allows 1–2 backlinks to your website for SEO purposes.",
+  },
+  {
+    question: "Will this help my SEO?",
+    answer:
+      "Yes, publishing on high-quality websites improves your search engine rankings and online visibility.",
+  },
+  {
+    question: "Can I submit my own article?",
+    answer:
+      "Yes, you can provide your content, or we can write it for you.",
+  },
+  {
+    question: "Is there a limit to how many posts I can submit?",
+    answer:
+      "No, you can choose packages that fit your needs, from single posts to multiple submissions.",
+  },
+  {
+    question: "How much does it cost?",
+    answer:
+      "We offer flexible plans to suit every budget. Pricing depends on the number of posts and the authority of the websites.",
+  },
+  {
+    question: "What industries do you cover?",
+    answer:
+      "We cover a wide range of industries, including tech, health, lifestyle, business, and more.",
+  },
+  {
+    question: "How do I track my results?",
+    answer:
+      "We provide live links and reports so you can see where your content is published and track performance.",
+  },
+  {
+    question: "Is this safe for my website?",
+    answer:
+      "Yes, we follow ethical publishing practices and avoid spammy sites.",
+  },
+  {
+    question: "How do I get started?",
+    answer:
+      "Simply choose a plan, share your content or topic, and our team will handle the rest.",
+  },
 ];
+
 
 const Faq = () => {
     const [activeIndex, setActiveIndex] = useState(0);

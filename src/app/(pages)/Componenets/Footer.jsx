@@ -15,7 +15,7 @@ const Footer = () => {
         <div>
           <h3 className="text-white text-xl md:text-2xl font-semibold mb-4">FG newswire.</h3>
           <p className="text-sm md:text-base text-white">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consequuntur maxime unde iusto deserunt inventore provident perferendis cum earum dignissimos similique!
+            We help businesses and individuals share their stories, press releases, and guest posts on trusted websites to boost visibility, and reach the right audience. All rights reserved.
           </p>
         </div>
 

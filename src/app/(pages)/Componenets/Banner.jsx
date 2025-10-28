@@ -26,8 +26,8 @@ function Banner() {
             data-wow-delay="0s"
           >
             <div className="mb-4 flex ms-10 sm:ms-0 items-center justify-center md:justify-start">
-              <div className="px-3 py-[4px] text-white font-medium rounded-full bg-gradient-to-r from-[#a238bb] to-[#e64671] bg-cover mr-[15px] text-[13px]"># 1</div>
-              <div className="text-sm">Lorem, ipsum dolor.</div>
+              {/* <div className="px-3 py-[4px] text-white font-medium rounded-full bg-gradient-to-r from-[#a238bb] to-[#e64671] bg-cover mr-[15px] text-[13px]"># 1</div> */}
+              <div className="text-sm">Reach More People with FG Newswire</div>
             </div>
           </div>
 
@@ -35,14 +35,14 @@ function Banner() {
             className="wow animate__animated animate__fadeInLeft inline-block text-xl sm:text-3xl md:text-5xl text-center md:text-start font-bold leading-tight my-1"
             data-wow-delay="0.2s"
           >
-            Lorem ipsum dolor <span className="text-blue-500">Facilis</span> adipisicing
+            Grow your visibility and connect with a <span className="text-blue-500">wider audience</span>
           </h1>
 
           <p
             className="wow animate__animated animate__fadeInLeft text-base md:text-lg text-[#242423] my-2"
             data-wow-delay="0.4s"
           >
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deserunt expedita totam sed molestiae quis itaque dignissimos minima eveniet voluptatibus facere consectetur cupiditate est harum quo sunt, aspernatur dolore earum architecto magni in provident delectus natus. Ab ullam quasi adipisci voluptates?
+            FG Newswire helps businesses and brands share their stories on trusted websites and news platforms. We make it easy to publish your updates, announcements, and press releases, helping you build credibility and attract attention online.
           </p>
 
           <div
@@ -72,7 +72,7 @@ function Banner() {
           >
             <div className="text-xs sm:text-base flex items-center justify-center md:justify-start">
               <FaCheckCircle size={20} className="mr-3 text-pink-600" />
-              Lorem ipsum <span className='text-xl mx-1 font-bold'>500K+</span> amet consectetur.
+              Our strong network reaches <span className='text-xl mx-1 font-bold'>500K+</span> readers worldwide.
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ const testimonials = [
   {
     name: "Peter Dunbar",
     role: "Phoenix Arts Club",
-    review: "The sure-fire way to have your efforts recognised",
+    review: "Our marketing team had tried multiple outreach methods, but nothing worked as efficiently as FG Newswire. Their team handled everything from content creation to publication, and our brand started getting noticed within days. We saw a 40% jump in web traffic within the first month.",
     stars: 5,
     img: "/imgs/team/cindy-gruensfelder.jpg",
   },
@@ -17,7 +17,7 @@ const testimonials = [
     name: "Charles Brecque",
     role: "Legislate Technologies Limited",
     review:
-      "PR Fire is an effective way of distributing your press release cost-effectively. The rewrite service is also a great way for increasing the likelihood of your press release appealing to journalists.",
+      "As a small business owner, I wanted a way to build credibility online without huge marketing costs. FG Newswire helped me publish guest posts on real, high-quality sites. My website rankings improved, and I received more customer inquiries than ever before.",
     stars: 5,
     img: "/imgs/team/jacob-henry.jpg",
   },
@@ -25,7 +25,7 @@ const testimonials = [
     name: "Steven Day",
     role: "House of Lords Debate",
     review:
-      "Through your generosity and skill at PR Fire, we are able to get the message out there ahead of our hugely important House of Lords debate. I'm very grateful and impressed by your service.",
+      "FG Newswire is now a core part of our PR strategy. Their press release and guest posting services have helped us strengthen our brand reputation and attract investors. The professionalism and speed of delivery really stand out. Highly recommended!",
     stars: 4,
     img: "/imgs/team/liz-porter.jpg",
   },
@@ -105,12 +105,10 @@ const TestimonialCarousel = () => {
         {/* Heading */}
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold text-purple-700">
-            Our Results Speak for Themselves
+            What Our Clients Say
           </h2>
           <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-            PR Fire has helped businesses of all sizes get targeted coverage on
-            high-authority media websites. Our clients come from a wide range of
-            industries including law, finance, SEO, crypto and much more.
+           Our clients trust FG Newswire to deliver real results. From startups to established brands, we&apos;ve helped businesses gain visibility, boost SEO, and build credibility through powerful guest posts and press releases.
           </p>
         </div>
 

@@ -39,23 +39,24 @@ function SignUp() {
 
       const data = await res.json();
 
-      if (res.ok && data.token) {
-        // Save token
-        localStorage.setItem("token", data.token);
+     if (res.ok && data.access_token) {
+  // Save access token
+  localStorage.setItem("token", data.access_token);
 
-        // Fetch user details
-        const userRes = await fetch("https://api.glassworld06.com/api/me", {
-          headers: { Authorization: `Bearer ${data.token}` },
-        });
+  // Fetch user details
+  const userRes = await fetch("https://api.glassworld06.com/api/me", {
+    headers: { Authorization: `Bearer ${data.access_token}` },
+  });
 
-        const userData = await userRes.json();
-        localStorage.setItem("user", JSON.stringify(userData));
+  const userData = await userRes.json();
+  localStorage.setItem("user", JSON.stringify(userData));
 
-        // Redirect
-        router.push("/");
-      } else {
-        setError(data.message || "Registration failed. Try again.");
-      }
+  // Redirect
+  router.push("/signin");
+} else {
+  setError(data.message || "Registration failed. Try again.");
+}
+
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");

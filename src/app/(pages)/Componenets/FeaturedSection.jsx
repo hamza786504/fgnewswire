@@ -49,21 +49,19 @@ export default function FeaturedSection() {
           data-wow-duration="1.2s"
           data-wow-delay="0.3s"
         >
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight">
-            Lorem ipsum dolor sit.{" "}
-            <span className="text-pink-600">Lorem ipsum</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+            The Most Effective Guest Posting Submission Service
           </h2>
           <p className="mt-4 text-gray-600 text-base md:text-lg">
-
-            Lorem ipsum dolor sit amet consectetur <strong>adipisicing</strong>{" "} elit. Autem quo doloremque omnis, nobis corrupti totam reprehenderit maiores et non obcaecati.
+Reach the right audience and grow your online presence effortlessly. FG Newswire connects you with high-quality websites to boost visibility, credibility, and SEO performance.
           </p>
 
           {/* Animated Progress Bars */}
           <div className="mt-8 space-y-5">
             {[
-              { label: "corrupti totam reprehenderit", value: 90 },
-              { label: "maiores et non obcaecati", value: 85 },
-              { label: "sit amet consectetur", value: 92 },
+              { label: "Publish on trusted sites", value: 90 },
+              { label: "Gain strong backlinks", value: 85 },
+              { label: "Drive traffic", value: 92 },
             ].map((item, i) => (
               <div key={i}>
                 <div className="text-sm text-gray-800 font-medium mb-1">

@@ -44,7 +44,7 @@ const handleSubmit = async (e) => {
       const userData = await userRes.json();
 
       // 🧠 Check if user is admin
-      if (userData.is_admin === "1" || userData.is_admin === 1) {
+      if (userData.is_admin === "0" || userData.is_admin === 0) {
         // Admin user → redirect to dashboard login
         localStorage.removeItem("token");
         localStorage.removeItem("token_expiry");
@@ -53,7 +53,7 @@ const handleSubmit = async (e) => {
 
       // ✅ Normal user → save info and redirect
       localStorage.setItem("user", JSON.stringify(userData));
-      router.push("/");
+      router.push("/dashboard/");
     } else {
       setError(data.message || "Invalid email or password");
     }

@@ -7,10 +7,10 @@ export default function BoostPresenceSection() {
         {/* Left Content */}
         <div className="w-full md:w-1/2">
           <h2 className="text-center md:text-start text-2xl md:text-3xl font-bold mb-6">
-            Lorem ipsum dolor sit amet consectetur?
+            Try FG Newswire - Safe, and Commitment-Free
           </h2>
           <p className="text-center md:text-start text-base md:text-lg leading-relaxed">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis maiores perspiciatis blanditiis iure suscipit!
+            Experience the freedom to explore our services without any upfront payment. At FG Newswire, you can start instantly, see real results, and decide when you&apos;re ready.
           </p>
         </div>
 

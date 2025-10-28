@@ -32,7 +32,7 @@ export default function BlogSection() {
       <div className="text-center mb-10 wow animate__animated animate__fadeInUp">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-800">Latest News & Insights</h2>
         <p className="text-gray-600 mt-2 text-sm md:text-base">
-          Get all digital marketing essentials from this site. Read our blogs to learn more about digital marketing.
+          Stay updated with the newest trends, tips, and stories to grow your brand and online presence.
         </p>
       </div>
 

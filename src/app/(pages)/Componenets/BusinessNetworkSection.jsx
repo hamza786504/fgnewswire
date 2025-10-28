@@ -18,13 +18,13 @@ export default function BusinessNetworkSection() {
       {/* Main content with WOW animations */}
       <div className="relative z-10 max-w-4xl text-center text-white">
         <h1 className="wow animate__animated animate__fadeInDown text-3xl sm:text-4xl md:text-5xl font-bold mb-4" data-wow-delay="0.2s">
-          Lorem, ipsum dolor
+          Get Started Today
         </h1>
         <p className="wow animate__animated animate__fadeInUp text-lg sm:text-xl md:text-2xl font-medium mb-6" data-wow-delay="0.4s">
-          Lorem ipsum dolor sit amet
+          Ready to grow your online presence?
         </p>
         <p className="wow animate__animated animate__fadeInUp text-base sm:text-lg md:text-xl mb-8" data-wow-delay="0.6s">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. <br className="hidden md:inline" /> Et exercitationem totam ipsa impedit quis ullam eaque fuga quasi eos? Odio.
+          Choose a Guest Posting Package or Press Release Plan that fits your goals and let us handle the rest.
         </p>
         <button className="wow animate__animated animate__zoomIn bg-white text-black font-semibold px-6 py-3 rounded-full capitalize shadow-md hover:bg-gray-200 transition" data-wow-delay="0.8s">
            impedit quis
