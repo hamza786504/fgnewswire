@@ -111,14 +111,14 @@ export default function GuestPostingPackage() {
                             className="text-white wow animate__animated animate__fadeInLeft inline-block text-xl sm:text-3xl md:text-5xl text-center md:text-start font-bold leading-tight my-1"
                             data-wow-delay="0.2s"
                         >
-                            High Quality Guest Posting Service & Blogger Outreach
+                            Expand Your Reach with Guest Posting Packages
                         </h1>
 
                         <p
                             className="wow animate__animated animate__fadeInLeft text-base md:text-lg my-2 text-white"
                             data-wow-delay="0.4s"
                         >
-                            Premium guest post service for Businesses, SEO agencies, and Marketers. Get powerful in-content, dofollow backlinks from relevant high-authority (DA) blogs, news sites, and magazines.
+                            Our guest posting packages make it easy to publish your content on high-quality, trusted websites. Reach the right audience, build backlinks, and improve your SEO while boosting your brand&apos;s online credibility, all with a simple, hassle-free process.
                         </p>
 
                         <div
@@ -180,10 +180,16 @@ export default function GuestPostingPackage() {
                 <div className="md:max-w-4xl lg:max-w-5xl mx-auto">
                     <div className="mb-12">
                         <h2 className="text-center text-2xl sm:text-3xl md:text-4xl capitalize font-bold text-gray-900">
-                            Why Choose GUESTPOSTLINKS for <span className="text-[#2563eb]">Guest Posting Service?</span>
+                            Why Choose Our <span className="text-[#2563eb]">Guest Posting Service?</span>
                         </h2>
                         <p className="text-center mt-4 text-sm sm:text-md md:text-lg text-gray-600">
-                            We help brands grow their business with high-quality SEO guest posting services. Our expert writers craft original, researched, and insightful articles, providing the best guest posting service available. These unique articles include links to your business and posts on targeted sites. If you&apos;re looking to buy blog posts or explore guest blogging services, our premium guest posting services can boost your website traffic. With over 35000+ websites listed worldwide, you can easily choose high DA authority websites to submit guest posts using our guest posting services. This ensures you get valuable do-follow backlinks from relevant high authority (DA) sites, making our guest post service a top choice for businesses seeking to enhance their online presence.
+                            Our guest posting service helps your brand get noticed on trusted, high-quality websites. It improves your SEO, drives real traffic, and connects your content with the right audience.
+                        </p>
+                         <p className="text-center mt-4 text-sm sm:text-md md:text-lg text-gray-600">
+                            We make the process simple and efficient. You provide your content, and we handle placement, publishing, and reporting, ensuring your brand gets noticed.
+                        </p>
+                         <p className="text-center mt-4 text-sm sm:text-md md:text-lg text-gray-600">
+                            With flexible packages, reliable support, and results-driven strategies, FG Newswire helps businesses of all sizes grow their credibility and online reach.
                         </p>
                     </div>
                 </div>
@@ -198,49 +204,44 @@ export default function GuestPostingPackage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
                     <div className="p-6 bg-white shadow-lg rounded-lg wow animate__animated animate__fadeInUp" data-wow-delay="0.1s">
-                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Genuine Manual Outreach</h3>
+                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Reach Your Audience</h3>
                         <p className="text-gray-600 text-sm md:text-md">
-                            We do not use any automated service or robot for guest post placement.
-                            100% talented and skilled human work for manual placement.
+                            Publish content on trusted websites and connect with real readers.
                         </p>
                     </div>
 
                     <div className="p-6 bg-white shadow-lg rounded-lg wow animate__animated animate__fadeInUp" data-wow-delay="0.2s">
-                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">High Authority & Quality Sites</h3>
+                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Improve SEO:</h3>
                         <p className="text-gray-600 text-sm md:text-md">
-                            We only post to sites with high authority and quality metrics.
-                            No author bios, no sponsored posts.
+                            Gain high-quality backlinks that boost search engine rankings effectively.
                         </p>
                     </div>
 
                     <div className="p-6 bg-white shadow-lg rounded-lg wow animate__animated animate__fadeInUp" data-wow-delay="0.3s">
-                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Premium Quality Content</h3>
+                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Build Credibility</h3>
                         <p className="text-gray-600 text-sm md:text-md">
-                            Our in-house content writers deliver 100% unique, hand-written articles
-                            following high writing standards.
+                            Feature your brand on authoritative sites to strengthen trust online.
                         </p>
                     </div>
 
                     <div className="p-6 bg-white shadow-lg rounded-lg wow animate__animated animate__fadeInUp" data-wow-delay="0.4s">
-                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Relevant Niche Links</h3>
+                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Drive Traffic</h3>
                         <p className="text-gray-600 text-sm md:text-md">
-                            Access a huge and growing database of niche websites to choose from.
+                            Increase website visits with engaging, relevant content for your audience
                         </p>
                     </div>
 
                     <div className="p-6 bg-white shadow-lg rounded-lg wow animate__animated animate__fadeInUp" data-wow-delay="0.5s">
-                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Choose Websites by Filters</h3>
+                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Flexible Packages</h3>
                         <p className="text-gray-600 text-sm md:text-md">
-                            Filter websites by Moz DA, PA, Ahrefs DR, Organic Traffic, Keywords,
-                            Semrush Traffic, and more.
+                            Choose plans that fit startups, growing businesses, and established brands.
                         </p>
                     </div>
 
                     <div className="p-6 bg-white shadow-lg rounded-lg wow animate__animated animate__fadeInUp" data-wow-delay="0.6s">
-                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Result Oriented Output</h3>
+                        <h3 className="text-md md:text-lg font-bold mb-3 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Proven Results</h3>
                         <p className="text-gray-600 text-sm md:text-md">
-                            Buying guest posts on quality traffic websites helps you gain more
-                            organic visibility in search pages.
+                            See measurable growth in visibility, engagement, and online presence quickly.
                         </p>
                     </div>
 
@@ -251,31 +252,29 @@ export default function GuestPostingPackage() {
 
             <section className="py-16 px-6 md:px-12 lg:px-24 bg-white">
                 <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-700 wow animate__animated animate__fadeInUp">
-                    How Does Our Guest Posting Service Work?
+                    How Our Guest Posting Service Work
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
                     <div className="p-6 rounded-lg shadow-lg border-l-4 border-blue-500 bg-gray-50 wow animate__animated animate__fadeInUp" data-wow-delay="0.1s">
-                        <h3 className="text-xl font-semibold mb-3 text-blue-600">1. Place an Order & Submit Requirements</h3>
+                        <h3 className="text-xl font-semibold mb-3 text-blue-600">Submit Your Content:</h3>
                         <p className="text-gray-600">
-                            Choose a publisher relevant to your business and provide anchor text, target URLs,
-                            and guest post topics if you selected our content writing add-on.
+                            Share your article or topic, or let our team create it
                         </p>
                     </div>
 
                     <div className="p-6 rounded-lg shadow-lg border-l-4 border-purple-500 bg-gray-50 wow animate__animated animate__fadeInUp" data-wow-delay="0.2s">
-                        <h3 className="text-xl font-semibold mb-3 text-purple-600">2. Content Approval or Revision</h3>
+                        <h3 className="text-xl font-semibold mb-3 text-purple-600">Placement on Trusted Sites</h3>
                         <p className="text-gray-600">
-                            Submit your own article or let our expert team write it for you. Approve or request revisions
-                            until you’re 100% satisfied.
+                            We publish your content on high-quality, relevant websites
                         </p>
                     </div>
 
                     <div className="p-6 rounded-lg shadow-lg border-l-4 border-blue-500 bg-gray-50 wow animate__animated animate__fadeInUp" data-wow-delay="0.3s">
-                        <h3 className="text-xl font-semibold mb-3 text-blue-600">3. Publishing & Reporting</h3>
+                        <h3 className="text-xl font-semibold mb-3 text-blue-600">Track Your Results</h3>
                         <p className="text-gray-600">
-                            We will publish the post on your chosen website and send you a detailed report once it’s live.
+                            Receive live links and performance reports to measure impact
                         </p>
                     </div>
 
@@ -355,7 +354,96 @@ export default function GuestPostingPackage() {
 
 
             <TestimonialCarousel />
-            <Faq />
+            <Faq
+  faqData={[
+    {
+      question: "What is guest posting?",
+      answer:
+        "Guest posting is publishing your article or content on another website to reach new audiences.",
+    },
+    {
+      question: "How does FG Newswire help with guest posting?",
+      answer:
+        "We find high-quality websites, place your content, and handle everything from start to finish.",
+    },
+    {
+      question: "Who can use this service?",
+      answer:
+        "Startups, small businesses, established brands, and individuals looking to grow their online presence.",
+    },
+    {
+      question: "Do I need to provide my article?",
+      answer:
+        "You can provide your own content, or our team can create it for you.",
+    },
+    {
+      question: "How long does it take to publish a post?",
+      answer:
+        "Most posts go live within a few days, depending on the package and website approval.",
+    },
+    {
+      question: "Are the websites real and trustworthy?",
+      answer:
+        "Yes, we only work with high-authority, relevant, and trusted websites.",
+    },
+    {
+      question: "How many backlinks can I include in a post?",
+      answer:
+        "Each post usually allows 1–2 backlinks to your website for SEO purposes.",
+    },
+    {
+      question: "Will this improve my SEO?",
+      answer:
+        "Yes, publishing on high-quality sites helps boost search engine rankings and visibility.",
+    },
+    {
+      question: "Can I choose the websites for my guest post?",
+      answer:
+        "Yes, we work with you to select relevant websites that match your niche.",
+    },
+    {
+      question: "How much does the service cost?",
+      answer:
+        "Pricing depends on the package, number of posts, and authority of the websites.",
+    },
+    {
+      question: "Are there flexible packages?",
+      answer:
+        "Yes, we offer packages for businesses of all sizes and budgets.",
+    },
+    {
+      question: "Can I track my guest post performance?",
+      answer:
+        "Yes, we provide live links and reports so you can monitor results.",
+    },
+    {
+      question: "Is this safe for my website?",
+      answer:
+        "Absolutely. We follow ethical practices and avoid spammy sites.",
+    },
+    {
+      question: "How often can I submit posts?",
+      answer:
+        "You can submit as many posts as your chosen package allows.",
+    },
+    {
+      question: "What topics are accepted?",
+      answer:
+        "We accept topics relevant to your business, industry, or niche.",
+    },
+    {
+      question: "Can guest posting increase brand credibility?",
+      answer:
+        "Yes, being featured on reputable sites strengthens your authority and trust.",
+    },
+    {
+      question: "How do I get started?",
+      answer:
+        "Select a package, provide your content or topic, and we handle the rest.",
+    },
+  ]}
+/>
+
             <CountriesSection />
 
 

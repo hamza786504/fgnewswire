@@ -18,7 +18,7 @@ export default function Header() {
     { link: "Home", href: "/" },
     { link: "Premium Publications", href: "/premium-publications" },
     { link: "Guest Posting Packages", href: "/guest-posting-package" },
-    { link: "Press Release", href: "/resellers-plan" },
+    { link: "Press Release", href: "/press-release" },
     {
       link: "Plans",
       href: "/plans",

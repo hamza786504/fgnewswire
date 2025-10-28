@@ -93,10 +93,11 @@ export default function PremiumPublications() {
                 <section className="mb-12">
                     <div className="text-center mb-8">
                         <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
-                            High Quality, High Traffic Publications
+                            Feature Your Story on Top Platforms.
+
                         </h2>
                         <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-                            Looking to get your brand featured on the worlds biggest publications? Look no further! See below 👇
+                            Get your content featured on high-authority websites to maximize visibility, credibility, and impact for your brand.
                         </p>
                     </div>
                 </section>
@@ -158,103 +159,185 @@ export default function PremiumPublications() {
                     </div>
                 </section>
 
-                {/* Content Sections */}
-                <section className="space-y-12">
-                    <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                        <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
-                            Boost Your SEO with Our Premium Authority Guest Posting Service
-                        </h2>
-                        <div className="prose max-w-none text-gray-700">
-                            <p>Welcome to our premium authority guest posting service. If you've been seeking a surefire way to enhance your website's visibility, you're in the right place.</p>
-                            <p>Guest posts on high-authority sites not only get your brand in front of a larger audience but also improve your website's ranking on search engines.</p>
-                            <p>Through our service, we'll help you establish your brand's voice across the web, boost your SEO, and drive targeted traffic to your site. Let's take a closer look at what authority guest posting is and how our expert services can give your online presence a substantial lift.</p>
-                        </div>
-                    </div>
+              {/* Content Sections */}
+<section className="space-y-12">
+  {/* Welcome Section */}
+  <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+    <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+      Welcome to FG Newswire
+    </h2>
+    <div className="prose max-w-none text-gray-700">
+      <p>
+        FG Newswire is your go-to platform for sharing stories, press releases,
+        and guest posts on trusted websites. With our services, you can easily
+        publish your content, connect with your target audience, and improve
+        your brand’s online presence.
+      </p>
+      <p>
+        Whether you’re announcing a new product, sharing company news, or posting
+        insightful articles, we make it simple and effective.
+      </p>
+    </div>
+  </div>
 
-                    <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                        <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
-                            What Are Authority Guest Posts?
-                        </h2>
-                        <div className="prose max-w-none text-gray-700">
-                            <p>Authority guest posts are articles that we create and place on high-authority, reputable websites on your behalf. The term 'authority' here refers to the strength and credibility of a website in the eyes of search engines such as Google. Websites with high authority are well-respected, trustworthy, and often have a substantial number of visitors.</p>
-                            <p>Furthermore, the key idea behind authority guest posts is simple. We write high-quality, engaging articles relevant to your business, and we post them on these high-authority websites.</p>
-                            <p>Each post we create includes a backlink to your website. These backlinks are like votes of confidence in the eyes of search engines. The more of these 'votes' you have from high-authority sites, the more credible your website becomes.</p>
-                            <p>Not only does this strategy increase your website's credibility, but it also drives quality traffic your way. When readers on these high-authority websites see your guest post and find it interesting, they'll likely click the link to your website to learn more about you.</p>
-                            <p>Therefore, authority guest posts serve a dual purpose: improving your SEO and attracting interested readers.</p>
-                        </div>
-                    </div>
+  {/* Why Choose FG Newswire */}
+  <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+    <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+      Why Choose FG Newswire
+    </h2>
+    <div className="prose max-w-none text-gray-700">
+      <p>
+        Our platform is designed to give you the maximum exposure with minimum
+        effort. We focus on quality, authority, and results, ensuring that your
+        content reaches the right audience.
+      </p>
+      <p>
+        Every guest post or press release is placed on high-authority websites,
+        helping you improve SEO, attract traffic, and build trust. With FG
+        Newswire, your news doesn’t just get published — it gets noticed.
+      </p>
+      <p>
+        We work with businesses of all sizes, offering flexible packages and
+        personalized support so you can achieve your goals without hassle.
+      </p>
+    </div>
+  </div>
 
-                    <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                        <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
-                            Why Choose Our Authority Guest Post Service?
-                        </h2>
-                        <div className="prose max-w-none text-gray-700">
-                            <p>You might wonder, why choose our authority guest post service? Here's why:</p>
-                            <ol className="list-decimal pl-6 space-y-2">
-                                <li><strong>Extensive network:</strong> We've built relationships with hundreds of high-authority websites across various niches. This means your guest posts will appear on platforms that already have a large, engaged audience.</li>
-                                <li><strong>Quality content:</strong> Our team of professional writers creates high-quality, engaging content tailored to your brand. Additionally, we ensure that each guest post not only captures readers' attention but also encourages them to visit your website.</li>
-                                <li><strong>SEO expertise:</strong> We understand the intricacies of SEO. Each guest post we craft is optimized with the right keywords to effectively boost your search engine rankings.</li>
-                                <li><strong>Transparent process:</strong> With us, you'll always be in the loop. Moreover, we provide regular updates about the websites we're targeting, the content we're creating, and the results we're achieving.</li>
-                                <li><strong>Result-driven strategy:</strong> We don't just aim for short-term success. Our goal is to provide you with a sustainable SEO strategy that brings in consistent traffic and boosts your website's authority in the long run.</li>
-                            </ol>
-                            <p>By choosing our authority guest post service, you're not just getting backlinks but building a solid foundation for your online presence.</p>
-                        </div>
-                    </div>
+  {/* Benefits Section */}
+  <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+    <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+      Benefits of Using FG Newswire
+    </h2>
+    <div className="prose max-w-none text-gray-700">
+      <ul className="list-disc pl-6 space-y-2">
+        <li>
+          <strong>Reach a Wider Audience:</strong> Get your content in front of
+          real readers on trusted websites.
+        </li>
+        <li>
+          <strong>Boost Your SEO:</strong> High-quality backlinks improve search
+          engine rankings.
+        </li>
+        <li>
+          <strong>Build Brand Credibility:</strong> Publishing on reputable
+          platforms strengthens your authority.
+        </li>
+        <li>
+          <strong>Fast and Efficient:</strong> Content gets live quickly, giving
+          you immediate results.
+        </li>
+        <li>
+          <strong>Affordable and Flexible:</strong> Plans for every budget and
+          business size.
+        </li>
+      </ul>
+    </div>
+  </div>
 
-                    <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                        <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
-                            How Does Our Process Work?
-                        </h2>
-                        <div className="prose max-w-none text-gray-700">
-                            <p>We believe in maintaining transparency with our clients, and that starts with explaining our process. Our authority guest posting service follows a proven, five-step approach that assures quality and results:</p>
+  {/* How It Works */}
+  <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+    <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+      How FG Newswire Works
+    </h2>
+    <div className="prose max-w-none text-gray-700">
+      <p>
+        Get featured on top-tier, high-authority websites to give your content
+        maximum visibility and impact. We ensure your articles, press releases,
+        and guest posts reach the right audience, boosting both traffic and
+        credibility.
+      </p>
 
-                            <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Step 1 - Understanding Your Business</h3>
-                            <p>The first step is all about getting to know your business. We dig deep to understand your industry, target audience, goals, and competitors. This process helps us to tailor our guest posting strategy to your unique needs and create content that will truly resonate with your audience.</p>
+      <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+        Step 1: Choose Your Service
+      </h3>
+      <p>
+        Select either guest posting or press release distribution depending on
+        your goals.
+      </p>
 
-                            <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Step 2 - Identifying Potential Websites</h3>
-                            <p>Next, we leverage our extensive network to identify high-authority websites that align with your business niche. Moreover, this ensures your guest posts will reach an audience interested in your products or services.</p>
+      <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+        Step 2: Share Your Content
+      </h3>
+      <p>
+        Provide your article, news, or topic details. If needed, our team can
+        write it for you.
+      </p>
 
-                            <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Step 3 - Crafting Compelling Content</h3>
-                            <p>Once we have a clear strategy in place, our team of experienced writers gets to work. They create engaging, insightful content that not only meets the standards of high-authority websites but also captures readers' interest. Our content creation process focuses on:</p>
-                            <ul className="list-disc pl-6 space-y-2 mt-2">
-                                <li><strong>Relevance:</strong> The content aligns with your business and the host website's audience.</li>
-                                <li><strong>Quality:</strong> We create well-researched, original articles that provide value to readers.</li>
-                                <li><strong>SEO optimization:</strong> Each post is optimized with the right keywords to help improve your search engine rankings.</li>
-                            </ul>
+      <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+        Step 3: Review & Approve
+      </h3>
+      <p>
+        We draft the content and let you review it before publication.
+      </p>
 
-                            <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Step 4 - Pitching and Posting</h3>
-                            <p>After the content is ready, we reach out to our partner websites to get your guest post published. Our long-standing relationships with these websites help ensure a smooth and quick process.</p>
+      <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+        Step 4: Publish on Trusted Sites
+      </h3>
+      <p>
+        Your content is published on high-authority websites relevant to your
+        niche.
+      </p>
 
-                            <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">Step 5 - Reporting and Analysis</h3>
-                            <p>Finally, we monitor each guest post's performance and provide you with detailed reports. This process allows you to see the direct impact of our services on your website traffic and search engine rankings.</p>
+      <h3 className="text-xl font-semibold mt-6 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+        Step 5: Track Your Results
+      </h3>
+      <p>
+        Receive live links and performance reports to measure visibility,
+        traffic, and engagement.
+      </p>
 
-                            <p className="mt-4">From start to finish, our process is designed to take the stress out of guest posting and deliver results you can see and measure.</p>
-                        </div>
-                    </div>
+      <p className="mt-4">
+        Our premium publications are handpicked for relevance, authority, and
+        engagement, helping you establish your brand as a trusted voice in your
+        industry.
+      </p>
+    </div>
+  </div>
 
-                    <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                        <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
-                            Expected Results and Benefits
-                        </h2>
-                        <div className="prose max-w-none text-gray-700">
-                            <p>What kind of results can you expect when you invest in our authority guest post service? Firstly, you will see a measurable increase in your website's search engine rankings.</p>
-                            <p>This happens because each high-quality backlink from an authority site signals to search engines that your website is trustworthy and relevant, boosting your SEO.</p>
-                            <p>However, the benefits extend beyond just SEO. By publishing content on well-respected sites, your brand gains exposure to a broader audience.</p>
-                            <p>Moreover, this not only drives more traffic to your website but also raises your brand's reputation. Over time, as we publish more guest posts, your website's authority will grow, leading to a sustainable increase in organic traffic.</p>
-                            <p>Additionally, by offering valuable content to readers through guest posts, you're also building a positive relationship with potential customers. They'll see your brand as an expert and a helpful resource in your industry, which can lead to increased customer trust and higher conversion rates.</p>
-                        </div>
-                    </div>
+  {/* Our Services */}
+  <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+    <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+      Our Services
+    </h2>
+    <div className="prose max-w-none text-gray-700">
+      <p>
+        FG Newswire offers two main services to help your brand grow:{" "}
+        <strong>Guest Posting</strong> and{" "}
+        <strong>Press Release Distribution</strong>. Each service is designed to
+        maximize your reach, improve SEO, and build credibility.
+      </p>
+      <p>
+        Our guest posting service places your articles on high-quality websites,
+        giving you valuable backlinks and attracting new visitors. Meanwhile,
+        our press release service ensures that your news is delivered to
+        journalists, bloggers, and readers who matter most.
+      </p>
+      <p>
+        With both services, you get professional content, fast publishing, and
+        measurable results, all tailored to your brand’s unique needs.
+      </p>
+    </div>
+  </div>
 
-                    <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                        <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
-                            Take the First Step Towards Boosting Your Online Presence Today!
-                        </h2>
-                        <div className="prose max-w-none text-gray-700">
-                            <p>Ready to supercharge your SEO strategy and enhance your brand's online presence? Let our authority guest post service pave the way to your success. It's time to get your brand in front of a broader audience on high-authority sites.</p>
-                            <p>Don't wait to start your journey towards higher search engine rankings and increased website traffic. Get in touch with us today. We're excited to work with you and help you reach new heights in your digital marketing efforts. Your online success is just a click away!</p>
-                        </div>
-                    </div>
-                </section>
+  {/* Get Started */}
+  <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+    <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent">
+      Get Started with FG Newswire
+    </h2>
+    <div className="prose max-w-none text-gray-700">
+      <p>
+        Starting with FG Newswire is simple and hassle-free. Choose a plan,
+        share your content, and let our team handle the rest.
+      </p>
+      <p>
+        Whether you’re a small startup or an established brand, we provide the
+        tools, guidance, and support to ensure your news reaches the right
+        audience and generates measurable results.
+      </p>
+    </div>
+  </div>
+</section>
+
             </main>
         </div>
     );

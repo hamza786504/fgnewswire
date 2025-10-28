@@ -213,13 +213,14 @@ export default function CountriesSection() {
   return (
     <section className="py-16 px-6 md:px-12 lg:px-24">
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
-        Traffic Websites{" "}
+        Explore {" "}
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-          by Country
+          Top Websites 
         </span>
+        {" "}by Country
       </h2>
       <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
-        Browse traffic websites by country to find high-quality guest posting opportunities in your target markets.
+        Find and explore high-traffic websites in different countries to target your audience effectively.
       </p>
 
       {/* Filters */}
