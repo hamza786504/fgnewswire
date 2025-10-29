@@ -5,7 +5,7 @@ function PersonalBrandingPressRelease() {
   return (
     <>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/personal branding.png"}
         heading={"Personal Branding Press Release Service"}
         description={"Build your professional image with FG Newswire’s Personal Branding Press Release Service. We help individuals, entrepreneurs, and professionals announce achievements."}
       />

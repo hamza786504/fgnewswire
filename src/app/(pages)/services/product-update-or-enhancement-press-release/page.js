@@ -5,7 +5,7 @@ function ProductUpdateOrEnhancementPressRelease() {
   return (
     <>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/product update.png.png"}
         heading={"Product Update & Enhancement Press Release Service"}
         description={"Keep your audience informed with FG Newswire’s Product Update & Enhancement Press Release Service. We help businesses announce new features, updates, or improvements."}
       />

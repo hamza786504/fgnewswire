@@ -5,7 +5,7 @@ function NewServiceLaunchesPressRelease() {
   return (
     <div>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/new serices.png"}
         heading={"New Service Launch Press Release Service"}
         description={"Make your new service launch memorable with FG Newswire. We help businesses announce innovative offerings, solutions, or features to a targeted audience."}
       />

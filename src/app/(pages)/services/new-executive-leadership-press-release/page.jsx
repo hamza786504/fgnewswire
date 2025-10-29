@@ -5,7 +5,7 @@ function NewExecutiveLeadershipPressRelease() {
   return (
     <div>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/new executie leadership.png"}
         heading={"New Executive Leadership Press Release Service"}
         description={"Announce leadership changes professionally with FG Newswire. We help businesses share news of new appointments, promotions, or executive hires and industry recognition."}
       />

@@ -5,7 +5,7 @@ function AppLaunchesPressRelease() {
   return (
     <div>
             <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/app launcher.png"}
         heading={"App Launch Press Release Service"}
         description={"Promote your app with FG Newswire’s App Launch Press Release Service. We help you announce new mobile or web apps, major updates, or innovative features."}
       />

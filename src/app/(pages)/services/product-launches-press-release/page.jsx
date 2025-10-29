@@ -5,7 +5,7 @@ function ProductLaunchesPressRelease() {
   return (
     <div>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/product launch.png"}
         heading={"Product Launch Press Release Service"}
         description={"Introduce your new products to the world with FG Newswire’s Product Launch Press Release Service. We help you announce product releases, updates, or innovations."}
       />

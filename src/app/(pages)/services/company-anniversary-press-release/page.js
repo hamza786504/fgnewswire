@@ -5,7 +5,7 @@ function ProductUpdateOrEnhancementPressRelease() {
   return (
     <>
             <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/crises management.png"}
         heading={"Company Anniversary Press Release Service"}
         description={"Celebrate milestones with FG Newswire’s Company Anniversary Press Release Service. We help businesses announce anniversaries, achievements, and milestones to media."}
       />

@@ -5,7 +5,7 @@ function CrisisManagementPressRelease() {
   return (
     <div>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/crises management.png"}
         heading={"Crisis Management Press Release Service"}
         description={"Protect your brand reputation with FG Newswire’s Crisis Management Press Release Service. We help businesses communicate effectively during sensitive situations."}
       />

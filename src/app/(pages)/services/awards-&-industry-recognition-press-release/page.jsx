@@ -5,7 +5,7 @@ function AwardsIndustoryRecognitionPressRelease() {
   return (
     <div>
             <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/awards ceremony.png"}
         heading={"Awards & Industry Recognition Press Release Service"}
         description={"Celebrate your achievements with FG Newswire’s Awards & Industry Recognition Press Release Service. We help businesses announce awards, accolades, and industry honors."}
       />

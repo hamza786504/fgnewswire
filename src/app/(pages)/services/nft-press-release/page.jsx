@@ -7,7 +7,7 @@ function NftPressRelease() {
     return (
         <>
             <ServicesBanner
-                image={"/imgs/services/nft-press-release.jpg"}
+                image={"/imgs/services/nft.png"}
                 heading={"NFT Press Release Service"}
                 description={"Get your NFT projects noticed with FG Newswire’s specialized NFT press release service. We help you share your latest drops, marketplace launches, or NFT news."}
             />

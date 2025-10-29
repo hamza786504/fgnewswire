@@ -5,7 +5,7 @@ function PartnershipAnnouncementPressRelease() {
   return (
     <div>
       <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/partnership.png"}
         heading={"Partnership Announcement Press Release Service"}
         description={"Share your strategic partnerships with FG Newswire’s specialized press release service. We help you announce collaborations, joint ventures, or alliances in a professional manner."}
       />

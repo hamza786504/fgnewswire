@@ -5,7 +5,7 @@ function BrandIdentityPressRelease() {
   return (
     <div>
             <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/brand identiy.png"}
         heading={"Brand Identity Press Release Service"}
         description={"Establish a strong and recognizable brand with FG Newswire’s Brand Identity Press Release Service. We help businesses communicate their brand values, vision, and identity."}
       />

@@ -5,7 +5,7 @@ function BlockchainPressRelease() {
   return (
     <>
       <ServicesBanner
-        image={"/imgs/services/blockchain-press-release.jpg"}
+        image={"/imgs/services/blockhain.png"}
         heading={"Blockchain Press Release Service"}
         description={"Amplify your blockchain project’s presence with FG Newswire. We specialize in sharing key updates, technology innovations, partnerships, or product launches with the right audience."}
       />

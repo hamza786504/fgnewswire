@@ -5,7 +5,7 @@ function NewManufacturingFacilityPressRelease() {
   return (
     <>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/new manufacturing.png"}
         heading={"New Manufacturing Facility Press Release Service"}
         description={"Announce your new facility with FG Newswire’s New Manufacturing Facility Press Release Service. We help new production capabilities to media, investors, and industry stakeholders."}
       />

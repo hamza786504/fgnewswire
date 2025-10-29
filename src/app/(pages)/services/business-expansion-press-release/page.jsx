@@ -5,7 +5,7 @@ function BusinessExpensionPressRelease() {
   return (
     <div>
       <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/business expansion.png"}
         heading={"Business Expansion Press Release Service"}
         description={"Announce your company’s growth with FG Newswire’s business expansion press release service. We help you share new office openings, market entries, mergers, or partnerships."}
       />

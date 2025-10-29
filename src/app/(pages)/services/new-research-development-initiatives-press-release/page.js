@@ -5,7 +5,7 @@ function NewResearchDevelopmentInitiativesPressRelease() {
   return (
     <>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/new research & de.png"}
         heading={"R&D Initiatives Press Release Service"}
         description={"Showcase innovation with FG Newswire’s R&D Initiatives Press Release Service. We help businesses announce new research projects."}
       />

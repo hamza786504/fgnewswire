@@ -5,7 +5,7 @@ function MarketingStrategy() {
   return (
     <>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/digital marketing strategy.png"}
         heading={"Marketing Strategy Press Release Service"}
         description={"Share your marketing initiatives and campaigns with FG Newswire’s Marketing Strategy Press Release Service. We help businesses communicate new strategies."}
       />

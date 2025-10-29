@@ -5,7 +5,7 @@ function EventsPressRelease() {
   return (
     <div>
         <ServicesBanner
-        image={"/imgs/services/business-expansion-press-release.jpg"}
+        image={"/imgs/services/events press release.png"}
         heading={"Events Press Release Service"}
         description={"Promote your events effectively with FG Newswire’s Events Press Release Service. We help businesses, organizations, launches, webinars, and other events to reach a wide audience."}
       />

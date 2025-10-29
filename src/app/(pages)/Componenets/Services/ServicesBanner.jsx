@@ -5,7 +5,7 @@ import Link from 'next/link'
 function ServicesBanner({image, heading , description}) {
     return (
         <>
-            <section className="pb-40 relative bg-sky-600 text-white py-16 px-4 sm:px-8 lg:px-16">
+            <section className="pb-40 relative bg-gradient-to-r from-blue-500 to-purple-700 text-white py-16 px-4 sm:px-8 lg:px-16">
                 <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center">
                     {/* Illustration */}
                     <div className="w-full lg:w-1/2 flex justify-center mb-10 lg:mb-0">
