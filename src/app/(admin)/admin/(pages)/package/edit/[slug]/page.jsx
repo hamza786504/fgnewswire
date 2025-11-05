@@ -134,56 +134,59 @@ export default function EditPackage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
 
-    setIsSubmitting(true);
-    setSubmitStatus({ success: null, message: "" });
+  setIsSubmitting(true);
+  setSubmitStatus({ success: null, message: "" });
 
-    try {
-      const token = localStorage.getItem("token");
-      const formDataToSend = new FormData();
+  try {
+    const token = localStorage.getItem("token");
+    const formDataToSend = new FormData();
 
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("type", formData.type);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("demo_report_url", formData.demo_report_url);
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("type", formData.type);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("demo_report_url", formData.demo_report_url);
 
-      formData.price.forEach((p, i) => {
-        formDataToSend.append(`price[${i}][quantity]`, p.quantity);
-        formDataToSend.append(`price[${i}][price]`, p.price);
-      });
+    formData.price.forEach((p, i) => {
+      formDataToSend.append(`price[${i}][quantity]`, p.quantity);
+      formDataToSend.append(`price[${i}][price]`, p.price);
+    });
 
-      formData.features.forEach((f, i) => {
-        formDataToSend.append(`features[${i}][text]`, f.text);
+    formData.features.forEach((f, i) => {
+      formDataToSend.append(`features[${i}][text]`, f.text);
 
-        if (f.image) {
-          // if user uploaded new file
-          formDataToSend.append(`features[${i}][image]`, f.image);
-        } else if (f.existingImage) {
-          // keep old image path
-          formDataToSend.append(`features[${i}][existingImage]`, f.existingImage);
-        }
-      });
+      // ✅ Only send one of these, not both
+      if (f.image) {
+        formDataToSend.append(`features[${i}][image]`, f.image); // new upload
+      } else if (f.existingImage && !f.image) {
+        formDataToSend.append(`features[${i}][existingImage]`, f.existingImage); // keep old image
+      }
+    });
 
-      const response = await fetch(`https://api.glassworld06.com/api/packages/${slug}`, {
-        method: "POST", // or PUT if API supports multipart PUT
-        headers: { Authorization: `Bearer ${token}` },
-        body: formDataToSend,
-      });
+    // ✅ Use PUT if backend supports multipart PUT
+    const response = await fetch(`https://api.glassworld06.com/api/packages/${slug}`, {
+      method: "PUT", // Laravel uses POST with `_method=PUT` for file updates
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formDataToSend,
+    });
 
-      if (!response.ok) throw new Error("Failed to update package");
+    if (!response.ok) throw new Error("Failed to update package");
 
-      setSubmitStatus({ success: true, message: "Package updated successfully!" });
-      setTimeout(() => router.push("/admin/package"), 1000);
-    } catch (err) {
-      console.error(err);
-      setSubmitStatus({ success: false, message: "Error updating package. Please try again." });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    setSubmitStatus({ success: true, message: "Package updated successfully!" });
+    setTimeout(() => router.push("/admin/package"), 1000);
+  } catch (err) {
+    console.error(err);
+    setSubmitStatus({ success: false, message: "Error updating package. Please try again." });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
 
   return (
@@ -303,7 +306,7 @@ export default function EditPackage() {
             src={
               feature.existingImage.startsWith("http")
                 ? feature.existingImage
-                : `https://api.glassworld06.com/${feature.existingImage}`
+                : `https://api.glassworld06.com/storage/${feature.existingImage}`
             }
             alt="Feature"
             className="w-16 h-16 object-cover rounded-md border"
