@@ -89,39 +89,49 @@ const handleSubmit = async (e) => {
   setSubmitStatus({ success: null, message: "" });
 
   try {
-    const token = localStorage.getItem("token"); // or however you store it
+    const token = localStorage.getItem("token");
 
-    // Prepare payload with token
-    const payload = {
-      name: formData.name,
-      type: formData.type,
-      description: formData.description,
-      demo_report_url: formData.demo_report_url,
-      price: formData.price.map((p) => ({
-        quantity: parseInt(p.quantity),
-        price: parseFloat(p.price),
-      })),
-      features: formData.features.map((f) => ({
-        text: f.text,
-        image: f.image || null,
-      })),
-    };
+    // ✅ Create a FormData object
+    const formDataToSend = new FormData();
 
-    console.log("Payload being sent:", payload);
+    // Add basic fields
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("type", formData.type);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("demo_report_url", formData.demo_report_url);
 
-  const response = await fetch("https://api.glassworld06.com/api/packages", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
-  body: JSON.stringify(payload),
-});
+    // Add price array
+    formData.price.forEach((p, i) => {
+      formDataToSend.append(`price[${i}][quantity]`, p.quantity);
+      formDataToSend.append(`price[${i}][price]`, p.price);
+    });
 
+    // Add features with text + image
+    formData.features.forEach((f, i) => {
+      formDataToSend.append(`features[${i}][text]`, f.text);
+      if (f.image) {
+        formDataToSend.append(`features[${i}][image]`, f.image);
+      }
+    });
+
+    console.log("Submitting FormData...");
+    for (let pair of formDataToSend.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    const response = await fetch("https://api.glassworld06.com/api/packages", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ Do NOT set Content-Type manually!
+      },
+      body: formDataToSend,
+    });
 
     if (!response.ok) throw new Error("Failed to submit package");
 
     setSubmitStatus({ success: true, message: "Package added successfully!" });
+
+    // Reset form
     setFormData({
       name: "",
       type: "",
@@ -137,6 +147,7 @@ const handleSubmit = async (e) => {
     setIsSubmitting(false);
   }
 };
+
 
 
 

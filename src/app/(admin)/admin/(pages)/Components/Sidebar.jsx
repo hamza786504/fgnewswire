@@ -78,9 +78,9 @@ function Sidebar() {
 
 
               <li>
-                <Link href="/admin/guest-post-package" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                <Link href="/admin/guest-post" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCube className="mr-3" />
-                  <span>Guest Posting Package</span>
+                  <span>Guest Posting</span>
                 </Link>
               </li>
 

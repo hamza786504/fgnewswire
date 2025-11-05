@@ -1,103 +1,238 @@
 'use client';
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { FaStar } from 'react-icons/fa';
-import { BiCheck } from 'react-icons/bi';
-import packagesData from "./plan";
+
+import { useEffect, useState } from 'react';
+import { BiSearch } from 'react-icons/bi';
 import Button from '@/app/(pages)/Componenets/Elements/Button';
-const Package = () => {
-    const [selectedQuantities, setSelectedQuantities] = useState({});
-    const [packages, setPackages] = useState([]);
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-    useEffect(() => {
-        setPackages(packagesData);
-    }, [])
+export default function PackagesTable() {
+  const [packages, setPackages] = useState([]);
+  const [filteredPackages, setFilteredPackages] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
-    const handleQuantityChange = (packageId, value) => {
-        setSelectedQuantities({
-            ...selectedQuantities,
-            [packageId]: value
+  const router = useRouter();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
+  // ✅ Fetch all packages from API
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('https://api.glassworld06.com/api/packages', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         });
+
+        if (!response.ok) throw new Error('Failed to fetch packages');
+
+        const data = await response.json();
+        
+        setPackages(data || []);
+        setFilteredPackages(data || []);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load packages. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     };
 
+    fetchPackages();
+  }, []);
 
-
-    return (
-          <main className="flex-1 rounded-bl-4xl bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
-                   <div className="max-w-7xl mx-auto">
-                       <div className="overflow-y-scoll container mx-auto px-0 pb-8">
-<div className="flex items-center justify-between">
-                               <h1 className="text-2xl font-bold text-start mb-8">Press Release Packages</h1>
-                               <Button href={"/admin/package/create"} content="Add Package" />
-</div>
-       
-                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                               {packages?.map((pkg, idx) => (
-                                   <div
-                                       key={idx}
-                                       className="wow animate__animated animate__fadeInUp"
-                                       data-wow-delay={`${idx * 0.2}s`}
-                                   >
-                                       <div className="rounded-xl">
-                                           <div className="h-full bg-white rounded-lg p-6">
-                                               <div className="flex items-center justify-start space-x-3 mt-2">
-                                                   <div className="h-10 w-10 rounded-full bg-gradient-to-b from-blue-700 to-blue-400 text-white flex items-center justify-center">
-                                                       <FaStar />
-                                                   </div>
-                                                   <p className="text-black font-semibold capitalize">
-                                                       {pkg.name}
-                                                   </p>
-                                               </div>
-                                               <p className="text-xs flex items-start justify-start md:text-sm my-5 h-[90px] text-start text-[#909090]">
-                                                   {pkg.info}
-                                               </p>
-                                               <p className="mb-4 text-2xl font-normal text-black">
-                                                   {pkg.price} <sup className='text-gray-400 text-base italic'>USD</sup>
-                                               </p>
-       
-                                               <ul className='my-3 max-h-[200px] overflow-y-auto no-scrollbar space-y-1.5'>
-                                                   {pkg.details.map((d, id) => (
-                                                       <li key={id} className='italic text-xs md:text-sm'>
-                                                           <span className='mr-3 inline-flex bg-blue-700 items-center justify-center text-white rounded-full h-4 w-4 border-none'>
-                                                               <BiCheck />
-                                                           </span>
-                                                           {d}
-                                                       </li>
-                                                   ))}
-                                               </ul>
-                                               {/* Quantity Selector */}
-                                               <div className="mb-4">
-                                                   <select
-                                                       className="w-full p-2 border border-gray-300 rounded-md"
-                                                       value={selectedQuantities[pkg.id] || 1}
-                                                       onChange={(e) => handleQuantityChange(pkg.id, parseInt(e.target.value))}
-                                                   >
-                                                       {pkg.quantityOptions.map(option => (
-                                                           <option key={option.value} value={option.value}>
-                                                               {option.text} - ${option.price}
-                                                           </option>
-                                                       ))}
-                                                   </select>
-                                               </div>
-       
-                                               {/* Payment Buttons */}
-                                               <div className="space-y-2">
-                                                   <button className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-white font-medium transition-colors">
-                                                       Pay With PayPal
-                                                   </button>
-                                                   <button className="w-full bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md text-white font-medium transition-colors">
-                                                       Pay With Crypto
-                                                   </button>
-                                               </div>
-                                           </div>
-                                       </div>
-                                   </div>
-                               ))}
-                           </div>
-                       </div>
-                   </div>
-               </main>
+  // ✅ Handle search
+  useEffect(() => {
+    const term = searchTerm.toLowerCase();
+    const filtered = packages.filter(pkg =>
+      pkg.name?.toLowerCase().includes(term) ||
+      pkg.type?.toLowerCase().includes(term) ||
+      pkg.description?.toLowerCase().includes(term)
     );
-};
+    setFilteredPackages(filtered);
+    setCurrentPage(1);
+  }, [searchTerm, packages]);
 
-export default Package;
+  // ✅ Pagination logic
+  const totalPages = Math.ceil(filteredPackages.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = filteredPackages.slice(startIndex, startIndex + itemsPerPage);
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  // ✅ Delete Package
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this package?");
+    if (!confirmDelete) return;
+
+    try {
+      setDeletingId(id);
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`https://api.glassworld06.com/api/packages/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to delete package");
+
+      // remove from local state
+      setPackages((prev) => prev.filter((p) => p.id !== id));
+      setFilteredPackages((prev) => prev.filter((p) => p.id !== id));
+
+      alert("Package deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete package. Please try again.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  return (
+    <main className="flex-1 rounded-bl-4xl bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Manage Packages</h1>
+          <Button href="/admin/package/create" content="Add Package" />
+        </div>
+
+        {/* Search Bar */}
+        <div className="mb-4 flex items-center justify-end">
+          <div className="flex items-center bg-white border border-gray-300 rounded-md px-2 py-1 w-full md:w-64">
+            <BiSearch className="text-gray-400 mr-2" />
+            <input
+              type="text"
+              placeholder="Search packages..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full border-none outline-none text-sm text-gray-700"
+            />
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {loading && (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-4 text-center text-gray-500 text-sm">
+                      Loading packages...
+                    </td>
+                  </tr>
+                )}
+                {!loading && error && (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-4 text-center text-red-600 text-sm">{error}</td>
+                  </tr>
+                )}
+                {!loading && !error && currentItems.length === 0 && (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-4 text-center text-blue-600 text-sm font-bold">
+                      No Packages Found
+                    </td>
+                  </tr>
+                )}
+
+                {!loading && !error && currentItems.map((pkg, index) => (
+                  <tr key={pkg.id || index}>
+                    <td className="px-6 py-4 text-sm text-gray-700">{startIndex + index + 1}</td>
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-800 capitalize">{pkg.name}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 capitalize">{pkg.type}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{pkg.description}</td>
+                    <td className="px-6 py-4 text-sm">
+                      <div className="flex gap-2">
+                        <Link href={`/admin/package/edit/${pkg.slug}`}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(pkg.id)}
+                          disabled={deletingId === pkg.id}
+                          className={`px-3 py-1 rounded-md text-xs text-white ${
+                            deletingId === pkg.id
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-red-600 hover:bg-red-700'
+                          }`}
+                        >
+                          {deletingId === pkg.id ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-6 flex justify-center items-center gap-2">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 text-sm rounded-md ${
+              currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:underline'
+            }`}
+          >
+            Prev
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .slice(Math.max(0, currentPage - 2), Math.min(totalPages, currentPage + 1))
+            .map((page) => (
+              <button
+                key={page}
+                onClick={() => goToPage(page)}
+                className={`px-3 py-1 text-sm rounded-md ${
+                  page === currentPage
+                    ? 'bg-blue-600 text-white'
+                    : 'text-blue-600 hover:bg-blue-100'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 text-sm rounded-md ${
+              currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:underline'
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </main>
+  );
+}
