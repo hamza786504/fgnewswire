@@ -3,69 +3,55 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-function SignIn() {
+export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  try {
-    const res = await fetch("https://api.glassworld06.com/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.access_token) {
-      // Store access token and expiry
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("token_expiry", Date.now() + data.expires_in * 1000);
-
-      // Fetch user info
-      const userRes = await fetch("https://api.glassworld06.com/api/me", {
+    try {
+      const res = await fetch("https://api.glassworld06.com/api/login", {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${data.access_token}`,
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ email, password }),
       });
 
-      const userData = await userRes.json();
+      const data = await res.json();
 
-      // 🧠 Check if user is admin
-      if (userData.is_admin === "0" || userData.is_admin === 0) {
-        // Admin user → redirect to dashboard login
-        localStorage.removeItem("token");
-        localStorage.removeItem("token_expiry");
-        return;
+      if (res.ok && data.status === "success" && data.access_token) {
+        const { access_token, expires_in, user } = data;
+
+        // ✅ Check role before proceeding
+        if (user.role !== "admin") {
+          setError("You do not have admin access.");
+          return;
+        }
+
+        // ✅ Store authentication details
+        localStorage.setItem("token", access_token);
+        localStorage.setItem("token_expiry", Date.now() + expires_in * 1000);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // ✅ Redirect to admin dashboard
+        router.push("/admin/");
+      } else {
+        setError(data.message || "Invalid email or password.");
       }
-
-      // ✅ Normal user → save info and redirect
-      localStorage.setItem("user", JSON.stringify(userData));
-      router.push("/dashboard/");
-    } else {
-      setError(data.message || "Invalid email or password");
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    setError("Something went wrong. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -148,5 +134,3 @@ const handleSubmit = async (e) => {
     </div>
   );
 }
-
-export default SignIn;

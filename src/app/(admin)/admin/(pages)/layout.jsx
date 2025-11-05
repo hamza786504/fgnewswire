@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "@/app/globals.css";
 import { SidebarProvider } from "../../context/SidebarContext";
-import WhatsappIcon from "../../Components/WhatsappIcon";
-import Footer from "../../Components/Footer";
-import Header from "../../Components/Header";
-import Sidebar from "../../Components/Sidebar";
+import Footer from "./Components/Footer";
+import Header from "./Components/Header";
+import Sidebar from "./Components/Sidebar";
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
@@ -17,31 +16,23 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const expiry = localStorage.getItem("token_expiry");
-    const userData = localStorage.getItem("user");
-
-    let user = null;
-    try {
-      user = userData ? JSON.parse(userData) : null; // ✅ parse safely
-    } catch (error) {
-      console.error("Invalid user data in localStorage:", error);
-    }
 
     if (!token || !expiry || Date.now() > parseInt(expiry)) {
-      router.replace("/");
-    } 
-    else if (user?.role === "admin") {
-      // 🚫 prevent admin from entering dashboard
-      router.replace("/admin");
-    } 
-    else {
+      router.replace("/admin/signin");
+    } else {
       setIsAuthenticated(true);
     }
 
+    // ✅ Mark check complete so render can proceed
     setIsAuthChecked(true);
   }, [router]);
 
-  if (!isAuthChecked || !isAuthenticated) return null;
 
+
+  // 🚫 Not authenticated — don't render anything
+  if (!isAuthenticated) return null;
+
+  // ✅ Authenticated — render the full dashboard
   return (
     <html lang="en">
       <head>
@@ -66,7 +57,6 @@ export default function DashboardLayout({ children }) {
               </main>
             </div>
           </div>
-          <WhatsappIcon />
         </SidebarProvider>
       </body>
     </html>

@@ -44,7 +44,7 @@ export default function Header() {
   // ✅ Check login state on mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    if(storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
   // ✅ Logout function
@@ -145,11 +145,11 @@ export default function Header() {
               {userDropdown && (
                 <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                   <Link
-                    href="/profile"
+                    href="/dashboard"
                     className="block px-4 py-2 text-sm hover:bg-green-50 dark:hover:bg-[#1e3a1f]/20"
                     onClick={() => setUserDropdown(false)}
                   >
-                    Profile
+                    Dashboard
                   </Link>
                   <button
                     onClick={handleLogout}
