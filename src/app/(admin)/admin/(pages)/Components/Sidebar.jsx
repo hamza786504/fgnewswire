@@ -4,7 +4,8 @@ import { useSidebar } from "../../../context/SidebarContext";
 import React, { useState, useRef, useEffect } from 'react'
 import {
   FaHome, FaNewspaper, FaCube,
-  FaTimes
+  FaTimes,
+  FaUser
 } from 'react-icons/fa';
 
 function Sidebar() {
@@ -76,22 +77,24 @@ function Sidebar() {
                 </Link>
               </li>
 
-
-              <li>
+<li>
+                <Link href="/admin/users" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                  <FaUser className="mr-3" />
+                  <span>Users</span>
+                </Link>
+              </li>
+              {/* <li>
                 <Link href="/admin/guest-post" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCube className="mr-3" />
                   <span>Guest Posting</span>
                 </Link>
               </li>
-
-
-
               <li>
                 <Link href="/admin/pressrooms" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaNewspaper className="mr-3" />
                   <span>Press Room</span>
                 </Link>
-              </li>
+              </li> */}
 
 
 
