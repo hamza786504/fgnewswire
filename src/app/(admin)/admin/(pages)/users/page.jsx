@@ -163,7 +163,7 @@ export default function UsersTable() {
                     <td className="px-6 py-4 text-sm">
                       <div className="flex gap-2">
                         <Link
-                          href={`/admin/user/edit/${user.id}`}
+                          href={`/admin/users/edit/${user.id}`}
                           className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs"
                         >
                           Edit
