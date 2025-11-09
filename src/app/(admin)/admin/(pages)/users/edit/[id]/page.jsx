@@ -78,7 +78,7 @@ export default function EditUser() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`https://api.glassworld06.com/api/users/${id}`, {
+      const response = await fetch(`https://api.glassworld06.com/api/users/update/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
