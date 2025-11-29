@@ -9,6 +9,7 @@ export default function PackageCreate() {
     features: [{ text: "", image: null }],
     demo_report_url: "",
     price: [{ quantity: "", price: "" }],
+    credit: ""    // 🔥 ADD THIS
   });
 
   const [errors, setErrors] = useState({});
@@ -70,6 +71,11 @@ export default function PackageCreate() {
       if (!f.text.trim()) newErrors[`feature_text_${i}`] = "Feature text required.";
     });
 
+    if (!formData.credit || isNaN(formData.credit)) {
+      newErrors.credit = "Valid credit are required.";
+    }
+
+
     formData.price.forEach((item, i) => {
       if (!item.quantity || isNaN(item.quantity))
         newErrors[`price_quantity_${i}`] = "Valid quantity required.";
@@ -81,72 +87,75 @@ export default function PackageCreate() {
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validateForm()) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-  setIsSubmitting(true);
-  setSubmitStatus({ success: null, message: "" });
+    setIsSubmitting(true);
+    setSubmitStatus({ success: null, message: "" });
 
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    // ✅ Create a FormData object
-    const formDataToSend = new FormData();
+      // ✅ Create a FormData object
+      const formDataToSend = new FormData();
 
-    // Add basic fields
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("type", formData.type);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("demo_report_url", formData.demo_report_url);
+      // Add basic fields
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("type", formData.type);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("demo_report_url", formData.demo_report_url);
+      formDataToSend.append("credit", formData.credit);
 
-    // Add price array
-    formData.price.forEach((p, i) => {
-      formDataToSend.append(`price[${i}][quantity]`, p.quantity);
-      formDataToSend.append(`price[${i}][price]`, p.price);
-    });
 
-    // Add features with text + image
-    formData.features.forEach((f, i) => {
-      formDataToSend.append(`features[${i}][text]`, f.text);
-      if (f.image) {
-        formDataToSend.append(`features[${i}][image]`, f.image);
+      // Add price array
+      formData.price.forEach((p, i) => {
+        formDataToSend.append(`price[${i}][quantity]`, p.quantity);
+        formDataToSend.append(`price[${i}][price]`, p.price);
+      });
+
+      // Add features with text + image
+      formData.features.forEach((f, i) => {
+        formDataToSend.append(`features[${i}][text]`, f.text);
+        if (f.image) {
+          formDataToSend.append(`features[${i}][image]`, f.image);
+        }
+      });
+
+      console.log("Submitting FormData...");
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0], pair[1]);
       }
-    });
 
-    console.log("Submitting FormData...");
-    for (let pair of formDataToSend.entries()) {
-      console.log(pair[0], pair[1]);
+      const response = await fetch("https://api.glassworld06.com/api/packages", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Do NOT set Content-Type manually!
+        },
+        body: formDataToSend,
+      });
+
+      if (!response.ok) throw new Error("Failed to submit package");
+
+      setSubmitStatus({ success: true, message: "Package added successfully!" });
+
+      setFormData({
+        name: "",
+        type: "",
+        description: "",
+        features: [{ text: "", image: null }],
+        demo_report_url: "",
+        price: [{ quantity: "", price: "" }],
+        credit: ""   // 🔥 RESET
+      });
+
+    } catch (err) {
+      console.error(err);
+      setSubmitStatus({ success: false, message: "Error submitting form. Please try again." });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const response = await fetch("https://api.glassworld06.com/api/packages", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`, // ✅ Do NOT set Content-Type manually!
-      },
-      body: formDataToSend,
-    });
-
-    if (!response.ok) throw new Error("Failed to submit package");
-
-    setSubmitStatus({ success: true, message: "Package added successfully!" });
-
-    // Reset form
-    setFormData({
-      name: "",
-      type: "",
-      description: "",
-      features: [{ text: "", image: null }],
-      demo_report_url: "",
-      price: [{ quantity: "", price: "" }],
-    });
-  } catch (err) {
-    console.error(err);
-    setSubmitStatus({ success: false, message: "Error submitting form. Please try again." });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
 
 
@@ -156,9 +165,8 @@ const handleSubmit = async (e) => {
       <div className="max-w-5xl mx-auto bg-white rounded-3xl p-4 md:p-6">
         {submitStatus.message && (
           <div
-            className={`mb-4 p-3 rounded-md ${
-              submitStatus.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}
+            className={`mb-4 p-3 rounded-md ${submitStatus.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+              }`}
           >
             {submitStatus.message}
           </div>
@@ -175,9 +183,8 @@ const handleSubmit = async (e) => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 ${
-                  errors.name ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.name ? "border-red-500" : "border-gray-300"
+                  }`}
               />
               {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
             </div>
@@ -188,9 +195,8 @@ const handleSubmit = async (e) => {
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 ${
-                  errors.type ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.type ? "border-red-500" : "border-gray-300"
+                  }`}
               >
                 <option value="">Select Type</option>
                 <option value="press_release">Press Release</option>
@@ -200,6 +206,21 @@ const handleSubmit = async (e) => {
             </div>
           </div>
 
+          <div className="mt-5">
+            <label className="block text-sm font-medium">Credit *</label>
+            <input
+              name="credit"
+              type="number"
+              value={formData.credit}
+              onChange={handleChange}
+              placeholder="Enter credit"
+              className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.credit ? "border-red-500" : "border-gray-300"
+                }`}
+            />
+            {errors.credit && <p className="text-red-600 text-sm">{errors.credit}</p>}
+          </div>
+
+
           {/* Description */}
           <div className="mt-5">
             <label className="block text-sm font-medium">Description *</label>
@@ -208,9 +229,8 @@ const handleSubmit = async (e) => {
               rows="3"
               value={formData.description}
               onChange={handleChange}
-              className={`mt-1 block w-full rounded-md border px-3 py-2 ${
-                errors.description ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.description ? "border-red-500" : "border-gray-300"
+                }`}
             ></textarea>
             {errors.description && <p className="text-red-600 text-sm">{errors.description}</p>}
           </div>
@@ -225,18 +245,16 @@ const handleSubmit = async (e) => {
                   placeholder="Quantity"
                   value={item.quantity}
                   onChange={(e) => handlePriceChange(index, "quantity", e.target.value)}
-                  className={`w-1/2 rounded-md border px-3 py-2 ${
-                    errors[`price_quantity_${index}`] ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-1/2 rounded-md border px-3 py-2 ${errors[`price_quantity_${index}`] ? "border-red-500" : "border-gray-300"
+                    }`}
                 />
                 <input
                   type="number"
                   placeholder="Price ($)"
                   value={item.price}
                   onChange={(e) => handlePriceChange(index, "price", e.target.value)}
-                  className={`w-1/2 rounded-md border px-3 py-2 ${
-                    errors[`price_price_${index}`] ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-1/2 rounded-md border px-3 py-2 ${errors[`price_price_${index}`] ? "border-red-500" : "border-gray-300"
+                    }`}
                 />
                 {formData.price.length > 1 && (
                   <button type="button" onClick={() => removePrice(index)} className="text-red-500 font-bold">
@@ -260,9 +278,8 @@ const handleSubmit = async (e) => {
                   placeholder="Feature text"
                   value={feature.text}
                   onChange={(e) => handleFeatureChange(index, "text", e.target.value)}
-                  className={`flex-1 rounded-md border px-3 py-2 ${
-                    errors[`feature_text_${index}`] ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`flex-1 rounded-md border px-3 py-2 ${errors[`feature_text_${index}`] ? "border-red-500" : "border-gray-300"
+                    }`}
                 />
                 <input
                   type="file"
@@ -290,9 +307,8 @@ const handleSubmit = async (e) => {
               value={formData.demo_report_url}
               onChange={handleChange}
               placeholder="https://example.com/demo-report"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 ${
-                errors.demo_report_url ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.demo_report_url ? "border-red-500" : "border-gray-300"
+                }`}
             />
             {errors.demo_report_url && <p className="text-red-600 text-sm">{errors.demo_report_url}</p>}
           </div>
@@ -302,9 +318,8 @@ const handleSubmit = async (e) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 ${
-                isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800"
-              }`}
+              className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800"
+                }`}
             >
               {isSubmitting ? "Submitting..." : "Add Package"}
             </button>

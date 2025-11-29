@@ -76,6 +76,12 @@ function Sidebar() {
                   <span>Packages</span>
                 </Link>
               </li>
+               <li>
+                <Link href="/admin/sites" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                  <FaUser className="mr-3" />
+                  <span>Guest Posting Sites</span>
+                </Link>
+              </li>
 
 <li>
                 <Link href="/admin/users" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
@@ -83,6 +89,13 @@ function Sidebar() {
                   <span>Users</span>
                 </Link>
               </li>
+              <li>
+                <Link href="/admin/cradits" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                  <FaUser className="mr-3" />
+                  <span>Cradits</span>
+                </Link>
+              </li>
+             
               {/* <li>
                 <Link href="/admin/guest-post" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCube className="mr-3" />

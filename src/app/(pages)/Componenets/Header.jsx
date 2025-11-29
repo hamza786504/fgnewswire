@@ -23,7 +23,6 @@ export default function Header() {
       link: "Plans",
       href: "/plans",
       submenu: [
-        { name: "All Plans", href: "/plans/all" },
         { name: "Yahoo Press Release", href: "/plans/yahoo-press-release" },
         { name: "Insider Press Release + Yahoo Finance", href: "/plans/insider-press-release" },
         { name: "Business Insider", href: "/plans/business-insider" },

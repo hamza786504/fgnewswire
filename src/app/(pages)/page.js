@@ -119,7 +119,7 @@ export default function Home() {
             "Simply choose a plan, share your content or topic, and our team will handle the rest.",
         },
       ]} />
-      <BlogSection />
+      {/* <BlogSection /> */}
       <Marquee />
     </>
   );
