@@ -10,7 +10,7 @@ const WavyCarousel = () => {
     },
        {
       one: "/imgs/khaleejtimes-logo.png",
-      two: "/imgs/enterpreneur-logo.webp",
+      two: "/imgs/enterpreneur-logo.png",
       animation: "", // Animation for bubble 13
     },
        {

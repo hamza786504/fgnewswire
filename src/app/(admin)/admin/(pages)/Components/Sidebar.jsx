@@ -41,7 +41,7 @@ function Sidebar() {
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`overflow-y-auto text-black w-64 bg-white z-100 flex-shrink-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-200 ease-in-out fixed md:static pt-4`}
+        className={`overflow-y-auto min-h-screen text-black w-64 bg-white z-100 flex-shrink-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-200 ease-in-out fixed md:static pt-4`}
       >
         <div className="p-4 pt-0 px-1">
           {/* Close button for mobile */}

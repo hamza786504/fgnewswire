@@ -98,7 +98,7 @@ export default function EditUser() {
       setSubmitStatus({ success: true, message: "User updated successfully!" });
 
       // ✅ Redirect after success
-      setTimeout(() => router.push("/admin/user"), 1000);
+      setTimeout(() => router.push("/admin/users"), 1000);
     } catch (err) {
       console.error(err);
       setSubmitStatus({
