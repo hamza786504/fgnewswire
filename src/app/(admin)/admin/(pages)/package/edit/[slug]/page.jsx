@@ -10,9 +10,10 @@ export default function EditPackage() {
     name: "",
     type: "",
     description: "",
-    features: [{ text: "", image: null }],
+    features: [{ text: "", image: null, included: true }], // 🔥 Added included
     demo_report_url: "",
     price: [{ quantity: "", price: "" }],
+    credit: "" // 🔥 Added credit field
   });
 
   const [errors, setErrors] = useState({});
@@ -38,13 +39,15 @@ export default function EditPackage() {
           type: data.type || "",
           description: data.description || "",
           demo_report_url: data.demo_report_url || "",
+          credit: data.credit || "", // 🔥 Load credit
           features: Array.isArray(data.features) && data.features.length
             ? data.features.map((f) => ({
               text: f.text || "",
               image: null, // for new upload
+              included: f.included ?? true, // 🔥 Load included, default to true
               existingImage: f.image || null, // 👈 store existing image URL
             }))
-            : [{ text: "", image: null, existingImage: null }],
+            : [{ text: "", image: null, included: true, existingImage: null }],
           price: Array.isArray(data.price) && data.price.length
             ? data.price.map((p) => ({
               quantity: p.quantity?.toString() || "",
@@ -52,7 +55,6 @@ export default function EditPackage() {
             }))
             : [{ quantity: "", price: "" }],
         });
-
 
       } catch (err) {
         console.error(err);
@@ -82,6 +84,13 @@ export default function EditPackage() {
     setFormData({ ...formData, features: updated });
   };
 
+  // 🔥 Handle included checkbox change
+  const handleIncludedChange = (index) => {
+    const updated = [...formData.features];
+    updated[index].included = !updated[index].included;
+    setFormData({ ...formData, features: updated });
+  };
+
   const addPrice = () =>
     setFormData({
       ...formData,
@@ -97,7 +106,7 @@ export default function EditPackage() {
   const addFeature = () =>
     setFormData({
       ...formData,
-      features: [...formData.features, { text: "", image: null }],
+      features: [...formData.features, { text: "", image: null, included: true }], // 🔥 Added included
     });
 
   const removeFeature = (index) =>
@@ -118,6 +127,10 @@ export default function EditPackage() {
     if (!formData.description.trim()) newErrors.description = "Description is required.";
     if (formData.demo_report_url && !isValidUrl(formData.demo_report_url))
       newErrors.demo_report_url = "Please enter a valid URL.";
+    
+    if (!formData.credit || isNaN(formData.credit)) {
+      newErrors.credit = "Valid credit are required.";
+    }
 
     formData.features.forEach((f, i) => {
       if (!f.text.trim()) newErrors[`feature_text_${i}`] = "Feature text required.";
@@ -134,69 +147,102 @@ export default function EditPackage() {
     return Object.keys(newErrors).length === 0;
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validateForm()) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-  setIsSubmitting(true);
-  setSubmitStatus({ success: null, message: "" });
+    setIsSubmitting(true);
+    setSubmitStatus({ success: null, message: "" });
 
-  try {
-    const token = localStorage.getItem("token");
-    const formDataToSend = new FormData();
+    try {
+      const token = localStorage.getItem("token");
+      const formDataToSend = new FormData();
 
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("type", formData.type);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("demo_report_url", formData.demo_report_url);
-    formDataToSend.append("_method", "PUT");
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("type", formData.type);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("demo_report_url", formData.demo_report_url);
+      formDataToSend.append("credit", formData.credit); // 🔥 Add credit
+      formDataToSend.append("_method", "PUT");
 
-    formData.price.forEach((p, i) => {
-      formDataToSend.append(`price[${i}][quantity]`, p.quantity);
-      formDataToSend.append(`price[${i}][price]`, p.price);
-    });
+      formData.price.forEach((p, i) => {
+        formDataToSend.append(`price[${i}][quantity]`, p.quantity);
+        formDataToSend.append(`price[${i}][price]`, p.price);
+      });
 
-    formData.features.forEach((f, i) => {
-      formDataToSend.append(`features[${i}][text]`, f.text);
+      formData.features.forEach((f, i) => {
+        formDataToSend.append(`features[${i}][text]`, f.text);
+        // 🔥 Convert boolean to "1" for true, "0" for false
+        formDataToSend.append(`features[${i}][included]`, f.included ? "1" : "0");
 
-      // ✅ Only send one of these, not both
-      if (f.image) {
-        formDataToSend.append(`features[${i}][image]`, f.image); // new upload
-      } else if (f.existingImage && !f.image) {
-        formDataToSend.append(`features[${i}][existingImage]`, f.existingImage); // keep old image
+        // ✅ Only send one of these, not both
+        if (f.image) {
+          formDataToSend.append(`features[${i}][image]`, f.image); // new upload
+        } else if (f.existingImage && !f.image) {
+          formDataToSend.append(`features[${i}][existingImage]`, f.existingImage); // keep old image
+        }
+      });
+
+      console.log("Submitting FormData for edit...");
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0], pair[1]);
       }
-    });
 
-    // ✅ Use PUT if backend supports multipart PUT
-    const response = await fetch(`https://api.glassworld06.com/api/packages/${slug}`, {
-      method: "POST", // Laravel uses POST with `_method=PUT` for file updates
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formDataToSend,
-    });
+      // ✅ Use POST with _method=PUT for Laravel
+      const response = await fetch(`https://api.glassworld06.com/api/packages/${slug}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
 
-    if (!response.ok) throw new Error("Failed to update package");
+      const responseData = await response.json(); // 🔥 Get response data
+      
+      if (!response.ok) {
+        // Show validation errors from backend
+        if (responseData.errors) {
+          const backendErrors = {};
+          Object.keys(responseData.errors).forEach(key => {
+            backendErrors[key] = responseData.errors[key][0];
+          });
+          setErrors(backendErrors);
+          throw new Error("Validation failed from backend");
+        }
+        throw new Error(responseData.message || "Failed to update package");
+      }
 
-    setSubmitStatus({ success: true, message: "Package updated successfully!" });
-    setTimeout(() => router.push("/admin/package"), 1000);
-  } catch (err) {
-    console.error(err);
-    setSubmitStatus({ success: false, message: "Error updating package. Please try again." });
-  } finally {
-    setIsSubmitting(false);
+      setSubmitStatus({ success: true, message: "Package updated successfully!" });
+      setTimeout(() => router.push("/admin/package"), 1000);
+    } catch (err) {
+      console.error(err);
+      setSubmitStatus({ 
+        success: false, 
+        message: err.message || "Error updating package. Please try again." 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl p-4 md:p-6">
+          <p>Loading package details...</p>
+        </div>
+      </main>
+    );
   }
-};
-
-
 
   return (
     <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
       <div className="max-w-5xl mx-auto bg-white rounded-3xl p-4 md:p-6">
         {submitStatus.message && (
           <div
-            className={`mb-4 p-3 rounded-md ${submitStatus.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-              }`}
+            className={`mb-4 p-3 rounded-md ${
+              submitStatus.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}
           >
             {submitStatus.message}
           </div>
@@ -213,8 +259,9 @@ export default function EditPackage() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.name ? "border-red-500" : "border-gray-300"
-                  }`}
+                className={`mt-1 block w-full rounded-md border px-3 py-2 ${
+                  errors.name ? "border-red-500" : "border-gray-300"
+                }`}
               />
               {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
             </div>
@@ -225,8 +272,9 @@ export default function EditPackage() {
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.type ? "border-red-500" : "border-gray-300"
-                  }`}
+                className={`mt-1 block w-full rounded-md border px-3 py-2 ${
+                  errors.type ? "border-red-500" : "border-gray-300"
+                }`}
               >
                 <option value="">Select Type</option>
                 <option value="press_release">Press Release</option>
@@ -234,6 +282,22 @@ export default function EditPackage() {
               </select>
               {errors.type && <p className="text-red-600 text-sm">{errors.type}</p>}
             </div>
+          </div>
+
+          {/* Credit */}
+          <div className="mt-5">
+            <label className="block text-sm font-medium">Credit *</label>
+            <input
+              name="credit"
+              type="number"
+              value={formData.credit}
+              onChange={handleChange}
+              placeholder="Enter credit"
+              className={`mt-1 block w-full rounded-md border px-3 py-2 ${
+                errors.credit ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+            {errors.credit && <p className="text-red-600 text-sm">{errors.credit}</p>}
           </div>
 
           {/* Description */}
@@ -244,8 +308,9 @@ export default function EditPackage() {
               rows="3"
               value={formData.description}
               onChange={handleChange}
-              className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.description ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 ${
+                errors.description ? "border-red-500" : "border-gray-300"
+              }`}
             ></textarea>
             {errors.description && <p className="text-red-600 text-sm">{errors.description}</p>}
           </div>
@@ -260,16 +325,18 @@ export default function EditPackage() {
                   placeholder="Quantity"
                   value={item.quantity}
                   onChange={(e) => handlePriceChange(index, "quantity", e.target.value)}
-                  className={`w-1/2 rounded-md border px-3 py-2 ${errors[`price_quantity_${index}`] ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={`w-1/2 rounded-md border px-3 py-2 ${
+                    errors[`price_quantity_${index}`] ? "border-red-500" : "border-gray-300"
+                  }`}
                 />
                 <input
                   type="number"
                   placeholder="Price ($)"
                   value={item.price}
                   onChange={(e) => handlePriceChange(index, "price", e.target.value)}
-                  className={`w-1/2 rounded-md border px-3 py-2 ${errors[`price_price_${index}`] ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={`w-1/2 rounded-md border px-3 py-2 ${
+                    errors[`price_price_${index}`] ? "border-red-500" : "border-gray-300"
+                  }`}
                 />
                 {formData.price.length > 1 && (
                   <button type="button" onClick={() => removePrice(index)} className="text-red-500 font-bold">
@@ -283,68 +350,82 @@ export default function EditPackage() {
             </button>
           </div>
 
-         {/* Features */}
-<div className="mt-5">
-  <label className="block text-sm font-medium">Features *</label>
-  {formData.features.map((feature, index) => (
-    <div key={index} className="flex flex-col md:flex-row items-center gap-3 mt-3">
-      {/* Feature Text */}
-      <input
-        type="text"
-        placeholder="Feature text"
-        value={feature.text}
-        onChange={(e) => handleFeatureChange(index, "text", e.target.value)}
-        className={`flex-1 rounded-md border px-3 py-2 ${
-          errors[`feature_text_${index}`] ? "border-red-500" : "border-gray-300"
-        }`}
-      />
+          {/* Features */}
+          <div className="mt-5">
+            <label className="block text-sm font-medium">Features *</label>
+            {formData.features.map((feature, index) => (
+              <div key={index} className="flex flex-col md:flex-row items-center gap-3 mt-3">
+                {/* Feature Text */}
+                <input
+                  type="text"
+                  placeholder="Feature text"
+                  value={feature.text}
+                  onChange={(e) => handleFeatureChange(index, "text", e.target.value)}
+                  className={`flex-1 rounded-md border px-3 py-2 ${
+                    errors[`feature_text_${index}`] ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
 
-      {/* Image Upload + Preview */}
-      <div className="flex items-center gap-3">
-        {/* 👇 Show existing image if available */}
-        {feature.existingImage && !feature.image && (
-          <img
-            src={
-              feature.existingImage.startsWith("http")
-                ? feature.existingImage
-                : `https://api.glassworld06.com/storage/${feature.existingImage}`
-            }
-            alt="Feature"
-            className="w-16 h-16 object-cover rounded-md border"
-          />
-        )}
+                {/* Image Upload + Preview */}
+                <div className="flex items-center gap-3">
+                  {/* 👇 Show existing image if available */}
+                  {feature.existingImage && !feature.image && (
+                    <img
+                      src={
+                        feature.existingImage.startsWith("http")
+                          ? feature.existingImage
+                          : `https://api.glassworld06.com/storage/${feature.existingImage}`
+                      }
+                      alt="Feature"
+                      className="w-16 h-16 object-cover rounded-md border"
+                    />
+                  )}
 
-        {/* 👇 Allow uploading new image */}
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => handleFeatureChange(index, "image", e.target.files[0])}
-          className="text-sm"
-        />
-      </div>
+                  {/* 👇 Allow uploading new image */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFeatureChange(index, "image", e.target.files[0])}
+                    className="text-sm"
+                  />
+                </div>
 
-      {/* Remove Feature */}
-      {formData.features.length > 1 && (
-        <button
-          type="button"
-          onClick={() => removeFeature(index)}
-          className="text-red-500 font-bold"
-        >
-          ✕
-        </button>
-      )}
-    </div>
-  ))}
+                {/* 🔥 Included Checkbox */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={`included-${index}`}
+                    checked={feature.included}
+                    onChange={() => handleIncludedChange(index)}
+                    className="h-4 w-4 text-blue-600 rounded"
+                  />
+                  <label htmlFor={`included-${index}`} className="text-sm text-gray-700">
+                    Included
+                  </label>
+                </div>
 
-  {/* Add New Feature Button */}
-  <button
-    type="button"
-    onClick={addFeature}
-    className="mt-3 text-sm text-blue-600 hover:underline"
-  >
-    + Add Feature
-  </button>
-</div>
+                {/* Remove Feature */}
+                {formData.features.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeFeature(index)}
+                    className="text-red-500 font-bold"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+
+            {/* Add New Feature Button */}
+            <button
+              type="button"
+              onClick={addFeature}
+              className="mt-3 text-sm text-blue-600 hover:underline"
+            >
+              + Add Feature
+            </button>
+          </div>
 
           {/* Demo Report URL */}
           <div className="mt-5">
@@ -354,8 +435,9 @@ export default function EditPackage() {
               value={formData.demo_report_url}
               onChange={handleChange}
               placeholder="https://example.com/demo-report"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.demo_report_url ? "border-red-500" : "border-gray-300"
-                }`}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 ${
+                errors.demo_report_url ? "border-red-500" : "border-gray-300"
+              }`}
             />
             {errors.demo_report_url && <p className="text-red-600 text-sm">{errors.demo_report_url}</p>}
           </div>
@@ -365,8 +447,9 @@ export default function EditPackage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+              className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 ${
+                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               {isSubmitting ? "Updating..." : "Update Package"}
             </button>

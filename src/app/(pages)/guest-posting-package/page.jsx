@@ -8,6 +8,7 @@ import TestimonialCarousel from "../Componenets/TestimonialCarousel";
 import Faq from "../Componenets/Faq";
 import CountriesSection from "../Componenets/CountriesSection";
 import PackagesWithAllFilters from "../Componenets/Filters";
+import GuestPostingPackageCard from "../Componenets/GuestPostingPackageCard";
 
 export default function GuestPostingPackage() {
     const [showForm, setShowForm] = useState(false);
@@ -157,43 +158,43 @@ export default function GuestPostingPackage() {
                         </div>
                     </div>
 
-                      {/* RIGHT SECTION IMAGE */}
-        <div
-          className="relative w-full md:w-1/2 text-center wow animate__animated animate__flipInY"
-          data-wow-delay="1s"
-          style={{
-            backfaceVisibility: "hidden",
-            transformStyle: "preserve-3d",
-            transition: "transform 1s ease-in-out",
-          }}
-        >
-          <div
-            className="absolute -bottom-[68px] sm:left-[120px] md:left-auto md:right-[230px] lg:right-[330px] z-[11] w-[120px] sm:w-[140px]"
-            style={{
-              animation: "pulseScale 2s ease-in-out infinite",
-            }}
-          >
-            <img src="/imgs/graph.png" alt="" />
-          </div>
-          <div className="absolute z-[11] w-[200px] top-[0px] -sm:top-[150px] left-auto right-[1%] sm:right-[70px] md:left-auto md:right-[0px] md:translate-x-[50px] lg:translate-0 lg:right-[30px]"
-            style={{
-              animation: "pulseScale 2s ease-in-out infinite",
-            }}>
-            <img src="/imgs/guest-posting-page/Guest posting.png" alt="" />
-          </div>
-          <div className="absolute -bottom-[20px] right-[3%] left-auto sm:right-[70px] md:left-auto md:right-[0px] md:translate-x-[50px] lg:translate-0 lg:right-[30px] z-[21] w-[130px] sm:w-[170px]" style={{
-            animation: "pulseScale 2s ease-in-out infinite",
-          }}>
-            <img src="/imgs/technoo.png" alt="" />
-          </div>
+                    {/* RIGHT SECTION IMAGE */}
+                    <div
+                        className="relative w-full md:w-1/2 text-center wow animate__animated animate__flipInY"
+                        data-wow-delay="1s"
+                        style={{
+                            backfaceVisibility: "hidden",
+                            transformStyle: "preserve-3d",
+                            transition: "transform 1s ease-in-out",
+                        }}
+                    >
+                        <div
+                            className="absolute -bottom-[68px] sm:left-[120px] md:left-auto md:right-[230px] lg:right-[330px] z-[11] w-[120px] sm:w-[140px]"
+                            style={{
+                                animation: "pulseScale 2s ease-in-out infinite",
+                            }}
+                        >
+                            <img src="/imgs/graph.png" alt="" />
+                        </div>
+                        <div className="absolute z-[11] w-[200px] top-[0px] -sm:top-[150px] left-auto right-[1%] sm:right-[70px] md:left-auto md:right-[0px] md:translate-x-[50px] lg:translate-0 lg:right-[30px]"
+                            style={{
+                                animation: "pulseScale 2s ease-in-out infinite",
+                            }}>
+                            <img src="/imgs/guest-posting-page/Guest posting.png" alt="" />
+                        </div>
+                        <div className="absolute -bottom-[20px] right-[3%] left-auto sm:right-[70px] md:left-auto md:right-[0px] md:translate-x-[50px] lg:translate-0 lg:right-[30px] z-[21] w-[130px] sm:w-[170px]" style={{
+                            animation: "pulseScale 2s ease-in-out infinite",
+                        }}>
+                            <img src="/imgs/technoo.png" alt="" />
+                        </div>
 
 
-          <img
-            src="/imgs/guest-posting-page/guest posting model.png"
-            alt=""
-            className="w-11/12 max-w-sm mx-auto"
-          />
-        </div>
+                        <img
+                            src="/imgs/guest-posting-page/guest posting model.png"
+                            alt=""
+                            className="w-11/12 max-w-sm mx-auto"
+                        />
+                    </div>
                 </div>
             </section>
 
@@ -207,10 +208,10 @@ export default function GuestPostingPackage() {
                         <p className="text-center mt-4 text-sm sm:text-md md:text-lg text-gray-600">
                             Our guest posting service helps your brand get noticed on trusted, high-quality websites. It improves your SEO, drives real traffic, and connects your content with the right audience.
                         </p>
-                         <p className="text-center mt-4 text-sm sm:text-md md:text-lg text-gray-600">
+                        <p className="text-center mt-4 text-sm sm:text-md md:text-lg text-gray-600">
                             We make the process simple and efficient. You provide your content, and we handle placement, publishing, and reporting, ensuring your brand gets noticed.
                         </p>
-                         <p className="text-center mt-4 text-sm sm:text-md md:text-lg text-gray-600">
+                        <p className="text-center mt-4 text-sm sm:text-md md:text-lg text-gray-600">
                             With flexible packages, reliable support, and results-driven strategies, FG Newswire helps businesses of all sizes grow their credibility and online reach.
                         </p>
                     </div>
@@ -319,52 +320,7 @@ export default function GuestPostingPackage() {
                         </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                        {plans.map((plan, idx) => (
-                            <div
-                                key={idx}
-                                className={`rounded-lg border shadow-md flex flex-col justify-between ${plan.highlight
-                                    ? "bg-blue-50 border-blue-400 relative"
-                                    : "bg-white border-orange-400"
-                                    }`}
-                            >
-                                {/* Popular Tag */}
-                                {plan.highlight && (
-                                    <div className="absolute top-0 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-lg">
-                                        Popular
-                                    </div>
-                                )}
-
-                                {/* Header */}
-                                <div className="p-6 text-center">
-                                    <h3 className="text-xl font-bold">{plan.title}</h3>
-                                    <h2 className="text-3xl font-bold mt-2">{plan.price}</h2>
-                                    <p className="text-gray-600 text-sm mt-1">{plan.subtitle}</p>
-                                </div>
-
-                                {/* Features */}
-                                <ul className="px-6 pb-6 space-y-2 text-gray-700 text-sm flex-1">
-                                    {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-start justify-start">
-                                            <FaCheckCircle className="mt-1" />
-                                            <span className="ml-1"> {feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                {/* Button */}
-                                <div className="p-6">
-                                    <Link
-                                        href="#"
-                                        className={`block w-full text-center py-2 rounded font-semibold  hover:text-white border transition ${plan.highlight
-                                            ? "text-blue-600 border-blue-600 hover:bg-blue-700"
-                                            : "text-orange-400 border-orange-400 hover:bg-orange-400"
-                                            }`}
-                                    >
-                                        BUY NOW
-                                    </Link>
-                                </div>
-                            </div>
-                        ))}
+                       <GuestPostingPackageCard />
                     </div>
                 </div>
                 <div className="text-center mt-5 mx-auto">
@@ -377,106 +333,96 @@ export default function GuestPostingPackage() {
 
             <TestimonialCarousel />
             <Faq
-  faqData={[
-    {
-      question: "What is guest posting?",
-      answer:
-        "Guest posting is publishing your article or content on another website to reach new audiences.",
-    },
-    {
-      question: "How does FG Newswire help with guest posting?",
-      answer:
-        "We find high-quality websites, place your content, and handle everything from start to finish.",
-    },
-    {
-      question: "Who can use this service?",
-      answer:
-        "Startups, small businesses, established brands, and individuals looking to grow their online presence.",
-    },
-    {
-      question: "Do I need to provide my article?",
-      answer:
-        "You can provide your own content, or our team can create it for you.",
-    },
-    {
-      question: "How long does it take to publish a post?",
-      answer:
-        "Most posts go live within a few days, depending on the package and website approval.",
-    },
-    {
-      question: "Are the websites real and trustworthy?",
-      answer:
-        "Yes, we only work with high-authority, relevant, and trusted websites.",
-    },
-    {
-      question: "How many backlinks can I include in a post?",
-      answer:
-        "Each post usually allows 1–2 backlinks to your website for SEO purposes.",
-    },
-    {
-      question: "Will this improve my SEO?",
-      answer:
-        "Yes, publishing on high-quality sites helps boost search engine rankings and visibility.",
-    },
-    {
-      question: "Can I choose the websites for my guest post?",
-      answer:
-        "Yes, we work with you to select relevant websites that match your niche.",
-    },
-    {
-      question: "How much does the service cost?",
-      answer:
-        "Pricing depends on the package, number of posts, and authority of the websites.",
-    },
-    {
-      question: "Are there flexible packages?",
-      answer:
-        "Yes, we offer packages for businesses of all sizes and budgets.",
-    },
-    {
-      question: "Can I track my guest post performance?",
-      answer:
-        "Yes, we provide live links and reports so you can monitor results.",
-    },
-    {
-      question: "Is this safe for my website?",
-      answer:
-        "Absolutely. We follow ethical practices and avoid spammy sites.",
-    },
-    {
-      question: "How often can I submit posts?",
-      answer:
-        "You can submit as many posts as your chosen package allows.",
-    },
-    {
-      question: "What topics are accepted?",
-      answer:
-        "We accept topics relevant to your business, industry, or niche.",
-    },
-    {
-      question: "Can guest posting increase brand credibility?",
-      answer:
-        "Yes, being featured on reputable sites strengthens your authority and trust.",
-    },
-    {
-      question: "How do I get started?",
-      answer:
-        "Select a package, provide your content or topic, and we handle the rest.",
-    },
-  ]}
-/>
+                faqData={[
+                    {
+                        question: "What is guest posting?",
+                        answer:
+                            "Guest posting is publishing your article or content on another website to reach new audiences.",
+                    },
+                    {
+                        question: "How does FG Newswire help with guest posting?",
+                        answer:
+                            "We find high-quality websites, place your content, and handle everything from start to finish.",
+                    },
+                    {
+                        question: "Who can use this service?",
+                        answer:
+                            "Startups, small businesses, established brands, and individuals looking to grow their online presence.",
+                    },
+                    {
+                        question: "Do I need to provide my article?",
+                        answer:
+                            "You can provide your own content, or our team can create it for you.",
+                    },
+                    {
+                        question: "How long does it take to publish a post?",
+                        answer:
+                            "Most posts go live within a few days, depending on the package and website approval.",
+                    },
+                    {
+                        question: "Are the websites real and trustworthy?",
+                        answer:
+                            "Yes, we only work with high-authority, relevant, and trusted websites.",
+                    },
+                    {
+                        question: "How many backlinks can I include in a post?",
+                        answer:
+                            "Each post usually allows 1–2 backlinks to your website for SEO purposes.",
+                    },
+                    {
+                        question: "Will this improve my SEO?",
+                        answer:
+                            "Yes, publishing on high-quality sites helps boost search engine rankings and visibility.",
+                    },
+                    {
+                        question: "Can I choose the websites for my guest post?",
+                        answer:
+                            "Yes, we work with you to select relevant websites that match your niche.",
+                    },
+                    {
+                        question: "How much does the service cost?",
+                        answer:
+                            "Pricing depends on the package, number of posts, and authority of the websites.",
+                    },
+                    {
+                        question: "Are there flexible packages?",
+                        answer:
+                            "Yes, we offer packages for businesses of all sizes and budgets.",
+                    },
+                    {
+                        question: "Can I track my guest post performance?",
+                        answer:
+                            "Yes, we provide live links and reports so you can monitor results.",
+                    },
+                    {
+                        question: "Is this safe for my website?",
+                        answer:
+                            "Absolutely. We follow ethical practices and avoid spammy sites.",
+                    },
+                    {
+                        question: "How often can I submit posts?",
+                        answer:
+                            "You can submit as many posts as your chosen package allows.",
+                    },
+                    {
+                        question: "What topics are accepted?",
+                        answer:
+                            "We accept topics relevant to your business, industry, or niche.",
+                    },
+                    {
+                        question: "Can guest posting increase brand credibility?",
+                        answer:
+                            "Yes, being featured on reputable sites strengthens your authority and trust.",
+                    },
+                    {
+                        question: "How do I get started?",
+                        answer:
+                            "Select a package, provide your content or topic, and we handle the rest.",
+                    },
+                ]}
+            />
 
             <CountriesSection />
-
-
-
-
-
-
-
-
-
-
 
             <div className="container mx-auto px-4 py-6">
                 {/* Product Gallery and Summary */}
@@ -779,6 +725,7 @@ export default function GuestPostingPackage() {
                     </div>
                 </div>
             </div>
+
             <section className="w-full px-4 py-10 bg-gray-50">
                 <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
                     {/* Left: Ratings Summary */}
