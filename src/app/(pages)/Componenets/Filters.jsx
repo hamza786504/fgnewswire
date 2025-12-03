@@ -4,6 +4,85 @@ import { useState } from "react";
 import Link from "next/link";
 import { FaCheckCircle, FaSearch } from "react-icons/fa";
 
+// Data for the publications table
+const publicationsData = [
+  { url: "https://www.forbes.com/", da: "95", tat: "3-5 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.inc.com/", da: "95", tat: "3-5 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.bloomberg.com/", da: "94", tat: "2-3 weeks", linkType: "No Follow", sponsored: "Press Release" },
+  { url: "https://www.usatoday.com/", da: "94", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://finance.yahoo.com/", da: "93", tat: "2-3 weeks", linkType: "No Follow", sponsored: "Press Release" },
+  { url: "https://www.chicagotribune.com/", da: "93", tat: "2-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://nl.mashable.com/", da: "93", tat: "2-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.sfgate.com/", da: "93", tat: "2-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
+  { url: "https://www.nydailynews.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.mercurynews.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.chron.com/", da: "92", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
+  { url: "http://eonline.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://venturebeat.com/", da: "92", tat: "3-5 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "http://billboard.com/", da: "92", tat: "3-5 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.nasdaq.com/", da: "91", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.makeuseof.com/", da: "91", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.ibtimes.com/", da: "91", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.makeuseof.com/", da: "91", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.washingtontimes.com/", da: "90", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
+  { url: "https://www.miamiherald.com/", da: "90", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.azcentral.com/", da: "90", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
+  { url: "https://www.inquirer.net/", da: "89", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://dailycaller.com/", da: "89", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.dallasnews.com/", da: "89", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.digitaljournal.com/", da: "88", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.benzinga.com/", da: "87", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.maxim.com/", da: "87", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
+  { url: "https://www.villagevoice.com/", da: "85", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://www.techtimes.com/", da: "84", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://hackernoon.com/", da: "84", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.mensjournal.com/", da: "82", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
+  { url: "https://goodmenproject.com/", da: "82", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes / No" },
+  { url: "https://www.intouchweekly.com/", da: "82", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.sfexaminer.com/", da: "80", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.lifeandstylemag.com/", da: "80", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://okmagazine.com/", da: "80", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.tmcnet.com/", da: "80", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.closerweekly.com/", da: "78", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.laweekly.com/", da: "77", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://hauteliving.com/", da: "73", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
+  { url: "https://www.sfweekly.com/", da: "73", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.financemagnates.com/", da: "71", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.bbntimes.com/", da: "71", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
+  { url: "https://www.geekextreme.com/", da: "70", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://techbullion.com/", da: "61", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "UK Magazines", da: "DA", tat: "Cost", linkType: "Link Type", sponsored: "Sponsored" },
+  { url: "https://www.mirror.co.uk/", da: "94", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://www.dailymail.co.uk/", da: "94", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.express.co.uk/", da: "93", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://metro.co.uk/", da: "93", tat: "2-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://www.dailystar.co.uk/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://www.ibtimes.co.uk/", da: "90", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.manchestereveningnews.co.uk/", da: "90", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.walesonline.co.uk/", da: "89", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.liverpoolecho.co.uk/", da: "88", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.birminghammail.co.uk/", da: "87", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.dailyrecord.co.uk/", da: "85", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "https://www.thisismoney.co.uk/", da: "81", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
+  { url: "https://www.femalefirst.co.uk/", da: "78", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.deadlinenews.co.uk/", da: "75", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.bristolpost.co.uk/", da: "80", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
+  { url: "Other Magazines", da: "DA", tat: "Cost", linkType: "Link Type", sponsored: "Sponsored" },
+  { url: "http://africa.businessinsider.com/", da: "94", tat: "2-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.entrepreneur.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.entrepreneur.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.jpost.com/", da: "91", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
+  { url: "https://www.timesofisrael.com/", da: "91", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
+  { url: "https://www.livemint.com/", da: "91", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://guardian.ng/", da: "87", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
+  { url: "https://www.khaleejtimes.com/", da: "86", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://www.arabianbusiness.com/", da: "84", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://gulfbusiness.com/", da: "72", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
+  { url: "https://www.forbesmiddleeast.com/", da: "72", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+  { url: "https://www.ibtimes.sg/", da: "70", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
+];
+
+
 export default function PackagesWithAllFilters({ plans = [] }) {
   const [filters, setFilters] = useState({
     as: "",
@@ -434,9 +513,8 @@ export default function PackagesWithAllFilters({ plans = [] }) {
         {plans.map((plan, idx) => (
           <div
             key={idx}
-            className={`rounded-lg border shadow-md flex flex-col justify-between relative ${
-              plan.highlight ? "bg-blue-50 border-blue-400" : "bg-white border-orange-400"
-            }`}
+            className={`rounded-lg border shadow-md flex flex-col justify-between relative ${plan.highlight ? "bg-blue-50 border-blue-400" : "bg-white border-orange-400"
+              }`}
           >
             {plan.highlight && (
               <div className="absolute top-0 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-lg">
@@ -462,9 +540,8 @@ export default function PackagesWithAllFilters({ plans = [] }) {
             <div className="p-6">
               <Link
                 href="#"
-                className={`block w-full text-center py-2 rounded font-semibold hover:text-white border transition ${
-                  plan.highlight ? "text-blue-600 border-blue-600 hover:bg-blue-700" : "text-orange-400 border-orange-400 hover:bg-orange-400"
-                }`}
+                className={`block w-full text-center py-2 rounded font-semibold hover:text-white border transition ${plan.highlight ? "text-blue-600 border-blue-600 hover:bg-blue-700" : "text-orange-400 border-orange-400 hover:bg-orange-400"
+                  }`}
               >
                 BUY NOW
               </Link>
@@ -472,6 +549,75 @@ export default function PackagesWithAllFilters({ plans = [] }) {
           </div>
         ))}
       </div>
+
+
+
+      {/* Publications Table */}
+      <section className="mb-16 overflow-x-auto">
+        <div className="overflow-x-auto bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+          <table className="overflow-x-auto min-w-full divide-y divide-gray-200">
+            <thead className="bg-gradient-to-r from-blue-500 to-purple-700 text-white">
+              <tr>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  US Magazines
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  DA
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  Cost
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  TAT
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  Link Type
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  Sponsored
+                </th>
+                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {publicationsData.map((pub, index) => (
+                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {pub.url.includes('http') ? (
+                      <span className="text-blue-600 hover:text-purple-700 hover:underline transition-colors">
+                        {pub.url}
+                      </span>
+                    ) : (
+                      <span className="font-bold text-purple-700">{pub.url}</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{pub.da}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <a href="https://worldwidebacklink.spp.io/dashboard" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-purple-700 hover:underline transition-colors">
+                      Contact Us!
+                    </a>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{pub.tat}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{pub.linkType}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{pub.sponsored}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    <Link href={"/guest-posting-package/da50"}className="uppercase w-full bg-gradient-to-r from-blue-400 to-purple-600 
+                hover:from-blue-500 hover:to-purple-700 px-8 py-3 rounded-full text-sm 
+                font-semibold text-white transition-all duration-300 shadow-lg 
+                hover:shadow-xl transform hover:-translate-y-1">
+                      Buy Now
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex my-10 items-center justify-center">
+          <Link href="/signin" className="hidden md:inline-flex ml-6 hover:bg-transparent bg-[#163316] justify-center uppercase bg-gradient-to-r from-blue-400 to-purple-600 hover:from-blue-500 hover:to-purple-700 px-8 py-3 rounded-full text-sm font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-xl transform">VIEW ALL PUBLICATIONS</Link>
+        </div>
+      </section>
     </div>
   );
 }

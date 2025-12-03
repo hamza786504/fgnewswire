@@ -43,10 +43,10 @@ export default async function PricingSection() {
           
           <div className="text-center">
             <Link
-              href="/plans/all"
+              href="/press-release"
               className="inline-block max-w-[220px] !mx-auto mt-7 text-center w-full bg-gradient-to-r from-blue-500 to-purple-700 text-white py-2 rounded font-semibold hover:bg-blue-700 transition"
             >
-              Buy Now
+              View All Plans
             </Link>
           </div>
         </div>

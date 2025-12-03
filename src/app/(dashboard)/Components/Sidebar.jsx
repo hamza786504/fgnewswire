@@ -165,14 +165,6 @@ function Sidebar() {
                   <span>Packages</span>
                 </Link>
               </li>
-
-              <li>
-                <Link href="/dashboard/reseller-packages" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
-                  <FaCube className="mr-3" />
-                  <span>Reseller Packages</span>
-                </Link>
-              </li>
-
               <li>
                 <Link href="/dashboard/guest-post-package" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCube className="mr-3" />
@@ -205,20 +197,6 @@ function Sidebar() {
                 <Link href="/dashboard/guest-post-credit" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCreditCard className="mr-3" />
                   <span>Guest Posting Credit</span>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="/dashboard/viewticket" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
-                  <FaTicketAlt className="mr-3" />
-                  <span>Support Tickets</span>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="/dashboard/giftcode/check" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
-                  <FaGift className="mr-3" />
-                  <span>Gift Code</span>
                 </Link>
               </li>
             </ul>
