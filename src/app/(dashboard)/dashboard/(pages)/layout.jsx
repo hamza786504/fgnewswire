@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }) {
     }
 
     if (!token || !expiry || Date.now() > parseInt(expiry)) {
-      router.replace("/");
+      router.replace("/dashboard/signin");
     } 
     else if (user?.role === "admin") {
       // 🚫 prevent admin from entering dashboard

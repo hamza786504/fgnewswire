@@ -7,7 +7,6 @@ import { BiCheck } from "react-icons/bi";
 import TestimonialCarousel from "../Componenets/TestimonialCarousel";
 import Faq from "../Componenets/Faq";
 import CountriesSection from "../Componenets/CountriesSection";
-import PackagesWithAllFilters from "../Componenets/Filters";
 import GuestPostingPackageCard from "../Componenets/GuestPostingPackageCard";
 
 export default function GuestPostingPackage() {
@@ -149,7 +148,7 @@ export default function GuestPostingPackage() {
                                 <FaLongArrowAltRight className="ms-0" />
                             </a> */}
                             <Link
-                                href="/"
+                                href="/sites"
                                 className="justify-center sm:justify-start px-3 md:px-4 py-[6px] rounded-3xl text-xs sm:text-sm lg:text-base font-normal border-2 text-white text-center white bg-transparent border-white transition-all ease-in-out uppercase inline-flex items-center gap-2"
                             >
                                 PUBLISHER SITES & PRICING
@@ -306,7 +305,6 @@ export default function GuestPostingPackage() {
 
 
 
-            <PackagesWithAllFilters />
 
 
             <section className="py-16 px-2 md:px-12 lg:px-24  max-w-6xl mx-auto bg-white">

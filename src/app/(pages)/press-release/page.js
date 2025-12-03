@@ -46,7 +46,7 @@ async function AllPackagesPage() {
           Pick a plan that works best for you. We offer clear pricing with no hidden fees.
         </p>
 
-        <div className="mt-7 grid grid-cols-3">
+        <div className="mt-7 grid grid-cols-3 space-y-5">
           {/* Client component for tabs */}
           {allPackages.filter(p => p.type === "press_release").map((plan, idx) => <PlanCard plan={plan} idx={idx} />)}
         </div>

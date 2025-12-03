@@ -1,7 +1,7 @@
 import { BiSearch } from 'react-icons/bi';
 
 
-export default function Dashboard() {
+export default function PressRelease() {
 
   return (
     <>

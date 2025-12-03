@@ -39,7 +39,7 @@ export default async function PricingSection() {
 
         <div className="relative px-6">
           {/* ClientSlider handles all interactive parts */}
-          <ClientSlider packages={packages} />
+          <ClientSlider packages={packages.filter(p => p.type === "press_release" && p.name.toLowerCase() === "basic" || p.name.toLowerCase() === "standard" || p.name.toLowerCase() === "premium")} />
           
           <div className="text-center">
             <Link

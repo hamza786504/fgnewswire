@@ -42,9 +42,7 @@ function PlanCard({plan, idx}) {
                     <div className="mt-0">
                         <h2 className="text-4xl text-white font-semibold">{getMinPrice()}</h2>
                         <h4 className="text-white text-sm">
-                            {isPriceArray && plan.price.length > 0 
-                                ? `${plan.price[0].quantity || 1} press release`
-                                : "1 press release"}
+                            1 press release
                         </h4>
                     </div>
                 </div>
@@ -112,7 +110,7 @@ function PlanCard({plan, idx}) {
                     )}
                     
                     <Link
-                        href="#"
+                        href="/signin"
                         className="block text-center w-full bg-gradient-to-r from-blue-500 to-purple-700 text-white py-2 rounded font-semibold hover:bg-blue-700 transition"
                     >
                         Buy Now

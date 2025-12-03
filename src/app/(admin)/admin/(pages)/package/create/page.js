@@ -162,16 +162,16 @@ const handleSubmit = async (e) => {
 
     setSubmitStatus({ success: true, message: "Package added successfully!" });
 
-    // Reset form
-    setFormData({
-      name: "",
-      type: "",
-      description: "",
-      features: [{ text: "", image: null, included: true }],
-      demo_report_url: "",
-      price: [{ quantity: "", price: "" }],
-      credit: ""
-    });
+    // // Reset form
+    // setFormData({
+    //   name: "",
+    //   type: "",
+    //   description: "",
+    //   features: [{ text: "", image: null, included: true }],
+    //   demo_report_url: "",
+    //   price: [{ quantity: "", price: "" }],
+    //   credit: ""
+    // });
 
   } catch (err) {
     console.error(err);

@@ -10,6 +10,8 @@ export default function Header() {
   const [plansOpen, setPlansOpen] = useState(false);
   const [userDropdown, setUserDropdown] = useState(false);
   const [user, setUser] = useState(null);
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const dropdownRef = useRef(null);
   const navItemRef = useRef(null);
@@ -22,23 +24,59 @@ export default function Header() {
     {
       link: "Plans",
       href: "/plans",
-      submenu: [
-        { name: "Yahoo Press Release", href: "/plans/yahoo-press-release" },
-        { name: "Insider Press Release + Yahoo Finance", href: "/plans/insider-press-release" },
-        { name: "Business Insider", href: "/plans/business-insider" },
-        { name: "Benzinga PR", href: "/plans/benzinga-pr" },
-        { name: "Digital Journal PR", href: "/plans/digital-journal-pr" },
-        { name: "Bignewsnetwork PR", href: "/plans/bingnewsnetwork-pr" },
-        { name: "AP News (Associated Press) Press Release", href: "/plans/ap-news-press-release" },
-        { name: "Khaleejtimes Press Release", href: "/plans/khaleejtimes-press-release" },
-        { name: "GulfNews Press Release", href: "/plans/gulfnews-press-release" },
-        { name: "Street Insider PR", href: "/plans/street-insider-pr" },
-        { name: "MSN News Press Release", href: "/plans/msn-news-press-release" }
-      ]
+      submenu: [] // Will be populated dynamically
     },
     { link: "News Room", href: "/news-room" },
     { link: "Guidelines", href: "/guidelines" },
   ];
+
+  // ✅ Fetch packages on component mount
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const response = await fetch('https://api.glassworld06.com/api/packages', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch packages');
+
+        const data = await response.json();
+        
+        // Transform packages into submenu format
+        const packageSubmenu = data.filter(d => d.type === "press_release" && (d.name.toLowerCase() !== "basic" && d.name.toLowerCase() !== "standard" && d.name.toLowerCase() !== "premium")).map(pkg => ({
+          name: pkg.name,
+          href: `/plans/${pkg.slug}`, // Use package slug for URL
+          slug: pkg.slug
+        }));
+
+        // Update the Plans submenu
+        const updatedNavLinks = navLinks.map(link => {
+          if (link.link === "Plans") {
+            return {
+              ...link,
+              submenu: packageSubmenu
+            };
+          }
+          return link;
+        });
+
+        // Note: We can't directly update navLinks since it's not state
+        // We'll use a separate state for dynamic packages
+        setPackages(packageSubmenu);
+        
+      } catch (err) {
+        console.error('Error fetching packages:', err);
+        // You can set a default/fallback menu here if needed
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPackages();
+  }, []); // Empty dependency array means this runs once on mount
 
   // ✅ Check login state on mount
   useEffect(() => {
@@ -96,25 +134,40 @@ export default function Header() {
                 <button
                   onClick={() => setPlansOpen(!plansOpen)}
                   className="flex text-sm items-center hover:text-[#1e3a1f] transition duration-300"
+                  disabled={loading}
                 >
                   {link.link}
-                  <FaChevronDown className={`ml-1 text-xs transition-transform ${plansOpen ? 'rotate-180' : ''}`} />
+                  {!loading && (
+                    <FaChevronDown className={`ml-1 text-xs transition-transform ${plansOpen ? 'rotate-180' : ''}`} />
+                  )}
                 </button>
 
-                {plansOpen && (
+                {plansOpen && !loading && packages.length > 0 && (
                   <div
                     ref={dropdownRef}
-                    className="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg py-2 z-50 border border-gray-200 dark:border-gray-700"
+                    className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg py-2 z-50 border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto"
                   >
-                    {link.submenu.map((subItem, subKey) => (
+                    {packages.map((pkg, subKey) => (
                       <Link
                         key={subKey}
-                        href={subItem.href}
-                        className="block px-4 py-2 hover:bg-green-50 dark:hover:bg-[#1e3a1f]/20 rounded transition"
+                        href={pkg.href}
+                        className="block px-4 py-2 hover:bg-green-50 dark:hover:bg-[#1e3a1f]/20 rounded transition text-sm"
+                        onClick={() => setPlansOpen(false)}
                       >
-                        {subItem.name}
+                        {pkg.name}
                       </Link>
                     ))}
+                  </div>
+                )}
+
+                {plansOpen && !loading && packages.length === 0 && (
+                  <div
+                    ref={dropdownRef}
+                    className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg py-2 z-50 border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="px-4 py-2 text-sm text-gray-500">
+                      No packages available
+                    </div>
                   </div>
                 )}
               </div>
@@ -182,25 +235,37 @@ export default function Header() {
                   <button
                     onClick={() => setPlansOpen(!plansOpen)}
                     className="flex items-center w-full justify-between"
+                    disabled={loading}
                   >
                     {link.link}
-                    <FaChevronDown className={`text-xs transition-transform ${plansOpen ? 'rotate-180' : ''}`} />
+                    {loading ? (
+                      <span className="text-xs">⌛</span>
+                    ) : (
+                      <FaChevronDown className={`text-xs transition-transform ${plansOpen ? 'rotate-180' : ''}`} />
+                    )}
                   </button>
-                  {plansOpen && (
+                  {plansOpen && !loading && packages.length > 0 && (
                     <div className="pl-4 mt-2 space-y-2">
-                      {link.submenu.map((subItem, subKey) => (
+                      {packages.map((pkg, subKey) => (
                         <Link
                           key={subKey}
-                          href={subItem.href}
+                          href={pkg.href}
                           onClick={() => {
                             setPlansOpen(false);
                             setIsOpen(false);
                           }}
-                          className="block py-1 hover:bg-green-50 dark:hover:bg-[#1e3a1f]/20 rounded transition"
+                          className="block py-1 hover:bg-green-50 dark:hover:bg-[#1e3a1f]/20 rounded transition text-sm"
                         >
-                          {subItem.name}
+                          {pkg.name}
                         </Link>
                       ))}
+                    </div>
+                  )}
+                  {plansOpen && !loading && packages.length === 0 && (
+                    <div className="pl-4 mt-2">
+                      <div className="py-1 text-sm text-gray-500">
+                        No packages available
+                      </div>
                     </div>
                   )}
                 </div>
@@ -225,11 +290,11 @@ export default function Header() {
                 <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
                 <p className="px-4 py-2 text-sm font-semibold">{user.name}</p>
                 <Link
-                  href="/profile"
+                  href="/dashboard"
                   className="px-4 py-2 hover:bg-green-50 dark:hover:bg-[#1e3a1f]/20"
                   onClick={() => setIsOpen(false)}
                 >
-                  Profile
+                  Dashboard
                 </Link>
                 <button
                   onClick={handleLogout}
