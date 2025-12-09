@@ -10,6 +10,8 @@ async function getGuestSites() {
     if (!res.ok) throw new Error("Failed to fetch guest posting sites");
 
     const data = await res.json();
+    console.log(data);
+    
     return data;
   } catch (error) {
     console.error("SSR Fetch Error:", error);

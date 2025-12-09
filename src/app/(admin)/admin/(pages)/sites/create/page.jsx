@@ -365,7 +365,7 @@ export default function CreateGuestPostingSite() {
         
         // Redirect after 2 seconds
         setTimeout(() => {
-          router.push('/sites');
+          router.push('/admin/sites');
         }, 2000);
       } else {
         console.log('API Error Response:', responseData);

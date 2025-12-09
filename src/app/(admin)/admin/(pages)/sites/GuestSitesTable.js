@@ -18,7 +18,7 @@ export default function GuestSitesTable({ initialData }) {
   const [filteredSites, setFilteredSites] = useState(initialData?.data || []);
   const [searchTerm, setSearchTerm] = useState("");
   const [deletingId, setDeletingId] = useState(null);
-  
+
   // For API pagination
   const [currentPage, setCurrentPage] = useState(initialData?.current_page || 1);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +78,7 @@ export default function GuestSitesTable({ initialData }) {
 
       const res = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${id}`, {
         method: "DELETE",
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         },
@@ -93,7 +93,7 @@ export default function GuestSitesTable({ initialData }) {
         data: updatedData,
         total_sites: prev.total_sites - 1
       }));
-      
+
       setFilteredSites(prev => prev.filter((s) => s.id !== id));
 
       alert("Site deleted successfully!");
@@ -119,6 +119,15 @@ export default function GuestSitesTable({ initialData }) {
 
   // Calculate total pages for display
   const totalPages = sitesData.total_pages;
+
+  // Add this helper function at the top of your component
+  const parseMetrics = (metricsString) => {
+    try {
+      return JSON.parse(metricsString);
+    } catch (error) {
+      return {}; // Return empty object if parsing fails
+    }
+  };
 
   return (
     <main className="flex-1 rounded-bl-4xl bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
@@ -219,11 +228,11 @@ export default function GuestSitesTable({ initialData }) {
                         </td>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {site.metrics?.moz_da?.score || "N/A"}
+                          {parseMetrics(site.metrics).da || "N/A"}
                         </td>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {site.metrics?.ahrefs_dr?.score || "N/A"}
+                          {parseMetrics(site.metrics).dr || "N/A"}
                         </td>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
@@ -233,7 +242,7 @@ export default function GuestSitesTable({ initialData }) {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex gap-2">
                             <Link
-                              href={`/admin/sites/edit/${site.id}`}
+                              href={`/admin/sites/edit/${site.slug}`}
                               className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs transition-colors"
                             >
                               Edit
@@ -279,9 +288,8 @@ export default function GuestSitesTable({ initialData }) {
                 key={page}
                 onClick={() => goToPage(page)}
                 disabled={isLoading}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200"
-                } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`px-3 py-1 rounded-md text-sm ${currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200"
+                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {page}
               </button>
@@ -297,7 +305,7 @@ export default function GuestSitesTable({ initialData }) {
           </div>
         )}
 
-       
+
       </div>
     </main>
   );
