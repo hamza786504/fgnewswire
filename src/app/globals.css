@@ -1,0 +1,455 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+:root {
+    --dark-primary: #1e3a1f;
+    --dark-secondary: #c2ff00;
+}
+
+.clip-mask-announcementbar {
+    clip-path: polygon(19% 0, 100% 0%, 100% 100%, 0% 100%);
+}
+
+* {
+    font-family: "Montserrat", sans-serif;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+
+@keyframes pulseScale {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Animation for Up and Down movement */
+@keyframes bubbleUpDown {
+    0% {
+        transform: translateY(-10px);
+    }
+
+    50% {
+        transform: translateY(10px);
+    }
+
+    100% {
+        transform: translateY(-10px);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* {
+    font-family: 'Montserrat', sans-serif
+}
+
+/* 
+@media screen and (max-width: 1600px) {
+    .graph {
+        bottom: 2%;
+        right: 35%;
+    }
+}
+
+
+.graph img {
+    max-width: 100%;
+}
+
+
+
+
+.rocket img , .elem-2 img {
+    max-width: 100%
+}
+
+
+
+.elem-2 {
+    position: absolute;
+    width: 330px;
+    top: 210px;
+    right: 200px;
+    z-index: 1;
+    animation: up-down 10s linear infinite both;
+    z-index: 11
+}
+
+
+
+@media screen and (max-width: 1600px) {
+    .elem-2 {
+        width: 300px;
+        right: 1%;
+        top: 22%;
+    }
+}
+
+@media screen and (max-width: 1066px) {
+    .elem-2 {
+        width: 220px;
+        top: 28%;
+    }
+}
+
+
+
+.elem-3 {
+    position: absolute;
+    bottom: 40px;
+    right: 200px;
+    z-index: 1;
+    width: 250px;
+    animation: left-right 10s linear infinite both;
+    z-index: 11;
+}
+
+@media screen and (max-width: 1600px) {
+    .elem-3 {
+        width: 200px;
+        bottom: 3%;
+        right: 5%;
+    }
+
+}
+
+
+
+.banner-flex-colone {
+    width: 50%;
+    padding-top: 50px
+}
+
+@media screen and (max-width:1377px) {
+
+    .banner-flex-colone {
+        padding-top: 100px
+    }
+}
+
+@media screen and (max-width:1066px) {
+    .banner-flex-colone {
+        width: 55%
+    }
+}
+
+@media screen and (max-width:810px) {
+    .banner-flex-colone,
+    .banner-flex-coltwo {
+        width: 100%
+    }
+    
+    .banner-flex-coltwo {
+        padding-top: 28px;
+        margin: 0 auto;
+    }
+
+  .rocket {
+        top: 6%;
+        width: 80px;
+        left: 20%
+    }
+
+    .graph {
+        bottom: -6%;
+        right: auto;
+        left: 20%;
+        width: 130px
+    }
+
+
+    .stats .stat span {
+        font-size: 20px
+    }
+
+    .stats .stat {
+        padding: 5px 0;
+        text-align: left
+    }
+
+    .stats {
+        margin-top: 35px;
+        padding-top: 15px;
+        display: none
+    }
+
+    .numberarea-indx {
+        overflow: hidden
+    }
+}
+
+
+@media screen and (max-width:490px) {
+    .banner-flex-colone,
+    .banner-flex-coltwo {
+        width: 100%
+    }
+}
+
+
+@media screen and (max-width:1066px) {
+
+    .rank-item .rank-text {
+        font-size: 15px
+    }
+        .rank-item {
+        display: none
+    }
+
+}
+
+@media screen and (max-width:810px) {
+
+    .rank-item {
+        display: none
+    }
+
+    .rank-item .rank {
+        white-space: nowrap
+    }
+
+    .rank-item .rank-text {
+        font-size: 16px;
+        padding: 10px 0
+    }
+
+    .rank-item {
+        flex-wrap: wrap;
+        justify-content: center
+    }
+}
+@media screen and (max-width:490px) {
+
+    .rank-item {
+        display: none
+    }
+
+    .rank-item .rank {
+        white-space: nowrap
+    }
+
+    .rank-item .rank-text {
+        font-size: 16px;
+        padding: 10px 0
+    }
+
+    .rank-item {
+        flex-wrap: wrap;
+        justify-content: center
+    }
+}
+
+
+.mobiletitle {
+    display: none
+}
+
+
+.stats {
+    border-top: 1px solid #bdb8be;
+    margin-top: 45px;
+    padding-top: 35px;
+    max-width: 550px
+}
+
+.stats .stat {
+    font-size: 17px;
+    padding: 12px 0;
+    max-width: 550px
+}
+
+.stats .stat i {
+    font-size: 25px;
+    margin-right: 10px;
+    color: #0ca72d
+}
+
+.stats .stat span {
+    font-size: 27px;
+    margin-right: 5px;
+    margin-left: 5px;
+    font-weight: 800
+}
+
+
+.banner-flex-coltwo {
+    width: 48%
+}
+
+@media screen and (max-width: 1600px) {
+    .banner-flex-coltwo {
+        width: 40%;
+        margin: 0 auto;
+    }
+}
+@media screen and (max-width: 800px) {
+    .banner-flex-coltwo {
+        width: 75% !important;
+    }
+}
+
+.banner-flex-coltwo img {
+    display: block;
+    max-width: 100%;
+    margin-top: 10px
+}
+
+.elem-3 img {
+    max-width: 100%;
+    box-shadow: 0 5px 10px #00000026
+}
+@media screen and (max-width:810px) {
+    .elem-2 {
+        top: auto;
+        bottom: 22%;
+        width: 200px;
+        right: 15%
+    }
+    
+    .elem-3 {
+        width: 130px;
+        bottom: 0;
+        right: 5%;
+        display: none
+    }
+}
+
+@media screen and (max-width:490px) {
+
+
+    .elem-2 {
+        top: auto;
+        bottom: 128px;
+        width: 150px;
+        right: 0
+    }
+
+    
+    .rocket {
+        top: 6%;
+        width: 75px;
+        left: .5%
+    }
+
+    .graph {
+        bottom: -6%;
+        right: auto;
+        left: 0;
+        width: 130px
+    }
+
+    .elem-3 {
+        width: 130px;
+        bottom: 0;
+        right: 5%;
+        display: none
+    }
+
+    .stats .stat span {
+        font-size: 20px
+    }
+
+    .stats .stat {
+        padding: 5px 0;
+        text-align: left
+    }
+
+    .stats {
+        margin-top: 35px;
+        padding-top: 15px;
+        display: none
+    }
+        .banner-flex-coltwo {
+        padding-top: 28px
+    }
+
+}
+
+@media screen and (max-width:650px) {
+    .elem-2 {
+        right: 10%
+    }
+}
+
+
+
+a.knowmore {
+    background-color: transparent;
+    color: #242423;
+    border: 2px solid #242423;
+    margin-left: 20px
+}
+ */
