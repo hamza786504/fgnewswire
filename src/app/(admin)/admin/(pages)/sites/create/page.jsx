@@ -345,8 +345,6 @@ export default function CreateGuestPostingSite() {
         console.log(pair[0], pair[1]);
       }
 
-      console.log(formDataToSend);
-      return;
       
       const response = await fetch('https://api.glassworld06.com/api/guest-posting-sites', {
         method: 'POST',
