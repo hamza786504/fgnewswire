@@ -9,7 +9,7 @@ export default function EditGuestSite() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug;
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [siteData, setSiteData] = useState(null);
@@ -46,137 +46,158 @@ export default function EditGuestSite() {
       article_niches: ['']
     }
   });
-  
+
   const [images, setImages] = useState([]);
   const [guidelinesPdf, setGuidelinesPdf] = useState(null);
   const [exampleImage, setExampleImage] = useState(null);
   const [mainImage, setMainImage] = useState(null);
-  
+
   // Fetch site data
   useEffect(() => {
     const fetchSiteData = async () => {
-      try {
-        setIsLoading(true);
-        // CORRECTED API URL - Removed /api/ from the path
-        const res = await fetch(`https://api.glassworld06.com/guest-posting-sites/${slug}`);
-        
-        if (!res.ok) {
-          throw new Error(`Failed to fetch site data: ${res.status}`);
-        }
-        
-        const data = await res.json();
-        console.log('API Response:', data); // Debug log
-        
-        const site = data.data?.[0];
-        
-        if (site) {
-          setSiteData(site);
-          
-          // Parse metrics if it's a string
-          let metricsData = {};
-          if (site.metrics) {
-            if (typeof site.metrics === 'string') {
-              try {
-                metricsData = JSON.parse(site.metrics);
-              } catch (e) {
-                console.error('Error parsing metrics:', e);
-              }
-            } else {
-              metricsData = site.metrics;
-            }
-          }
-          
-          // Parse services if it's a string
-          let servicesData = { order_types: [''], word_options: [''], article_niches: [''] };
-          if (site.services) {
-            if (typeof site.services === 'string') {
-              try {
-                servicesData = JSON.parse(site.services);
-              } catch (e) {
-                console.error('Error parsing services:', e);
-              }
-            } else {
-              servicesData = site.services;
-            }
-          }
-          
-          // Initialize form with existing data
-          setFormData({
-            website_url: site.website_url || '',
-            publication: site.publication || '',
-            niche: site.niche || '',
-            language: site.language || '',
-            country: site.country || '',
-            sports_allowed: site.sports_allowed || false,
-            sponsored: site.sponsored || false,
-            indexed: site.indexed || false,
-            do_follow: site.do_follow || false,
-            pharmacy_allowed: site.pharmacy_allowed || false,
-            crypto_allowed: site.crypto_allowed || false,
-            foreign_lang_allowed: site.foreign_lang_allowed || false,
-            link_type: site.link_type || '',
-            link_validity: site.link_validity || '',
-            price: site.price || '',
-            credit: site.credit || '',
-            p_rules: site.p_rules || '',
-            description: site.description || '',
-            metrics: {
-              da: metricsData.da || '',
-              dr: metricsData.dr || '',
-              ahrefs_traffic: metricsData.ahrefs_traffic || '',
-              ahrefs_keywords: metricsData.ahrefs_keywords || '',
-              semrush_traffic: metricsData.semrush_traffic || '',
-              semrush_countries: metricsData.semrush_countries || ''
-            },
-            services: servicesData
-          });
-          
-          // Initialize images
-          if (site.images && Array.isArray(site.images)) {
-            setImages(site.images.map(img => ({
-              ...img,
-              preview: img.file ? `https://api.glassworld06.com/storage/${img.file}` : null,
-              isNew: false
-            })));
-          }
-          
-          if (site.guidelines_pdf) {
-            setGuidelinesPdf({ 
-              name: 'Existing PDF', 
-              url: `https://api.glassworld06.com/storage/${site.guidelines_pdf}`,
-              isNew: false 
-            });
-          }
-          
-          if (site.example_image) {
-            setExampleImage({ 
-              name: 'Existing Image', 
-              url: `https://api.glassworld06.com/storage/${site.example_image}`,
-              isNew: false 
-            });
-          }
-          
-          if (site.image) {
-            setMainImage({ 
-              name: 'Main Image', 
-              url: `https://api.glassworld06.com/storage/${site.image}`,
-              isNew: false 
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching site:', error);
-        alert('Failed to load site data');
-      } finally {
-        setIsLoading(false);
+  try {
+    setIsLoading(true);
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert('Authentication required. Please login again.');
+      router.push('admin/signin');
+      return;
+    }
+
+    const res = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${slug}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-    };
+    });
     
+    if (!res.ok) {
+      throw new Error(`Failed to fetch site data: ${res.status}`);
+    }
+
+    const site = await res.json(); // Direct response is the site object
+    console.log('API Response:', site); // Debug log
+
+    // No need for data.data?.[0] - use site directly
+    setSiteData(site);
+
+    // Parse metrics if it's a string
+    let metricsData = {};
+    if (site.metrics) {
+      if (typeof site.metrics === 'string') {
+        try {
+          metricsData = JSON.parse(site.metrics);
+        } catch (e) {
+          console.error('Error parsing metrics:', e);
+        }
+      } else {
+        metricsData = site.metrics;
+      }
+    }
+
+    // Parse services if it's a string
+    let servicesData = { order_types: [''], word_options: [''], article_niches: [''] };
+    if (site.services) {
+      if (typeof site.services === 'string') {
+        try {
+          servicesData = JSON.parse(site.services);
+        } catch (e) {
+          console.error('Error parsing services:', e);
+        }
+      } else {
+        servicesData = site.services;
+      }
+    }
+
+    // Initialize form with existing data
+    setFormData({
+      website_url: site.website_url || '',
+      publication: site.publication || '',
+      niche: site.niche || '',
+      language: site.language || '',
+      country: site.country || '',
+      sports_allowed: site.sports_allowed || false,
+      sponsored: site.sponsored || false,
+      indexed: site.indexed || false,
+      do_follow: site.do_follow || false,
+      pharmacy_allowed: site.pharmacy_allowed || false,
+      crypto_allowed: site.crypto_allowed || false,
+      foreign_lang_allowed: site.foreign_lang_allowed || false,
+      link_type: site.link_type || '',
+      link_validity: site.link_validity || '',
+      price: site.price || '',
+      credit: site.credit || '',
+      p_rules: site.p_rules || '',
+      description: site.description || '',
+      metrics: {
+        da: metricsData.da || '',
+        dr: metricsData.dr || '',
+        ahrefs_traffic: metricsData.ahrefs_traffic || '',
+        ahrefs_keywords: metricsData.ahrefs_keywords || '',
+        semrush_traffic: metricsData.semrush_traffic || '',
+        semrush_countries: metricsData.semrush_countries || ''
+      },
+      services: servicesData
+    });
+
+    // Initialize images - FIX: Parse the images string
+    let imagesArray = [];
+    if (site.images) {
+      if (typeof site.images === 'string') {
+        try {
+          imagesArray = JSON.parse(site.images);
+        } catch (e) {
+          console.error('Error parsing images:', e);
+        }
+      } else if (Array.isArray(site.images)) {
+        imagesArray = site.images;
+      }
+    }
+    
+    if (Array.isArray(imagesArray) && imagesArray.length > 0) {
+      setImages(imagesArray.map(img => ({
+        ...img,
+        preview: img.file ? `https://api.glassworld06.com/storage/${img.file}` : null,
+        isNew: false
+      })));
+    }
+
+    if (site.guidelines_pdf) {
+      setGuidelinesPdf({
+        name: 'Existing PDF',
+        url: `https://api.glassworld06.com/storage/${site.guidelines_pdf}`,
+        isNew: false
+      });
+    }
+
+    if (site.example_image) {
+      setExampleImage({
+        name: 'Existing Image',
+        url: `https://api.glassworld06.com/storage/${site.example_image}`,
+        isNew: false
+      });
+    }
+
+    if (site.image) {
+      setMainImage({
+        name: 'Main Image',
+        url: `https://api.glassworld06.com/storage/${site.image}`,
+        isNew: false
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching site:', error);
+    alert('Failed to load site data');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
     if (slug) {
       fetchSiteData();
     }
   }, [slug]);
-  
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -184,7 +205,7 @@ export default function EditGuestSite() {
       [name]: type === 'checkbox' ? checked : value
     }));
   };
-  
+
   const handleMetricsChange = (metric, value) => {
     setFormData(prev => ({
       ...prev,
@@ -194,7 +215,7 @@ export default function EditGuestSite() {
       }
     }));
   };
-  
+
   const handleServicesChange = (category, index, value) => {
     const updatedServices = { ...formData.services };
     if (!Array.isArray(updatedServices[category])) {
@@ -202,13 +223,13 @@ export default function EditGuestSite() {
     }
     updatedServices[category] = [...updatedServices[category]];
     updatedServices[category][index] = value;
-    
+
     setFormData(prev => ({
       ...prev,
       services: updatedServices
     }));
   };
-  
+
   const addServiceItem = (category) => {
     setFormData(prev => ({
       ...prev,
@@ -218,7 +239,7 @@ export default function EditGuestSite() {
       }
     }));
   };
-  
+
   const removeServiceItem = (category, index) => {
     const updatedItems = (formData.services[category] || []).filter((_, i) => i !== index);
     setFormData(prev => ({
@@ -229,18 +250,18 @@ export default function EditGuestSite() {
       }
     }));
   };
-  
+
   const handleImageUpload = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     const fileObject = {
       file,
       name: file.name,
       preview: URL.createObjectURL(file),
       isNew: true
     };
-    
+
     if (type === 'main') {
       setMainImage(fileObject);
     } else if (type === 'example') {
@@ -249,7 +270,7 @@ export default function EditGuestSite() {
       setGuidelinesPdf(fileObject);
     }
   };
-  
+
   const handleImagesUpload = (e) => {
     const files = Array.from(e.target.files);
     const newImages = files.map(file => ({
@@ -258,30 +279,30 @@ export default function EditGuestSite() {
       preview: URL.createObjectURL(file),
       isNew: true
     }));
-    
+
     setImages(prev => [...prev, ...newImages]);
   };
-  
+
   const removeImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setIsSubmitting(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         alert('Authentication required. Please login again.');
         router.push('/login');
         return;
       }
-      
+
       // Prepare form data for multipart upload
       const formDataToSend = new FormData();
-      
+
       // Add text fields
       Object.keys(formData).forEach(key => {
         if (key === 'metrics' || key === 'services') {
@@ -291,27 +312,27 @@ export default function EditGuestSite() {
           formDataToSend.append(key, formData[key]);
         }
       });
-      
+
       // Add files
       if (mainImage?.isNew && mainImage?.file) {
         formDataToSend.append('image', mainImage.file);
       }
-      
+
       if (exampleImage?.isNew && exampleImage?.file) {
         formDataToSend.append('example_image', exampleImage.file);
       }
-      
+
       if (guidelinesPdf?.isNew && guidelinesPdf?.file) {
         formDataToSend.append('guidelines_pdf', guidelinesPdf.file);
       }
-      
+
       // Add gallery images
       const newImages = images.filter(img => img.isNew && img.file);
       newImages.forEach((img, index) => {
         formDataToSend.append(`images[${index}]`, img.file);
         formDataToSend.append(`images_alt[${index}]`, img.alt || `Image ${index + 1}`);
       });
-      
+
       // For updating API (based on your documentation)
       const res = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${slug}`, {
         method: 'PUT',
@@ -321,16 +342,16 @@ export default function EditGuestSite() {
         },
         body: formDataToSend
       });
-      
+
       const responseData = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(responseData.message || 'Failed to update site');
       }
-      
+
       alert('Site updated successfully!');
       router.push('/admin/sites');
-      
+
     } catch (error) {
       console.error('Update error:', error);
       alert(error.message || 'Failed to update site. Please try again.');
@@ -338,7 +359,7 @@ export default function EditGuestSite() {
       setIsSubmitting(false);
     }
   };
-  
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#ebecf0] p-6">
@@ -351,7 +372,7 @@ export default function EditGuestSite() {
       </div>
     );
   }
-  
+
   if (!siteData) {
     return (
       <div className="min-h-screen bg-[#ebecf0] p-6">
@@ -366,7 +387,7 @@ export default function EditGuestSite() {
       </div>
     );
   }
-  
+
   return (
     <main className="min-h-screen bg-[#ebecf0] p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
@@ -379,7 +400,7 @@ export default function EditGuestSite() {
             <FiArrowLeft className="mr-2" />
             Back to Sites
           </Link>
-          
+
           <h1 className="text-2xl font-bold text-gray-800">
             Edit Guest Posting Site
           </h1>
@@ -387,7 +408,7 @@ export default function EditGuestSite() {
             Update site details and metrics
           </p>
         </div>
-        
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
           <div className="space-y-6">
@@ -396,7 +417,7 @@ export default function EditGuestSite() {
               <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
                 Basic Information
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Website URL */}
                 <div>
@@ -413,7 +434,7 @@ export default function EditGuestSite() {
                     placeholder="https://example.com"
                   />
                 </div>
-                
+
                 {/* Publication */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -428,7 +449,7 @@ export default function EditGuestSite() {
                     placeholder="Publication name"
                   />
                 </div>
-                
+
                 {/* Niche */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -444,7 +465,7 @@ export default function EditGuestSite() {
                     placeholder="Technology, Health, Business, etc."
                   />
                 </div>
-                
+
                 {/* Language */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -460,7 +481,7 @@ export default function EditGuestSite() {
                     placeholder="English, Spanish, etc."
                   />
                 </div>
-                
+
                 {/* Country */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -478,13 +499,13 @@ export default function EditGuestSite() {
                 </div>
               </div>
             </div>
-            
+
             {/* Metrics Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
                 Website Metrics
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* DA */}
                 <div>
@@ -501,7 +522,7 @@ export default function EditGuestSite() {
                     max="100"
                   />
                 </div>
-                
+
                 {/* DR */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -517,7 +538,7 @@ export default function EditGuestSite() {
                     max="100"
                   />
                 </div>
-                
+
                 {/* Ahrefs Traffic */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -531,7 +552,7 @@ export default function EditGuestSite() {
                     placeholder="Estimated traffic"
                   />
                 </div>
-                
+
                 {/* Ahrefs Keywords */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -545,7 +566,7 @@ export default function EditGuestSite() {
                     placeholder="Number of keywords"
                   />
                 </div>
-                
+
                 {/* Semrush Traffic */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -559,7 +580,7 @@ export default function EditGuestSite() {
                     placeholder="Estimated traffic"
                   />
                 </div>
-                
+
                 {/* Semrush Countries */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -575,13 +596,13 @@ export default function EditGuestSite() {
                 </div>
               </div>
             </div>
-            
+
             {/* Pricing & Details Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
                 Pricing & Details
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Price */}
                 <div>
@@ -599,7 +620,7 @@ export default function EditGuestSite() {
                     placeholder="100.00"
                   />
                 </div>
-                
+
                 {/* Credit */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -614,7 +635,7 @@ export default function EditGuestSite() {
                     placeholder="Number of credits"
                   />
                 </div>
-                
+
                 {/* Link Type */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -633,7 +654,7 @@ export default function EditGuestSite() {
                     <option value="Nofollow">Nofollow</option>
                   </select>
                 </div>
-                
+
                 {/* Link Validity */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -654,13 +675,13 @@ export default function EditGuestSite() {
                 </div>
               </div>
             </div>
-            
+
             {/* Checkboxes Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
                 Features & Permissions
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
                   { name: 'sports_allowed', label: 'Sports Allowed' },
@@ -687,19 +708,19 @@ export default function EditGuestSite() {
                 ))}
               </div>
             </div>
-            
+
             {/* Services Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
                 Services & Options
               </h2>
-              
+
               {['order_types', 'word_options', 'article_niches'].map((category) => (
                 <div key={category} className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
                     {category.replace('_', ' ')}
                   </label>
-                  
+
                   {(Array.isArray(formData.services[category]) ? formData.services[category] : []).map((item, index) => (
                     <div key={index} className="flex gap-2 mb-2">
                       <input
@@ -718,7 +739,7 @@ export default function EditGuestSite() {
                       </button>
                     </div>
                   ))}
-                  
+
                   <button
                     type="button"
                     onClick={() => addServiceItem(category)}
@@ -729,13 +750,13 @@ export default function EditGuestSite() {
                 </div>
               ))}
             </div>
-            
+
             {/* Content Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
                 Content
               </h2>
-              
+
               <div className="space-y-4">
                 {/* Posting Rules */}
                 <div>
@@ -751,7 +772,7 @@ export default function EditGuestSite() {
                     placeholder="Enter posting rules and requirements..."
                   />
                 </div>
-                
+
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -768,13 +789,13 @@ export default function EditGuestSite() {
                 </div>
               </div>
             </div>
-            
+
             {/* Files Section */}
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
                 Files & Images
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Main Image */}
                 <div>
@@ -814,7 +835,7 @@ export default function EditGuestSite() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Example Image */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -853,7 +874,7 @@ export default function EditGuestSite() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Guidelines PDF */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -890,7 +911,7 @@ export default function EditGuestSite() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Gallery Images */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -915,7 +936,7 @@ export default function EditGuestSite() {
                         </div>
                       ))}
                     </div>
-                    
+
                     <label className="cursor-pointer flex items-center justify-center">
                       <FiUpload className="h-6 w-6 text-gray-400 mr-2" />
                       <span className="text-sm text-gray-600">
@@ -934,7 +955,7 @@ export default function EditGuestSite() {
               </div>
             </div>
           </div>
-          
+
           {/* Submit Button */}
           <div className="mt-8 pt-6 border-t flex justify-end">
             <button
@@ -944,7 +965,7 @@ export default function EditGuestSite() {
             >
               Cancel
             </button>
-            
+
             <button
               type="submit"
               disabled={isSubmitting}
