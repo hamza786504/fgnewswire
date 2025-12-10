@@ -1,158 +1,242 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaCheckCircle, FaSearch } from "react-icons/fa";
 
-// Data for the publications table
-const publicationsData = [
-  { url: "https://www.forbes.com/", da: "95", tat: "3-5 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.inc.com/", da: "95", tat: "3-5 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.bloomberg.com/", da: "94", tat: "2-3 weeks", linkType: "No Follow", sponsored: "Press Release" },
-  { url: "https://www.usatoday.com/", da: "94", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://finance.yahoo.com/", da: "93", tat: "2-3 weeks", linkType: "No Follow", sponsored: "Press Release" },
-  { url: "https://www.chicagotribune.com/", da: "93", tat: "2-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://nl.mashable.com/", da: "93", tat: "2-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.sfgate.com/", da: "93", tat: "2-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
-  { url: "https://www.nydailynews.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.mercurynews.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.chron.com/", da: "92", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
-  { url: "http://eonline.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://venturebeat.com/", da: "92", tat: "3-5 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "http://billboard.com/", da: "92", tat: "3-5 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.nasdaq.com/", da: "91", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.makeuseof.com/", da: "91", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.ibtimes.com/", da: "91", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.makeuseof.com/", da: "91", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.washingtontimes.com/", da: "90", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
-  { url: "https://www.miamiherald.com/", da: "90", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.azcentral.com/", da: "90", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
-  { url: "https://www.inquirer.net/", da: "89", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://dailycaller.com/", da: "89", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.dallasnews.com/", da: "89", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.digitaljournal.com/", da: "88", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.benzinga.com/", da: "87", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.maxim.com/", da: "87", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
-  { url: "https://www.villagevoice.com/", da: "85", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://www.techtimes.com/", da: "84", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://hackernoon.com/", da: "84", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.mensjournal.com/", da: "82", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
-  { url: "https://goodmenproject.com/", da: "82", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes / No" },
-  { url: "https://www.intouchweekly.com/", da: "82", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.sfexaminer.com/", da: "80", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.lifeandstylemag.com/", da: "80", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://okmagazine.com/", da: "80", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.tmcnet.com/", da: "80", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.closerweekly.com/", da: "78", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.laweekly.com/", da: "77", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://hauteliving.com/", da: "73", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
-  { url: "https://www.sfweekly.com/", da: "73", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.financemagnates.com/", da: "71", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.bbntimes.com/", da: "71", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
-  { url: "https://www.geekextreme.com/", da: "70", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://techbullion.com/", da: "61", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "UK Magazines", da: "DA", tat: "Cost", linkType: "Link Type", sponsored: "Sponsored" },
-  { url: "https://www.mirror.co.uk/", da: "94", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://www.dailymail.co.uk/", da: "94", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.express.co.uk/", da: "93", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://metro.co.uk/", da: "93", tat: "2-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://www.dailystar.co.uk/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://www.ibtimes.co.uk/", da: "90", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.manchestereveningnews.co.uk/", da: "90", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.walesonline.co.uk/", da: "89", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.liverpoolecho.co.uk/", da: "88", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.birminghammail.co.uk/", da: "87", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.dailyrecord.co.uk/", da: "85", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "https://www.thisismoney.co.uk/", da: "81", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
-  { url: "https://www.femalefirst.co.uk/", da: "78", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.deadlinenews.co.uk/", da: "75", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.bristolpost.co.uk/", da: "80", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Yes" },
-  { url: "Other Magazines", da: "DA", tat: "Cost", linkType: "Link Type", sponsored: "Sponsored" },
-  { url: "http://africa.businessinsider.com/", da: "94", tat: "2-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.entrepreneur.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.entrepreneur.com/", da: "92", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.jpost.com/", da: "91", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Discrete" },
-  { url: "https://www.timesofisrael.com/", da: "91", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "Yes" },
-  { url: "https://www.livemint.com/", da: "91", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://guardian.ng/", da: "87", tat: "1-3 weeks", linkType: "Do Follow", sponsored: "No" },
-  { url: "https://www.khaleejtimes.com/", da: "86", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://www.arabianbusiness.com/", da: "84", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://gulfbusiness.com/", da: "72", tat: "1-3 weeks", linkType: "No Follow", sponsored: "Discrete" },
-  { url: "https://www.forbesmiddleeast.com/", da: "72", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-  { url: "https://www.ibtimes.sg/", da: "70", tat: "1-3 weeks", linkType: "No Follow", sponsored: "No" },
-];
-
-
 export default function PackagesWithAllFilters({ plans = [] }) {
+  const [sites, setSites] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filterOptions, setFilterOptions] = useState({
+    niches: [],
+    languages: [],
+    countries: [],
+    linkTypes: [],
+    sponsors: [],
+  });
+
+  // Initial filters state
   const [filters, setFilters] = useState({
-    as: "",
-    da: "",
-    dr: "",
+    website_url: "",
     niche: "",
     language: "",
-    ahrefTraffic: "",
-    ahrefKeywords: "",
-    similarwebTraffic: "",
-    semrushTraffic: "",
     country: "",
-    sportsAllowed: "",
-    pharmacyAllowed: "",
-    cryptoAllowed: "",
-    backlinks: "",
-    linkType: "",
-    linkValidity: "",
-    googleNews: "",
-    markedSponsored: "",
-    foreignLangAllowed: "",
-    tld: "",
-    priceRange: "",
-    selectWeek: "",
-    searchText: "",
+    sports_allowed: "",
+    sponsored: "",
+    indexed: "",
+    do_follow: "",
+    pharmacy_allowed: "",
+    crypto_allowed: "",
+    foreign_lang_allowed: "",
+    link_type: "",
+    link_validity: "",
+    price_min: "",
+    price_max: "",
+    da_min: "",
+    da_max: "",
+    dr_min: "",
+    dr_max: "",
     perPage: "25",
-    sortBy: "ahrefs",
+    sortBy: "da_desc",
+    searchText: "",
   });
+
+  // Fetch sites with filters
+  const fetchSites = async (filterParams = {}) => {
+    try {
+      setIsLoading(true);
+      
+      // Build query string from filters
+      const queryParams = new URLSearchParams();
+      
+      // Add all active filters
+      Object.entries(filterParams).forEach(([key, value]) => {
+        if (value !== "" && value !== null && value !== undefined) {
+          if (key === "searchText" && value.trim() !== "") {
+            // Search can be implemented differently or with API support
+            // For now, we'll handle search client-side
+          } else {
+            queryParams.append(key, value);
+          }
+        }
+      });
+
+      // Add pagination and sorting
+      if (filterParams.perPage) queryParams.append("per_page", filterParams.perPage);
+      if (filterParams.sortBy) {
+        const [sortField, sortOrder] = filterParams.sortBy.split("_");
+        queryParams.append("sort_by", sortField);
+        queryParams.append("sort_order", sortOrder);
+      }
+
+      const queryString = queryParams.toString();
+      const url = queryString 
+        ? `https://api.glassworld06.com/api/guest-posting-sites?${queryString}`
+        : `https://api.glassworld06.com/api/guest-posting-sites`;
+
+      console.log("Fetching from:", url);
+      
+      const res = await fetch(url);
+      
+      if (!res.ok) {
+        throw new Error(`Failed to fetch sites: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      // Transform API data to match your table structure
+      const transformedSites = Array.isArray(data) 
+        ? data.map(transformSiteData) 
+        : (Array.isArray(data.data) ? data.data.map(transformSiteData) : []);
+      
+      setSites(transformedSites);
+      
+      // Extract filter options from sites data
+      extractFilterOptions(transformedSites);
+      
+    } catch (error) {
+      console.error('Error fetching sites:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Transform site data for table display
+  const transformSiteData = (site) => {
+    // Parse metrics if it's a string
+    let metrics = {};
+    if (site.metrics && typeof site.metrics === 'string') {
+      try {
+        metrics = JSON.parse(site.metrics);
+      } catch (e) {
+        console.error('Error parsing metrics:', e);
+      }
+    } else if (site.metrics) {
+      metrics = site.metrics;
+    }
+    
+    return {
+      id: site.id,
+      website_url: site.website_url || "",
+      slug: site.slug || site.id,
+      publication: site.publication || site.website_url || "Unknown Publication",
+      da: metrics.da || 0,
+      dr: metrics.dr || 0,
+      price: site.price ? `$${site.price}` : "Contact Us!",
+      tat: "1-3 weeks", // Default, you can add this field to your API
+      link_type: site.link_type || "N/A",
+      sponsored: site.sponsored ? "Yes" : "No",
+      niche: site.niche || "",
+      language: site.language || "",
+      country: site.country || "",
+      sports_allowed: site.sports_allowed || false,
+      indexed: site.indexed || false,
+      do_follow: site.do_follow || false,
+      pharmacy_allowed: site.pharmacy_allowed || false,
+      crypto_allowed: site.crypto_allowed || false,
+      foreign_lang_allowed: site.foreign_lang_allowed || false,
+      link_validity: site.link_validity || "",
+      // Store original for filtering
+      original: site
+    };
+  };
+
+  // Extract unique values for filter dropdowns
+  const extractFilterOptions = (sitesData) => {
+    const niches = new Set();
+    const languages = new Set();
+    const countries = new Set();
+    const linkTypes = new Set();
+    
+    sitesData.forEach(site => {
+      if (site.niche) niches.add(site.niche);
+      if (site.language) languages.add(site.language);
+      if (site.country) countries.add(site.country);
+      if (site.link_type && site.link_type !== "N/A") linkTypes.add(site.link_type);
+    });
+    
+    setFilterOptions({
+      niches: Array.from(niches).sort(),
+      languages: Array.from(languages).sort(),
+      countries: Array.from(countries).sort(),
+      linkTypes: Array.from(linkTypes).sort(),
+      sponsors: ["Yes", "No"]
+    });
+  };
+
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchSites();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters((s) => ({ ...s, [name]: value }));
+    setFilters(prev => ({ ...prev, [name]: value }));
   };
 
   const applyFilters = () => {
-    // TODO: implement real filtering (client-side or server-side)
-    // For now just logs filters so you can see what to send to your API.
-    console.log("Applying filters:", filters);
-    // Example: fetch(`/api/plans?${qs.stringify(filters)}`) ...
+    // Create a clean filters object for API call
+    const apiFilters = { ...filters };
+    
+    // Remove empty values
+    Object.keys(apiFilters).forEach(key => {
+      if (apiFilters[key] === "" || apiFilters[key] === null || apiFilters[key] === undefined) {
+        delete apiFilters[key];
+      }
+    });
+    
+    // Remove client-side only filters
+    delete apiFilters.searchText;
+    delete apiFilters.perPage;
+    delete apiFilters.sortBy;
+    
+    console.log("Applying filters to API:", apiFilters);
+    fetchSites(apiFilters);
   };
 
   const clearFilters = () => {
-    setFilters({
-      as: "",
-      da: "",
-      dr: "",
+    const clearedFilters = {
+      website_url: "",
       niche: "",
       language: "",
-      ahrefTraffic: "",
-      ahrefKeywords: "",
-      similarwebTraffic: "",
-      semrushTraffic: "",
       country: "",
-      sportsAllowed: "",
-      pharmacyAllowed: "",
-      cryptoAllowed: "",
-      backlinks: "",
-      linkType: "",
-      linkValidity: "",
-      googleNews: "",
-      markedSponsored: "",
-      foreignLangAllowed: "",
-      tld: "",
-      priceRange: "",
-      selectWeek: "",
-      searchText: "",
+      sports_allowed: "",
+      sponsored: "",
+      indexed: "",
+      do_follow: "",
+      pharmacy_allowed: "",
+      crypto_allowed: "",
+      foreign_lang_allowed: "",
+      link_type: "",
+      link_validity: "",
+      price_min: "",
+      price_max: "",
+      da_min: "",
+      da_max: "",
+      dr_min: "",
+      dr_max: "",
       perPage: "25",
-      sortBy: "ahrefs",
-    });
+      sortBy: "da_desc",
+      searchText: "",
+    };
+    
+    setFilters(clearedFilters);
+    fetchSites(); // Fetch without filters
   };
+
+  // Apply search filter client-side (or you can implement server-side search)
+  const filteredSites = sites.filter(site => {
+    if (!filters.searchText) return true;
+    
+    const searchLower = filters.searchText.toLowerCase();
+    return (
+      site.website_url?.toLowerCase().includes(searchLower) ||
+      site.publication?.toLowerCase().includes(searchLower) ||
+      site.niche?.toLowerCase().includes(searchLower) ||
+      site.language?.toLowerCase().includes(searchLower) ||
+      site.country?.toLowerCase().includes(searchLower)
+    );
+  });
 
   return (
     <div className="w-full px-4 md:px-8 py-6">
@@ -160,283 +244,219 @@ export default function PackagesWithAllFilters({ plans = [] }) {
       <div className="bg-white shadow rounded-lg p-4 mb-6">
         {/* Filters container: mobile => horizontal scroll, md+ => wrap */}
         <div className="flex gap-2 overflow-x-auto md:overflow-visible md:flex-wrap py-2">
-          {/* Keep each control minimally wide so horizontal scroll looks tidy */}
-          <select
-            name="as"
-            value={filters.as}
-            onChange={handleChange}
-            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-          >
-            <option value="">AS</option>
-            <option value="<10">&lt;10</option>
-            <option value="10-50">10 - 50</option>
-            <option value="50+">50+</option>
-          </select>
-
-          <select
-            name="da"
-            value={filters.da}
-            onChange={handleChange}
-            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">DA</option>
-            <option value="0-10">0 - 10</option>
-            <option value="11-30">11 - 30</option>
-            <option value="31-50">31 - 50</option>
-            <option value="51+">51+</option>
-          </select>
-
-          <select
-            name="dr"
-            value={filters.dr}
-            onChange={handleChange}
-            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">DR</option>
-            <option value="0-10">0 - 10</option>
-            <option value="11-30">11 - 30</option>
-            <option value="31-50">31 - 50</option>
-            <option value="51+">51+</option>
-          </select>
-
+          {/* Niche Filter - Dynamic */}
           <select
             name="niche"
             value={filters.niche}
             onChange={handleChange}
-            className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
+            className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
-            <option value="">Niche</option>
-            <option value="tech">Technology</option>
-            <option value="health">Health</option>
-            <option value="finance">Finance</option>
-            <option value="ecommerce">Ecommerce</option>
+            <option value="">All Niches</option>
+            {filterOptions.niches.map((niche, index) => (
+              <option key={index} value={niche}>
+                {niche}
+              </option>
+            ))}
           </select>
 
+          {/* Language Filter - Dynamic */}
           <select
             name="language"
             value={filters.language}
             onChange={handleChange}
             className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
           >
-            <option value="">Language</option>
-            <option value="english">English</option>
-            <option value="spanish">Spanish</option>
-            <option value="multi">Multi</option>
+            <option value="">All Languages</option>
+            {filterOptions.languages.map((language, index) => (
+              <option key={index} value={language}>
+                {language}
+              </option>
+            ))}
           </select>
 
-          <select
-            name="ahrefTraffic"
-            value={filters.ahrefTraffic}
-            onChange={handleChange}
-            className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Ahref Traffic</option>
-            <option value="low">&lt;1k</option>
-            <option value="medium">1k - 10k</option>
-            <option value="high">&gt;10k</option>
-          </select>
-
-          <select
-            name="ahrefKeywords"
-            value={filters.ahrefKeywords}
-            onChange={handleChange}
-            className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Ahref Keywords</option>
-            <option value="<100">&lt;100</option>
-            <option value="100-500">100 - 500</option>
-            <option value="500+">500+</option>
-          </select>
-
-          <select
-            name="similarwebTraffic"
-            value={filters.similarwebTraffic}
-            onChange={handleChange}
-            className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Similarweb Traffic</option>
-            <option value="low">&lt;5k</option>
-            <option value="medium">5k - 50k</option>
-            <option value="high">&gt;50k</option>
-          </select>
-
-          <select
-            name="semrushTraffic"
-            value={filters.semrushTraffic}
-            onChange={handleChange}
-            className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Semrush Traffic</option>
-            <option value="low">&lt;5k</option>
-            <option value="medium">5k - 50k</option>
-            <option value="high">&gt;50k</option>
-          </select>
-
+          {/* Country Filter - Dynamic */}
           <select
             name="country"
             value={filters.country}
             onChange={handleChange}
             className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
           >
-            <option value="">Country</option>
-            <option value="us">United States</option>
-            <option value="uk">United Kingdom</option>
-            <option value="pk">Pakistan</option>
-            <option value="in">India</option>
-            <option value="ca">Canada</option>
+            <option value="">All Countries</option>
+            {filterOptions.countries.map((country, index) => (
+              <option key={index} value={country}>
+                {country}
+              </option>
+            ))}
           </select>
 
-          {/* boolean / allowed flags */}
+          {/* Link Type Filter - Dynamic */}
           <select
-            name="sportsAllowed"
-            value={filters.sportsAllowed}
+            name="link_type"
+            value={filters.link_type}
+            onChange={handleChange}
+            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
+          >
+            <option value="">All Link Types</option>
+            {filterOptions.linkTypes.map((type, index) => (
+              <option key={index} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+
+          {/* Sponsored Filter */}
+          <select
+            name="sponsored"
+            value={filters.sponsored}
+            onChange={handleChange}
+            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
+          >
+            <option value="">Sponsored?</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+
+          {/* Do Follow Filter */}
+          <select
+            name="do_follow"
+            value={filters.do_follow}
+            onChange={handleChange}
+            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
+          >
+            <option value="">Do Follow?</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+
+          {/* Sports Allowed Filter */}
+          <select
+            name="sports_allowed"
+            value={filters.sports_allowed}
             onChange={handleChange}
             className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
           >
-            <option value="">Sports/Gaming allowed?</option>
-            <option value="any">Any</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
+            <option value="">Sports Allowed?</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
           </select>
 
+          {/* Pharmacy Allowed Filter */}
           <select
-            name="pharmacyAllowed"
-            value={filters.pharmacyAllowed}
+            name="pharmacy_allowed"
+            value={filters.pharmacy_allowed}
             onChange={handleChange}
             className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
           >
-            <option value="">Pharmacy allowed?</option>
-            <option value="any">Any</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
+            <option value="">Pharmacy Allowed?</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
           </select>
 
+          {/* Crypto Allowed Filter */}
           <select
-            name="cryptoAllowed"
-            value={filters.cryptoAllowed}
+            name="crypto_allowed"
+            value={filters.crypto_allowed}
             onChange={handleChange}
             className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
           >
-            <option value="">Crypto allowed?</option>
-            <option value="any">Any</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
+            <option value="">Crypto Allowed?</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
           </select>
 
+          {/* Foreign Language Allowed Filter */}
           <select
-            name="backlinks"
-            value={filters.backlinks}
+            name="foreign_lang_allowed"
+            value={filters.foreign_lang_allowed}
             onChange={handleChange}
-            className="min-w-[150px] md:w-auto border rounded-md px-3 py-2 text-sm"
+            className="min-w-[180px] md:w-auto border rounded-md px-3 py-2 text-sm"
           >
-            <option value="">No. of backlinks</option>
-            <option value="<100">&lt;100</option>
-            <option value="100-500">100 - 500</option>
-            <option value="500-1000">500 - 1k</option>
-            <option value="1000+">1000+</option>
+            <option value="">Foreign Language Allowed?</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
           </select>
 
+          {/* Indexed Filter */}
           <select
-            name="linkType"
-            value={filters.linkType}
-            onChange={handleChange}
-            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Link Type</option>
-            <option value="dofollow">Dofollow</option>
-            <option value="nofollow">Nofollow</option>
-            <option value="sponsored">Sponsored</option>
-            <option value="ugc">UGC</option>
-            <option value="any">Any</option>
-          </select>
-
-          <select
-            name="linkValidity"
-            value={filters.linkValidity}
+            name="indexed"
+            value={filters.indexed}
             onChange={handleChange}
             className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
           >
-            <option value="">Link Validity</option>
-            <option value="live">Live</option>
-            <option value="broken">Broken</option>
-            <option value="any">Any</option>
+            <option value="">Indexed?</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
           </select>
 
-          <select
-            name="googleNews"
-            value={filters.googleNews}
-            onChange={handleChange}
-            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Google News</option>
-            <option value="any">Any</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
+          {/* DA Range Filter */}
+          <div className="flex gap-1 min-w-[200px]">
+            <input
+              type="number"
+              name="da_min"
+              value={filters.da_min}
+              onChange={handleChange}
+              placeholder="DA Min"
+              className="w-1/2 border rounded-md px-2 py-2 text-sm"
+              min="0"
+              max="100"
+            />
+            <input
+              type="number"
+              name="da_max"
+              value={filters.da_max}
+              onChange={handleChange}
+              placeholder="DA Max"
+              className="w-1/2 border rounded-md px-2 py-2 text-sm"
+              min="0"
+              max="100"
+            />
+          </div>
 
-          <select
-            name="markedSponsored"
-            value={filters.markedSponsored}
-            onChange={handleChange}
-            className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Marked as Sponsored</option>
-            <option value="any">Any</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
+          {/* DR Range Filter */}
+          <div className="flex gap-1 min-w-[200px]">
+            <input
+              type="number"
+              name="dr_min"
+              value={filters.dr_min}
+              onChange={handleChange}
+              placeholder="DR Min"
+              className="w-1/2 border rounded-md px-2 py-2 text-sm"
+              min="0"
+              max="100"
+            />
+            <input
+              type="number"
+              name="dr_max"
+              value={filters.dr_max}
+              onChange={handleChange}
+              placeholder="DR Max"
+              className="w-1/2 border rounded-md px-2 py-2 text-sm"
+              min="0"
+              max="100"
+            />
+          </div>
 
-          <select
-            name="foreignLangAllowed"
-            value={filters.foreignLangAllowed}
-            onChange={handleChange}
-            className="min-w-[160px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Foreign lang. allowed?</option>
-            <option value="any">Any</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-
-          <select
-            name="tld"
-            value={filters.tld}
-            onChange={handleChange}
-            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">TLD</option>
-            <option value=".com">.com</option>
-            <option value=".net">.net</option>
-            <option value=".org">.org</option>
-            <option value=".co.uk">.co.uk</option>
-            <option value="other">Other</option>
-          </select>
-
-          <select
-            name="priceRange"
-            value={filters.priceRange}
-            onChange={handleChange}
-            className="min-w-[150px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Price range</option>
-            <option value="<50">&lt;$50</option>
-            <option value="50-150">$50 - $150</option>
-            <option value="150-500">$150 - $500</option>
-            <option value="500+">$500+</option>
-          </select>
-
-          <select
-            name="selectWeek"
-            value={filters.selectWeek}
-            onChange={handleChange}
-            className="min-w-[140px] md:w-auto border rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Select Week</option>
-            <option value="this-week">This Week</option>
-            <option value="1-week">Last 1 Week</option>
-            <option value="2-weeks">Last 2 Weeks</option>
-            <option value="4-weeks">Last 4 Weeks</option>
-          </select>
+          {/* Price Range Filter */}
+          <div className="flex gap-1 min-w-[220px]">
+            <input
+              type="number"
+              name="price_min"
+              value={filters.price_min}
+              onChange={handleChange}
+              placeholder="Min Price"
+              className="w-1/2 border rounded-md px-2 py-2 text-sm"
+              min="0"
+            />
+            <input
+              type="number"
+              name="price_max"
+              value={filters.price_max}
+              onChange={handleChange}
+              placeholder="Max Price"
+              className="w-1/2 border rounded-md px-2 py-2 text-sm"
+              min="0"
+            />
+          </div>
         </div>
 
         {/* Actions: search, bulk, perPage, sort */}
@@ -447,16 +467,14 @@ export default function PackagesWithAllFilters({ plans = [] }) {
                 name="searchText"
                 value={filters.searchText}
                 onChange={handleChange}
-                placeholder="Search by Website URL or Niche..."
+                placeholder="Search by Website URL, Publication, Niche..."
                 className="w-full border rounded-md px-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
               <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60" />
             </div>
 
             <button
-              onClick={() => {
-                applyFilters();
-              }}
+              onClick={applyFilters}
               className="bg-orange-500 text-white rounded-md text-sm px-4 py-2 font-semibold hover:bg-orange-600 transition whitespace-nowrap"
             >
               APPLY FILTERS
@@ -489,135 +507,167 @@ export default function PackagesWithAllFilters({ plans = [] }) {
               onChange={handleChange}
               className="border rounded-md px-3 py-2 text-sm"
             >
-              <option value="ahrefs">Sort by Ahrefs</option>
-              <option value="price">Sort by Price</option>
-              <option value="da">Sort by DA</option>
-              <option value="dr">Sort by DR</option>
+              <option value="da_desc">DA (High to Low)</option>
+              <option value="da_asc">DA (Low to High)</option>
+              <option value="dr_desc">DR (High to Low)</option>
+              <option value="dr_asc">DR (Low to High)</option>
+              <option value="price_asc">Price (Low to High)</option>
+              <option value="price_desc">Price (High to Low)</option>
             </select>
+          </div>
+        </div>
+      </div>
 
-            <button
-              onClick={() => {
-                // Example: Bulk search flow (open modal / navigate / send file)
-                console.log("Bulk search pressed");
-              }}
-              className="bg-blue-600 text-white rounded-md text-sm px-3 py-2 font-semibold hover:bg-blue-700 transition"
+      {/* PACKAGES GRID (your existing grid - optional) */}
+      {plans.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {plans.map((plan, idx) => (
+            <div
+              key={idx}
+              className={`rounded-lg border shadow-md flex flex-col justify-between relative ${plan.highlight ? "bg-blue-50 border-blue-400" : "bg-white border-orange-400"
+                }`}
             >
-              BULK SEARCH
-            </button>
-          </div>
-        </div>
-      </div>
+              {plan.highlight && (
+                <div className="absolute top-0 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-lg">
+                  Popular
+                </div>
+              )}
 
-      {/* PACKAGES GRID (your existing grid) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {plans.map((plan, idx) => (
-          <div
-            key={idx}
-            className={`rounded-lg border shadow-md flex flex-col justify-between relative ${plan.highlight ? "bg-blue-50 border-blue-400" : "bg-white border-orange-400"
-              }`}
-          >
-            {plan.highlight && (
-              <div className="absolute top-0 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-lg">
-                Popular
+              <div className="p-6 text-center">
+                <h3 className="text-xl font-bold">{plan.title}</h3>
+                <h2 className="text-3xl font-bold mt-2">{plan.price}</h2>
+                <p className="text-gray-600 text-sm mt-1">{plan.subtitle}</p>
               </div>
-            )}
 
-            <div className="p-6 text-center">
-              <h3 className="text-xl font-bold">{plan.title}</h3>
-              <h2 className="text-3xl font-bold mt-2">{plan.price}</h2>
-              <p className="text-gray-600 text-sm mt-1">{plan.subtitle}</p>
+              <ul className="px-6 pb-6 space-y-2 text-gray-700 text-sm flex-1">
+                {plan.features?.map((feature, i) => (
+                  <li key={i} className="flex items-start">
+                    <FaCheckCircle className="mt-1" />
+                    <span className="ml-2">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="p-6">
+                <Link
+                  href="#"
+                  className={`block w-full text-center py-2 rounded font-semibold hover:text-white border transition ${plan.highlight ? "text-blue-600 border-blue-600 hover:bg-blue-700" : "text-orange-400 border-orange-400 hover:bg-orange-400"
+                    }`}
+                >
+                  BUY NOW
+                </Link>
+              </div>
             </div>
+          ))}
+        </div>
+      )}
 
-            <ul className="px-6 pb-6 space-y-2 text-gray-700 text-sm flex-1">
-              {plan.features?.map((feature, i) => (
-                <li key={i} className="flex items-start">
-                  <FaCheckCircle className="mt-1" />
-                  <span className="ml-2">{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="p-6">
-              <Link
-                href="#"
-                className={`block w-full text-center py-2 rounded font-semibold hover:text-white border transition ${plan.highlight ? "text-blue-600 border-blue-600 hover:bg-blue-700" : "text-orange-400 border-orange-400 hover:bg-orange-400"
-                  }`}
-              >
-                BUY NOW
-              </Link>
-            </div>
-          </div>
-        ))}
-      </div>
-
-
-
-      {/* Publications Table */}
-      <section className="mb-16 overflow-x-auto">
-        <div className="overflow-x-auto bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-          <table className="overflow-x-auto min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-blue-500 to-purple-700 text-white">
-              <tr>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                  US Magazines
-                </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                  DA
-                </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                  Cost
-                </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                  TAT
-                </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                  Link Type
-                </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                  Sponsored
-                </th>
-                <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {publicationsData.map((pub, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    {pub.url.includes('http') ? (
-                      <span className="text-blue-600 hover:text-purple-700 hover:underline transition-colors">
-                        {pub.url}
-                      </span>
-                    ) : (
-                      <span className="font-bold text-purple-700">{pub.url}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{pub.da}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="https://worldwidebacklink.spp.io/dashboard" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-purple-700 hover:underline transition-colors">
-                      Contact Us!
-                    </a>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{pub.tat}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{pub.linkType}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{pub.sponsored}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    <Link href={"/guest-posting-package/da50"}className="uppercase w-full bg-gradient-to-r from-blue-400 to-purple-600 
-                hover:from-blue-500 hover:to-purple-700 px-8 py-3 rounded-full text-sm 
-                font-semibold text-white transition-all duration-300 shadow-lg 
-                hover:shadow-xl transform hover:-translate-y-1">
-                      Buy Now
-                    </Link>
-                  </td>
+      {/* Loading State */}
+      {isLoading ? (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p className="mt-2 text-gray-600">Loading guest posting sites...</p>
+        </div>
+      ) : (
+        /* Publications Table */
+        <section className="mb-16 overflow-x-auto">
+          <div className="overflow-x-auto bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gradient-to-r from-blue-500 to-purple-700 text-white">
+                <tr>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                    Website / Publication
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                    DA
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                    Cost
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                    TAT
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                    Link Type
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                    Sponsored
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                    Action
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex my-10 items-center justify-center">
-          <Link href="/signin" className="hidden md:inline-flex ml-6 hover:bg-transparent bg-[#163316] justify-center uppercase bg-gradient-to-r from-blue-400 to-purple-600 hover:from-blue-500 hover:to-purple-700 px-8 py-3 rounded-full text-sm font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-xl transform">VIEW ALL PUBLICATIONS</Link>
-        </div>
-      </section>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredSites.length > 0 ? (
+                  filteredSites.map((site, index) => (
+                    <tr key={site.id} className={index % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <span className="text-blue-600 hover:text-purple-700 hover:underline transition-colors">
+                          {site.publication}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {site.da || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        {site.price === 'Contact Us!' ? (
+                          <a 
+                            href="https://worldwidebacklink.spp.io/dashboard" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-blue-600 hover:text-purple-700 hover:underline transition-colors"
+                          >
+                            {site.price}
+                          </a>
+                        ) : (
+                          <span>{site.price}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {site.tat}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {site.link_type}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {site.sponsored}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <Link 
+                          href={`/sites/${site.slug}`}
+                          className="inline-block uppercase bg-gradient-to-r from-blue-400 to-purple-600 
+                            hover:from-blue-500 hover:to-purple-700 px-4 py-2 rounded-full text-xs 
+                            font-semibold text-white transition-all duration-300 shadow-lg 
+                            hover:shadow-xl transform hover:-translate-y-1"
+                        >
+                          Buy Now
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
+                      No guest posting sites found. Please try different filters.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* View All Publications Button */}
+          <div className="flex my-10 items-center justify-center">
+            <Link 
+              href="/signin" 
+              className="hidden md:inline-flex ml-6 hover:bg-transparent bg-[#163316] justify-center uppercase bg-gradient-to-r from-blue-400 to-purple-600 hover:from-blue-500 hover:to-purple-700 px-8 py-3 rounded-full text-sm font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-xl transform"
+            >
+              VIEW ALL PUBLICATIONS
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

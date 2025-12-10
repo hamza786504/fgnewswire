@@ -67,6 +67,7 @@ export default function EditGuestSite() {
 
     const res = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${slug}`, {
       headers: {
+        'Content-Type': "application/json",
         'Authorization': `Bearer ${token}`
       }
     });
@@ -332,11 +333,13 @@ export default function EditGuestSite() {
         formDataToSend.append(`images[${index}]`, img.file);
         formDataToSend.append(`images_alt[${index}]`, img.alt || `Image ${index + 1}`);
       });
+      formDataToSend.append(`_method`, "PUT");
 
       // For updating API (based on your documentation)
       const res = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${slug}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
+          "Content-Type": "application/json",
           'Authorization': `Bearer ${token}`
           // Note: No Content-Type header for FormData
         },
