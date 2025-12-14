@@ -635,7 +635,7 @@ export default function PackagesWithAllFilters({ plans = [] }) {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <Link 
-                          href={`/sites/${site.slug}`}
+                          href={`/guest-posting-package/${site.slug}`}
                           className="inline-block uppercase bg-gradient-to-r from-blue-400 to-purple-600 
                             hover:from-blue-500 hover:to-purple-700 px-4 py-2 rounded-full text-xs 
                             font-semibold text-white transition-all duration-300 shadow-lg 

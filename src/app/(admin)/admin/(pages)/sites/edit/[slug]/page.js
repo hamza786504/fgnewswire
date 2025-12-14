@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { FiArrowLeft, FiUpload, FiTrash2 } from "react-icons/fi";
+import { FiArrowLeft, FiUpload, FiTrash2, FiPlus } from "react-icons/fi";
 
 export default function EditGuestSite() {
   const params = useParams();
@@ -40,10 +40,11 @@ export default function EditGuestSite() {
       semrush_traffic: '',
       semrush_countries: ''
     },
+    // Updated services structure
     services: {
-      order_types: [''],
-      word_options: [''],
-      article_niches: ['']
+      order_types: [{ name: '', price: '' }],
+      article_niches: [{ name: '', price: '' }],
+      word_options: [{ name: '', price: '' }]
     }
   });
 
@@ -55,144 +56,188 @@ export default function EditGuestSite() {
   // Fetch site data
   useEffect(() => {
     const fetchSiteData = async () => {
-  try {
-    setIsLoading(true);
-    const token = localStorage.getItem('token');
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem('token');
 
-    if (!token) {
-      alert('Authentication required. Please login again.');
-      router.push('admin/signin');
-      return;
-    }
-
-    const res = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${slug}`, {
-      headers: {
-        'Content-Type': "application/json",
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    if (!res.ok) {
-      throw new Error(`Failed to fetch site data: ${res.status}`);
-    }
-
-    const site = await res.json(); // Direct response is the site object
-    console.log('API Response:', site); // Debug log
-
-    // No need for data.data?.[0] - use site directly
-    setSiteData(site);
-
-    // Parse metrics if it's a string
-    let metricsData = {};
-    if (site.metrics) {
-      if (typeof site.metrics === 'string') {
-        try {
-          metricsData = JSON.parse(site.metrics);
-        } catch (e) {
-          console.error('Error parsing metrics:', e);
+        if (!token) {
+          alert('Authentication required. Please login again.');
+          router.push('admin/signin');
+          return;
         }
-      } else {
-        metricsData = site.metrics;
-      }
-    }
 
-    // Parse services if it's a string
-    let servicesData = { order_types: [''], word_options: [''], article_niches: [''] };
-    if (site.services) {
-      if (typeof site.services === 'string') {
-        try {
-          servicesData = JSON.parse(site.services);
-        } catch (e) {
-          console.error('Error parsing services:', e);
+        const res = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${slug}`, {
+          headers: {
+            'Content-Type': "application/json",
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch site data: ${res.status}`);
         }
-      } else {
-        servicesData = site.services;
-      }
-    }
 
-    // Initialize form with existing data
-    setFormData({
-      website_url: site.website_url || '',
-      publication: site.publication || '',
-      niche: site.niche || '',
-      language: site.language || '',
-      country: site.country || '',
-      sports_allowed: site.sports_allowed || false,
-      sponsored: site.sponsored || false,
-      indexed: site.indexed || false,
-      do_follow: site.do_follow || false,
-      pharmacy_allowed: site.pharmacy_allowed || false,
-      crypto_allowed: site.crypto_allowed || false,
-      foreign_lang_allowed: site.foreign_lang_allowed || false,
-      link_type: site.link_type || '',
-      link_validity: site.link_validity || '',
-      price: site.price || '',
-      credit: site.credit || '',
-      p_rules: site.p_rules || '',
-      description: site.description || '',
-      metrics: {
-        da: metricsData.da || '',
-        dr: metricsData.dr || '',
-        ahrefs_traffic: metricsData.ahrefs_traffic || '',
-        ahrefs_keywords: metricsData.ahrefs_keywords || '',
-        semrush_traffic: metricsData.semrush_traffic || '',
-        semrush_countries: metricsData.semrush_countries || ''
-      },
-      services: servicesData
-    });
+        const site = await res.json();
+        console.log('API Response:', site);
+        setSiteData(site);
 
-    // Initialize images - FIX: Parse the images string
-    let imagesArray = [];
-    if (site.images) {
-      if (typeof site.images === 'string') {
-        try {
-          imagesArray = JSON.parse(site.images);
-        } catch (e) {
-          console.error('Error parsing images:', e);
+        // Parse metrics if it's a string
+        let metricsData = {};
+        if (site.metrics) {
+          if (typeof site.metrics === 'string') {
+            try {
+              metricsData = JSON.parse(site.metrics);
+            } catch (e) {
+              console.error('Error parsing metrics:', e);
+            }
+          } else {
+            metricsData = site.metrics;
+          }
         }
-      } else if (Array.isArray(site.images)) {
-        imagesArray = site.images;
+
+        // Parse services if it's a string - Updated for new structure
+        let servicesData = { 
+          order_types: [{ name: '', price: '' }], 
+          article_niches: [{ name: '', price: '' }], 
+          word_options: [{ name: '', price: '' }] 
+        };
+        
+        if (site.services) {
+          if (typeof site.services === 'string') {
+            try {
+              const parsed = JSON.parse(site.services);
+              // Ensure we have the new structure
+              servicesData = {
+                order_types: Array.isArray(parsed.order_types) 
+                  ? parsed.order_types.map(item => ({ 
+                      name: item.name || item.value || '', 
+                      price: item.price || '' 
+                    }))
+                  : [{ name: '', price: '' }],
+                article_niches: Array.isArray(parsed.article_niches)
+                  ? parsed.article_niches.map(item => ({ 
+                      name: item.name || item.value || '', 
+                      price: item.price || '' 
+                    }))
+                  : [{ name: '', price: '' }],
+                word_options: Array.isArray(parsed.word_options)
+                  ? parsed.word_options.map(item => ({ 
+                      name: item.name || item.value || '', 
+                      price: item.price || '' 
+                    }))
+                  : [{ name: '', price: '' }]
+              };
+            } catch (e) {
+              console.error('Error parsing services:', e);
+            }
+          } else {
+            // Already an object, ensure it has the new structure
+            servicesData = {
+              order_types: Array.isArray(site.services.order_types)
+                ? site.services.order_types.map(item => ({ 
+                    name: item.name || item.value || '', 
+                    price: item.price || '' 
+                  }))
+                : [{ name: '', price: '' }],
+              article_niches: Array.isArray(site.services.article_niches)
+                ? site.services.article_niches.map(item => ({ 
+                    name: item.name || item.value || '', 
+                    price: item.price || '' 
+                  }))
+                : [{ name: '', price: '' }],
+              word_options: Array.isArray(site.services.word_options)
+                ? site.services.word_options.map(item => ({ 
+                    name: item.name || item.value || '', 
+                    price: item.price || '' 
+                  }))
+                : [{ name: '', price: '' }]
+            };
+          }
+        }
+
+        // Initialize form with existing data
+        setFormData({
+          website_url: site.website_url || '',
+          publication: site.publication || '',
+          niche: site.niche || '',
+          language: site.language || '',
+          country: site.country || '',
+          sports_allowed: site.sports_allowed || false,
+          sponsored: site.sponsored || false,
+          indexed: site.indexed || false,
+          do_follow: site.do_follow || false,
+          pharmacy_allowed: site.pharmacy_allowed || false,
+          crypto_allowed: site.crypto_allowed || false,
+          foreign_lang_allowed: site.foreign_lang_allowed || false,
+          link_type: site.link_type || '',
+          link_validity: site.link_validity || '',
+          price: site.price || '',
+          credit: site.credit || '',
+          p_rules: site.p_rules || '',
+          description: site.description || '',
+          metrics: {
+            da: metricsData.da || '',
+            dr: metricsData.dr || '',
+            ahrefs_traffic: metricsData.ahrefs_traffic || '',
+            ahrefs_keywords: metricsData.ahrefs_keywords || '',
+            semrush_traffic: metricsData.semrush_traffic || '',
+            semrush_countries: metricsData.semrush_countries || ''
+          },
+          services: servicesData
+        });
+
+        // Initialize images
+        let imagesArray = [];
+        if (site.images) {
+          if (typeof site.images === 'string') {
+            try {
+              imagesArray = JSON.parse(site.images);
+            } catch (e) {
+              console.error('Error parsing images:', e);
+            }
+          } else if (Array.isArray(site.images)) {
+            imagesArray = site.images;
+          }
+        }
+
+        if (Array.isArray(imagesArray) && imagesArray.length > 0) {
+          setImages(imagesArray.map(img => ({
+            ...img,
+            preview: img.file ? `https://api.glassworld06.com/storage/${img.file}` : null,
+            isNew: false
+          })));
+        }
+
+        if (site.guidelines_pdf) {
+          setGuidelinesPdf({
+            name: 'Existing PDF',
+            url: `https://api.glassworld06.com/storage/${site.guidelines_pdf}`,
+            isNew: false
+          });
+        }
+
+        if (site.example_image) {
+          setExampleImage({
+            name: 'Existing Image',
+            url: `https://api.glassworld06.com/storage/${site.example_image}`,
+            isNew: false
+          });
+        }
+
+        if (site.image) {
+          setMainImage({
+            name: 'Main Image',
+            url: `https://api.glassworld06.com/storage/${site.image}`,
+            isNew: false
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching site:', error);
+        alert('Failed to load site data');
+      } finally {
+        setIsLoading(false);
       }
-    }
-    
-    if (Array.isArray(imagesArray) && imagesArray.length > 0) {
-      setImages(imagesArray.map(img => ({
-        ...img,
-        preview: img.file ? `https://api.glassworld06.com/storage/${img.file}` : null,
-        isNew: false
-      })));
-    }
-
-    if (site.guidelines_pdf) {
-      setGuidelinesPdf({
-        name: 'Existing PDF',
-        url: `https://api.glassworld06.com/storage/${site.guidelines_pdf}`,
-        isNew: false
-      });
-    }
-
-    if (site.example_image) {
-      setExampleImage({
-        name: 'Existing Image',
-        url: `https://api.glassworld06.com/storage/${site.example_image}`,
-        isNew: false
-      });
-    }
-
-    if (site.image) {
-      setMainImage({
-        name: 'Main Image',
-        url: `https://api.glassworld06.com/storage/${site.image}`,
-        isNew: false
-      });
-    }
-  } catch (error) {
-    console.error('Error fetching site:', error);
-    alert('Failed to load site data');
-  } finally {
-    setIsLoading(false);
-  }
-};
+    };
 
     if (slug) {
       fetchSiteData();
@@ -217,13 +262,22 @@ export default function EditGuestSite() {
     }));
   };
 
-  const handleServicesChange = (category, index, value) => {
+  // Updated services handlers for name and price
+  const handleServicesChange = (category, index, field, value) => {
     const updatedServices = { ...formData.services };
     if (!Array.isArray(updatedServices[category])) {
       updatedServices[category] = [];
     }
+    
     updatedServices[category] = [...updatedServices[category]];
-    updatedServices[category][index] = value;
+    if (!updatedServices[category][index]) {
+      updatedServices[category][index] = { name: '', price: '' };
+    }
+    
+    updatedServices[category][index] = {
+      ...updatedServices[category][index],
+      [field]: value
+    };
 
     setFormData(prev => ({
       ...prev,
@@ -236,7 +290,7 @@ export default function EditGuestSite() {
       ...prev,
       services: {
         ...prev.services,
-        [category]: [...(Array.isArray(prev.services[category]) ? prev.services[category] : []), '']
+        [category]: [...(Array.isArray(prev.services[category]) ? prev.services[category] : []), { name: '', price: '' }]
       }
     }));
   };
@@ -304,52 +358,104 @@ export default function EditGuestSite() {
       // Prepare form data for multipart upload
       const formDataToSend = new FormData();
 
-      // Add text fields
+      // Add text fields - convert booleans to proper strings
       Object.keys(formData).forEach(key => {
         if (key === 'metrics' || key === 'services') {
           // Stringify nested objects
           formDataToSend.append(key, JSON.stringify(formData[key]));
         } else if (key !== 'images') {
-          formDataToSend.append(key, formData[key]);
+          const value = formData[key];
+          
+          // Handle boolean fields specifically for Laravel
+          const booleanFields = [
+            'sports_allowed', 'sponsored', 'indexed', 'do_follow',
+            'pharmacy_allowed', 'crypto_allowed', 'foreign_lang_allowed'
+          ];
+          
+          if (booleanFields.includes(key)) {
+            // Convert boolean to string '1' for true, '0' for false
+            formDataToSend.append(key, value ? '1' : '0');
+          } else {
+            formDataToSend.append(key, value);
+          }
         }
       });
 
-      // Add files
-      if (mainImage?.isNew && mainImage?.file) {
-        formDataToSend.append('image', mainImage.file);
+      // Add files - handle both new and existing files
+      if (mainImage) {
+        if (mainImage.isNew && mainImage.file) {
+          // New file upload
+          formDataToSend.append('image', mainImage.file);
+        } else if (mainImage.url && !mainImage.isNew) {
+          // Existing file - send as string
+          const existingPath = mainImage.url.replace('https://api.glassworld06.com/storage/', '');
+          formDataToSend.append('image', existingPath);
+        }
       }
 
-      if (exampleImage?.isNew && exampleImage?.file) {
-        formDataToSend.append('example_image', exampleImage.file);
+      if (exampleImage) {
+        if (exampleImage.isNew && exampleImage.file) {
+          formDataToSend.append('example_image', exampleImage.file);
+        } else if (exampleImage.url && !exampleImage.isNew) {
+          const existingPath = exampleImage.url.replace('https://api.glassworld06.com/storage/', '');
+          formDataToSend.append('example_image', existingPath);
+        }
       }
 
-      if (guidelinesPdf?.isNew && guidelinesPdf?.file) {
-        formDataToSend.append('guidelines_pdf', guidelinesPdf.file);
+      if (guidelinesPdf) {
+        if (guidelinesPdf.isNew && guidelinesPdf.file) {
+          formDataToSend.append('guidelines_pdf', guidelinesPdf.file);
+        } else if (guidelinesPdf.url && !guidelinesPdf.isNew) {
+          const existingPath = guidelinesPdf.url.replace('https://api.glassworld06.com/storage/', '');
+          formDataToSend.append('guidelines_pdf', existingPath);
+        }
       }
 
-      // Add gallery images
+      // Handle gallery images
+      // First, collect existing images
+      const existingImages = images.filter(img => !img.isNew);
+      if (existingImages.length > 0) {
+        const existingImagesData = existingImages.map(img => ({
+          file: img.file ? img.file.replace('https://api.glassworld06.com/storage/', '') : img.file,
+          alt: img.alt || ''
+        }));
+        formDataToSend.append('existing_images', JSON.stringify(existingImagesData));
+      }
+
+      // Add new gallery images
       const newImages = images.filter(img => img.isNew && img.file);
       newImages.forEach((img, index) => {
         formDataToSend.append(`images[${index}]`, img.file);
         formDataToSend.append(`images_alt[${index}]`, img.alt || `Image ${index + 1}`);
       });
-      formDataToSend.append(`_method`, "PUT");
 
-      // For updating API (based on your documentation)
+      // Debug: Log FormData contents
+      console.log('FormData contents:');
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0] + ': ', typeof pair[1], ' - ', pair[1]);
+      }
+
+      // For updating API
       const res = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${slug}`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
           'Authorization': `Bearer ${token}`
-          // Note: No Content-Type header for FormData
         },
         body: formDataToSend
       });
 
       const responseData = await res.json();
+      console.log('Update response:', responseData);
 
       if (!res.ok) {
-        throw new Error(responseData.message || 'Failed to update site');
+        const errorMessage = responseData.error || responseData.message || 'Failed to update site';
+        if (responseData.errors) {
+          const validationErrors = Object.entries(responseData.errors)
+            .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
+            .join('\n');
+          throw new Error(`Validation failed:\n${validationErrors}`);
+        }
+        throw new Error(errorMessage);
       }
 
       alert('Site updated successfully!');
@@ -712,46 +818,167 @@ export default function EditGuestSite() {
               </div>
             </div>
 
-            {/* Services Section */}
+            {/* Services Section - UPDATED */}
             <div>
               <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
                 Services & Options
               </h2>
 
-              {['order_types', 'word_options', 'article_niches'].map((category) => (
-                <div key={category} className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                    {category.replace('_', ' ')}
-                  </label>
-
-                  {(Array.isArray(formData.services[category]) ? formData.services[category] : []).map((item, index) => (
-                    <div key={index} className="flex gap-2 mb-2">
-                      <input
-                        type="text"
-                        value={item}
-                        onChange={(e) => handleServicesChange(category, index, e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder={`Add ${category.replace('_', ' ')} option`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeServiceItem(category, index)}
-                        className="px-3 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200"
-                      >
-                        Remove
-                      </button>
+              {/* Order Types */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Order Types
+                </label>
+                <div className="space-y-3">
+                  {(Array.isArray(formData.services.order_types) ? formData.services.order_types : []).map((item, index) => (
+                    <div key={index} className="space-y-2 p-3 border border-gray-200 rounded-md">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <input
+                            type="text"
+                            value={item.name || ''}
+                            onChange={(e) => handleServicesChange('order_types', index, 'name', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Order type name"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="number"
+                            value={item.price || ''}
+                            onChange={(e) => handleServicesChange('order_types', index, 'price', e.target.value)}
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Price ($)"
+                          />
+                        </div>
+                      </div>
+                      {formData.services.order_types.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeServiceItem('order_types', index)}
+                          className="text-sm text-red-600 hover:text-red-800"
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
                   ))}
-
                   <button
                     type="button"
-                    onClick={() => addServiceItem(category)}
-                    className="mt-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+                    onClick={() => addServiceItem('order_types')}
+                    className="mt-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center"
                   >
-                    Add {category.replace('_', ' ')} option
+                    <FiPlus className="mr-2" />
+                    Add Order Type
                   </button>
                 </div>
-              ))}
+              </div>
+
+              {/* Article Niches */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Article Niches
+                </label>
+                <div className="space-y-3">
+                  {(Array.isArray(formData.services.article_niches) ? formData.services.article_niches : []).map((item, index) => (
+                    <div key={index} className="space-y-2 p-3 border border-gray-200 rounded-md">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <input
+                            type="text"
+                            value={item.name || ''}
+                            onChange={(e) => handleServicesChange('article_niches', index, 'name', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Niche name"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="number"
+                            value={item.price || ''}
+                            onChange={(e) => handleServicesChange('article_niches', index, 'price', e.target.value)}
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Price ($)"
+                          />
+                        </div>
+                      </div>
+                      {formData.services.article_niches.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeServiceItem('article_niches', index)}
+                          className="text-sm text-red-600 hover:text-red-800"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addServiceItem('article_niches')}
+                    className="mt-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center"
+                  >
+                    <FiPlus className="mr-2" />
+                    Add Article Niche
+                  </button>
+                </div>
+              </div>
+
+              {/* Word Options */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Word Options
+                </label>
+                <div className="space-y-3">
+                  {(Array.isArray(formData.services.word_options) ? formData.services.word_options : []).map((item, index) => (
+                    <div key={index} className="space-y-2 p-3 border border-gray-200 rounded-md">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <input
+                            type="text"
+                            value={item.name || ''}
+                            onChange={(e) => handleServicesChange('word_options', index, 'name', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Word option"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="number"
+                            value={item.price || ''}
+                            onChange={(e) => handleServicesChange('word_options', index, 'price', e.target.value)}
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Price ($)"
+                          />
+                        </div>
+                      </div>
+                      {formData.services.word_options.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeServiceItem('word_options', index)}
+                          className="text-sm text-red-600 hover:text-red-800"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addServiceItem('word_options')}
+                    className="mt-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center"
+                  >
+                    <FiPlus className="mr-2" />
+                    Add Word Option
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Content Section */}

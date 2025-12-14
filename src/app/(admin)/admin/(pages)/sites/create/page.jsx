@@ -5,7 +5,7 @@ import { BiCheck, BiUpload, BiPlus, BiTrash } from 'react-icons/bi';
 
 export default function CreateGuestPostingSite() {
   const router = useRouter();
-  
+
   // Initial form state matching API structure
   const [formData, setFormData] = useState({
     website_url: '',
@@ -38,10 +38,10 @@ export default function CreateGuestPostingSite() {
     semrush_countries: ''
   });
 
-  // Services as object with arrays
-  const [orderTypes, setOrderTypes] = useState([{ value: '' }]);
-  const [articleNiches, setArticleNiches] = useState([{ value: '' }]);
-  const [wordOptions, setWordOptions] = useState([{ value: '' }]);
+
+  const [orderTypes, setOrderTypes] = useState([{ name: '', price: '' }]);
+  const [articleNiches, setArticleNiches] = useState([{ name: '', price: '' }]);
+  const [wordOptions, setWordOptions] = useState([{ name: '', price: '' }]);
 
   // Files state
   const [mainImage, setMainImage] = useState(null);
@@ -54,17 +54,17 @@ export default function CreateGuestPostingSite() {
   const [submitStatus, setSubmitStatus] = useState({ success: null, message: '' });
 
   // Dynamic options for select fields
-  const niches = ['Technology', 'Health', 'Finance', 'Business', 'Marketing', 'Lifestyle', 
-                 'Education', 'Travel', 'Sports', 'Entertainment', 'General', 'Real Estate',
-                 'Beauty', 'Food', 'Gaming', 'Fashion', 'Automotive', 'Home Improvement'];
-  
-  const languages = ['English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 
-                    'Russian', 'Chinese', 'Japanese', 'Arabic', 'Hindi', 'Korean'];
-  
-  const countries = ['USA', 'UK', 'Canada', 'Australia', 'Germany', 'France', 'Spain', 
-                    'Italy', 'India', 'China', 'Japan', 'Brazil', 'Mexico', 'Netherlands',
-                    'Sweden', 'Norway', 'Denmark', 'Finland', 'Switzerland', 'Austria'];
-  
+  const niches = ['Technology', 'Health', 'Finance', 'Business', 'Marketing', 'Lifestyle',
+    'Education', 'Travel', 'Sports', 'Entertainment', 'General', 'Real Estate',
+    'Beauty', 'Food', 'Gaming', 'Fashion', 'Automotive', 'Home Improvement'];
+
+  const languages = ['English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese',
+    'Russian', 'Chinese', 'Japanese', 'Arabic', 'Hindi', 'Korean'];
+
+  const countries = ['USA', 'UK', 'Canada', 'Australia', 'Germany', 'France', 'Spain',
+    'Italy', 'India', 'China', 'Japan', 'Brazil', 'Mexico', 'Netherlands',
+    'Sweden', 'Norway', 'Denmark', 'Finland', 'Switzerland', 'Austria'];
+
   const linkTypes = ['Text', 'Image', 'Guest Post', 'Sponsored Post', 'Editorial', 'Review', 'Press Release'];
   const linkValidities = ['Permanent', 'Temporary', '30 Days', '60 Days', '90 Days', '6 Months', '1 Year'];
 
@@ -75,7 +75,7 @@ export default function CreateGuestPostingSite() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    
+
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -89,17 +89,15 @@ export default function CreateGuestPostingSite() {
     }));
   };
 
-  // Handle order types changes
-  const handleOrderTypeChange = (index, value) => {
+  // Order Types
+  const handleOrderTypeChange = (index, field, value) => {
     const updated = [...orderTypes];
-    updated[index] = { value };
+    updated[index] = { ...updated[index], [field]: value };
     setOrderTypes(updated);
   };
 
-  // Add new order type
-  const addOrderType = () => {
-    setOrderTypes([...orderTypes, { value: '' }]);
-  };
+
+
 
   // Remove order type
   const removeOrderType = (index) => {
@@ -109,16 +107,11 @@ export default function CreateGuestPostingSite() {
     }
   };
 
-  // Handle article niches changes
-  const handleArticleNicheChange = (index, value) => {
+  // Article Niches
+  const handleArticleNicheChange = (index, field, value) => {
     const updated = [...articleNiches];
-    updated[index] = { value };
+    updated[index] = { ...updated[index], [field]: value };
     setArticleNiches(updated);
-  };
-
-  // Add new article niche
-  const addArticleNiche = () => {
-    setArticleNiches([...articleNiches, { value: '' }]);
   };
 
   // Remove article niche
@@ -129,16 +122,26 @@ export default function CreateGuestPostingSite() {
     }
   };
 
-  // Handle word options changes
-  const handleWordOptionChange = (index, value) => {
+  // Word Options
+  const handleWordOptionChange = (index, field, value) => {
     const updated = [...wordOptions];
-    updated[index] = { value };
+    updated[index] = { ...updated[index], [field]: value };
     setWordOptions(updated);
+  };
+
+  // Add new order type
+  const addOrderType = () => {
+    setOrderTypes([...orderTypes, { name: '', price: '' }]);
+  };
+
+  // Add new article niche
+  const addArticleNiche = () => {
+    setArticleNiches([...articleNiches, { name: '', price: '' }]);
   };
 
   // Add new word option
   const addWordOption = () => {
-    setWordOptions([...wordOptions, { value: '' }]);
+    setWordOptions([...wordOptions, { name: '', price: '' }]);
   };
 
   // Remove word option
@@ -205,46 +208,55 @@ export default function CreateGuestPostingSite() {
   // Validate form
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.website_url.trim()) {
       newErrors.website_url = 'Website URL is required';
     } else if (!/^https?:\/\/.+/.test(formData.website_url)) {
       newErrors.website_url = 'Please enter a valid URL';
     }
-    
+
     if (!formData.niche.trim()) {
       newErrors.niche = 'Niche is required';
     }
-    
+
     if (!formData.price || isNaN(formData.price) || parseFloat(formData.price) < 0) {
       newErrors.price = 'Valid price is required';
     }
-    
+
     if (formData.credit && (formData.credit < 0 || formData.credit > 100)) {
       newErrors.credit = 'Credit must be between 0 and 100';
     }
-    
+
     // Validate order types
     orderTypes.forEach((item, index) => {
-      if (!item.value.trim()) {
-        newErrors[`order_type_${index}`] = 'Order type is required';
+      if (!item.name.trim()) {
+        newErrors[`order_type_name_${index}`] = 'Service name is required';
+      }
+      if (!item.price || isNaN(item.price) || parseFloat(item.price) < 0) {
+        newErrors[`order_type_price_${index}`] = 'Valid price is required';
       }
     });
-    
+
     // Validate article niches
     articleNiches.forEach((item, index) => {
-      if (!item.value.trim()) {
-        newErrors[`article_niche_${index}`] = 'Article niche is required';
+      if (!item.name.trim()) {
+        newErrors[`article_niche_name_${index}`] = 'Niche name is required';
+      }
+      if (!item.price || isNaN(item.price) || parseFloat(item.price) < 0) {
+        newErrors[`article_niche_price_${index}`] = 'Valid price is required';
       }
     });
-    
+
     // Validate word options
     wordOptions.forEach((item, index) => {
-      if (!item.value.trim()) {
-        newErrors[`word_option_${index}`] = 'Word option is required';
+      if (!item.name.trim()) {
+        newErrors[`word_option_name_${index}`] = 'Word option is required';
+      }
+      if (!item.price || isNaN(item.price) || parseFloat(item.price) < 0) {
+        newErrors[`word_option_price_${index}`] = 'Valid price is required';
       }
     });
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -252,37 +264,37 @@ export default function CreateGuestPostingSite() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
     setSubmitStatus({ success: null, message: '' });
-    
+
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('Authentication required. Please login again.');
       }
-      
+
       // Prepare FormData for multipart upload
       const formDataToSend = new FormData();
-      
+
       // Add form data - ensure boolean fields are actual booleans
       Object.keys(formData).forEach(key => {
         if (formData[key] !== null && formData[key] !== undefined) {
           // Convert boolean fields to actual booleans
-          if (['sponsored', 'indexed', 'do_follow', 'sports_allowed', 
-               'pharmacy_allowed', 'crypto_allowed', 'foreign_lang_allowed'].includes(key)) {
+          if (['sponsored', 'indexed', 'do_follow', 'sports_allowed',
+            'pharmacy_allowed', 'crypto_allowed', 'foreign_lang_allowed'].includes(key)) {
             formDataToSend.append(key, formData[key] ? '1' : '0');
           } else {
             formDataToSend.append(key, formData[key]);
           }
         }
       });
-      
+
       // Add metrics as JSON string (object format)
       const formattedMetrics = {};
       Object.keys(metrics).forEach(key => {
@@ -290,46 +302,55 @@ export default function CreateGuestPostingSite() {
           formattedMetrics[key] = parseInt(metrics[key]) || metrics[key];
         }
       });
-      
+
       if (Object.keys(formattedMetrics).length > 0) {
         formDataToSend.append('metrics', JSON.stringify(formattedMetrics));
       }
-      
-      // Format services as object with arrays
+
+      // Format services as object with arrays of objects
       const formattedServices = {
         order_types: orderTypes
-          .filter(item => item.value.trim())
-          .map(item => item.value.trim()),
+          .filter(item => item.name.trim() && item.price !== '')
+          .map(item => ({
+            name: item.name.trim(),
+            price: parseFloat(item.price) || 0
+          })),
         article_niches: articleNiches
-          .filter(item => item.value.trim())
-          .map(item => item.value.trim()),
+          .filter(item => item.name.trim() && item.price !== '')
+          .map(item => ({
+            name: item.name.trim(),
+            price: parseFloat(item.price) || 0
+          })),
         word_options: wordOptions
-          .filter(item => item.value.trim())
-          .map(item => item.value.trim())
+          .filter(item => item.name.trim() && item.price !== '')
+          .map(item => ({
+            name: item.name.trim(),
+            price: parseFloat(item.price) || 0
+          }))
       };
-      
+
       // Add services as JSON string
       formDataToSend.append('services', JSON.stringify(formattedServices));
-      
+
       // Add files
       if (mainImage) {
         formDataToSend.append('image', mainImage);
       } else {
         formDataToSend.append('image', 'placeholder.jpg');
       }
-      
+
       if (exampleImage) {
         formDataToSend.append('example_image', exampleImage);
       } else {
         formDataToSend.append('example_image', 'sample.jpg');
       }
-      
+
       if (guidelinesPdf) {
         formDataToSend.append('guidelines_pdf', guidelinesPdf);
       } else {
         formDataToSend.append('guidelines_pdf', 'guideline.pdf');
       }
-      
+
       // Add additional images
       additionalImages.forEach((image, index) => {
         if (image.file) {
@@ -339,13 +360,13 @@ export default function CreateGuestPostingSite() {
         }
         formDataToSend.append(`images[${index}][alt]`, image.alt || `Image ${index + 1}`);
       });
-      
+
       console.log('Sending form data:');
       for (let pair of formDataToSend.entries()) {
         console.log(pair[0], pair[1]);
       }
 
-      
+
       const response = await fetch('https://api.glassworld06.com/api/guest-posting-sites', {
         method: 'POST',
         headers: {
@@ -354,15 +375,15 @@ export default function CreateGuestPostingSite() {
         },
         body: formDataToSend
       });
-      
+
       const responseData = await response.json();
-      
+
       if (response.ok) {
-        setSubmitStatus({ 
-          success: true, 
-          message: 'Guest posting site created successfully!' 
+        setSubmitStatus({
+          success: true,
+          message: 'Guest posting site created successfully!'
         });
-        
+
         // Redirect after 2 seconds
         setTimeout(() => {
           router.push('/admin/sites');
@@ -372,8 +393,8 @@ export default function CreateGuestPostingSite() {
         if (responseData.errors) {
           const backendErrors = {};
           Object.keys(responseData.errors).forEach(key => {
-            backendErrors[key] = Array.isArray(responseData.errors[key]) 
-              ? responseData.errors[key][0] 
+            backendErrors[key] = Array.isArray(responseData.errors[key])
+              ? responseData.errors[key][0]
               : responseData.errors[key];
           });
           setErrors(backendErrors);
@@ -383,9 +404,9 @@ export default function CreateGuestPostingSite() {
       }
     } catch (error) {
       console.error('Error creating site:', error);
-      setSubmitStatus({ 
-        success: false, 
-        message: error.message || 'Error creating site. Please try again.' 
+      setSubmitStatus({
+        success: false,
+        message: error.message || 'Error creating site. Please try again.'
       });
     } finally {
       setIsSubmitting(false);
@@ -684,135 +705,207 @@ export default function CreateGuestPostingSite() {
               </div>
 
               {/* Services Section */}
-              <div className="border-b border-gray-200 pb-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Services Offered</h3>
-                
-                {/* Order Types */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Order Types *
-                  </label>
-                  <div className="space-y-3">
-                    {orderTypes.map((item, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <div className="flex-1">
-                          <input
-                            type="text"
-                            value={item.value}
-                            onChange={(e) => handleOrderTypeChange(index, e.target.value)}
-                            placeholder="e.g., Sponsored Post, Editorial"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors[`order_type_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
-                          />
-                          {errors[`order_type_${index}`] && (
-                            <p className="mt-1 text-sm text-red-600">{errors[`order_type_${index}`]}</p>
-                          )}
-                        </div>
-                        {orderTypes.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => removeOrderType(index)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <BiTrash className="h-5 w-5" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addOrderType}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                      <BiPlus className="h-5 w-5 mr-2" />
-                      Add Order Type
-                    </button>
-                  </div>
-                </div>
+<div className="border-b border-gray-200 pb-8">
+  <h3 className="text-lg font-semibold text-gray-800 mb-4">Services Offered</h3>
+  
+  {/* Order Types */}
+  <div className="mb-6">
+    <label className="block text-sm font-medium text-gray-700 mb-3">
+      Order Types *
+    </label>
+    <div className="space-y-3">
+      {orderTypes.map((item, index) => (
+        <div key={index} className="space-y-3 p-4 border border-gray-200 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Service Name *
+              </label>
+              <input
+                type="text"
+                value={item.name}
+                onChange={(e) => handleOrderTypeChange(index, 'name', e.target.value)}
+                placeholder="e.g., Sponsored Post, Editorial"
+                className={`w-full px-4 py-2 border rounded-lg ${errors[`order_type_name_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors[`order_type_name_${index}`] && (
+                <p className="mt-1 text-sm text-red-600">{errors[`order_type_name_${index}`]}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Price ($) *
+              </label>
+              <input
+                type="number"
+                value={item.price}
+                onChange={(e) => handleOrderTypeChange(index, 'price', e.target.value)}
+                placeholder="e.g., 30"
+                step="0.01"
+                min="0"
+                className={`w-full px-4 py-2 border rounded-lg ${errors[`order_type_price_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors[`order_type_price_${index}`] && (
+                <p className="mt-1 text-sm text-red-600">{errors[`order_type_price_${index}`]}</p>
+              )}
+            </div>
+          </div>
+          
+          {orderTypes.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeOrderType(index)}
+              className="text-red-600 hover:text-red-800 text-sm"
+            >
+              Remove Service
+            </button>
+          )}
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addOrderType}
+        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+      >
+        <BiPlus className="h-5 w-5 mr-2" />
+        Add Order Type
+      </button>
+    </div>
+  </div>
 
-                {/* Article Niches */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Article Niches *
-                  </label>
-                  <div className="space-y-3">
-                    {articleNiches.map((item, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <div className="flex-1">
-                          <input
-                            type="text"
-                            value={item.value}
-                            onChange={(e) => handleArticleNicheChange(index, e.target.value)}
-                            placeholder="e.g., Tech, Business"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors[`article_niche_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
-                          />
-                          {errors[`article_niche_${index}`] && (
-                            <p className="mt-1 text-sm text-red-600">{errors[`article_niche_${index}`]}</p>
-                          )}
-                        </div>
-                        {articleNiches.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => removeArticleNiche(index)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <BiTrash className="h-5 w-5" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addArticleNiche}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                      <BiPlus className="h-5 w-5 mr-2" />
-                      Add Article Niche
-                    </button>
-                  </div>
-                </div>
+  {/* Article Niches */}
+  <div className="mb-6">
+    <label className="block text-sm font-medium text-gray-700 mb-3">
+      Article Niches *
+    </label>
+    <div className="space-y-3">
+      {articleNiches.map((item, index) => (
+        <div key={index} className="space-y-3 p-4 border border-gray-200 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Niche Name *
+              </label>
+              <input
+                type="text"
+                value={item.name}
+                onChange={(e) => handleArticleNicheChange(index, 'name', e.target.value)}
+                placeholder="e.g., Tech, Business"
+                className={`w-full px-4 py-2 border rounded-lg ${errors[`article_niche_name_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors[`article_niche_name_${index}`] && (
+                <p className="mt-1 text-sm text-red-600">{errors[`article_niche_name_${index}`]}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Price ($) *
+              </label>
+              <input
+                type="number"
+                value={item.price}
+                onChange={(e) => handleArticleNicheChange(index, 'price', e.target.value)}
+                placeholder="e.g., 10"
+                step="0.01"
+                min="0"
+                className={`w-full px-4 py-2 border rounded-lg ${errors[`article_niche_price_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors[`article_niche_price_${index}`] && (
+                <p className="mt-1 text-sm text-red-600">{errors[`article_niche_price_${index}`]}</p>
+              )}
+            </div>
+          </div>
+          
+          {articleNiches.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeArticleNiche(index)}
+              className="text-red-600 hover:text-red-800 text-sm"
+            >
+              Remove Niche
+            </button>
+          )}
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addArticleNiche}
+        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+      >
+        <BiPlus className="h-5 w-5 mr-2" />
+        Add Article Niche
+      </button>
+    </div>
+  </div>
 
-                {/* Word Options */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Word Options *
-                  </label>
-                  <div className="space-y-3">
-                    {wordOptions.map((item, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <div className="flex-1">
-                          <input
-                            type="text"
-                            value={item.value}
-                            onChange={(e) => handleWordOptionChange(index, e.target.value)}
-                            placeholder="e.g., 500 words, 1000 words, 1500 words"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors[`word_option_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
-                          />
-                          {errors[`word_option_${index}`] && (
-                            <p className="mt-1 text-sm text-red-600">{errors[`word_option_${index}`]}</p>
-                          )}
-                        </div>
-                        {wordOptions.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => removeWordOption(index)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <BiTrash className="h-5 w-5" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addWordOption}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                      <BiPlus className="h-5 w-5 mr-2" />
-                      Add Word Option
-                    </button>
-                  </div>
-                </div>
-              </div>
+  {/* Word Options */}
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-3">
+      Word Options *
+    </label>
+    <div className="space-y-3">
+      {wordOptions.map((item, index) => (
+        <div key={index} className="space-y-3 p-4 border border-gray-200 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Word Option *
+              </label>
+              <input
+                type="text"
+                value={item.name}
+                onChange={(e) => handleWordOptionChange(index, 'name', e.target.value)}
+                placeholder="e.g., 500 words"
+                className={`w-full px-4 py-2 border rounded-lg ${errors[`word_option_name_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors[`word_option_name_${index}`] && (
+                <p className="mt-1 text-sm text-red-600">{errors[`word_option_name_${index}`]}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Price ($) *
+              </label>
+              <input
+                type="number"
+                value={item.price}
+                onChange={(e) => handleWordOptionChange(index, 'price', e.target.value)}
+                placeholder="e.g., 20"
+                step="0.01"
+                min="0"
+                className={`w-full px-4 py-2 border rounded-lg ${errors[`word_option_price_${index}`] ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors[`word_option_price_${index}`] && (
+                <p className="mt-1 text-sm text-red-600">{errors[`word_option_price_${index}`]}</p>
+              )}
+            </div>
+          </div>
+          
+          {wordOptions.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeWordOption(index)}
+              className="text-red-600 hover:text-red-800 text-sm"
+            >
+              Remove Option
+            </button>
+          )}
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addWordOption}
+        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+      >
+        <BiPlus className="h-5 w-5 mr-2" />
+        Add Word Option
+      </button>
+    </div>
+  </div>
+</div>
 
               {/* Content Settings */}
               <div className="border-b border-gray-200 pb-8">
@@ -936,7 +1029,7 @@ export default function CreateGuestPostingSite() {
               {/* File Uploads */}
               <div className="border-b border-gray-200 pb-8">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">File Uploads</h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Main Image */}
                   <div>

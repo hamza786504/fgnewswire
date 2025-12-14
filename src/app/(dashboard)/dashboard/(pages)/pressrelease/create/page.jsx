@@ -22,51 +22,95 @@ export default function PressReleaseCreate() {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch companies, PR types, and categories on component mount
+  // Static data for categories and PR types
+  const staticCategories = [
+    { id: 1, name: "Technology" },
+    { id: 2, name: "Business" },
+    { id: 3, name: "Health & Wellness" },
+    { id: 4, name: "Education" },
+    { id: 5, name: "Finance" },
+    { id: 6, name: "Entertainment" },
+    { id: 7, name: "Sports" },
+    { id: 8, name: "Lifestyle" },
+    { id: 9, name: "Science" },
+    { id: 10, name: "Travel" }
+  ];
+
+  const staticPrTypes = [
+    { id: 1, name: "Standard Press Release", credit_cost: 10 },
+    { id: 2, name: "Premium Press Release", credit_cost: 25 },
+    { id: 3, name: "Corporate Announcement", credit_cost: 15 },
+    { id: 4, name: "Product Launch", credit_cost: 30 },
+    { id: 5, name: "Event Announcement", credit_cost: 20 },
+    { id: 6, name: "Crisis Communication", credit_cost: 40 },
+    { id: 7, name: "Financial Results", credit_cost: 35 },
+    { id: 8, name: "Award Announcement", credit_cost: 15 },
+    { id: 9, name: "Partnership News", credit_cost: 25 },
+    { id: 10, name: "Charity/CSR", credit_cost: 10 }
+  ];
+
+  // Fetch companies on component mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCompanies = async () => {
       try {
         const token = localStorage.getItem("token");
-        
-        // Fetch companies
+        if (!token) {
+          setSubmitStatus({ 
+            success: false, 
+            message: "Authentication token not found. Please log in again." 
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch companies only
         const companiesRes = await fetch("https://api.glassworld06.com/api/companies", {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         });
+        
+        if (!companiesRes.ok) {
+          console.error("Companies API error:", companiesRes.status);
+          throw new Error(`Failed to fetch companies: ${companiesRes.status}`);
+        }
+        
         const companiesData = await companiesRes.json();
-        setCompanies(companiesData.data || companiesData || []);
-
-        // Fetch PR types
-        const prTypesRes = await fetch("https://api.glassworld06.com/api/pr-types", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const prTypesData = await prTypesRes.json();
-        setPrTypes(prTypesData.data || prTypesData || []);
-
-        // Fetch categories
-        const categoriesRes = await fetch("https://api.glassworld06.com/api/categories", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const categoriesData = await categoriesRes.json();
-        setCategories(categoriesData.data || categoriesData || []);
+        console.log("Companies data:", companiesData);
+        
+        // Set static categories and PR types
+        setCategories(staticCategories);
+        setPrTypes(staticPrTypes);
+        
+        // Handle companies response
+        if (companiesData.data) {
+          setCompanies(companiesData.data);
+        } else if (Array.isArray(companiesData)) {
+          setCompanies(companiesData);
+        } else if (companiesData.status === "success" && companiesData.data) {
+          setCompanies(companiesData.data);
+        } else {
+          console.warn("Unexpected companies response structure:", companiesData);
+          setCompanies([]);
+        }
 
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching companies:", error);
+        // Still set static categories and PR types even if companies fail
+        setCategories(staticCategories);
+        setPrTypes(staticPrTypes);
+        
         setSubmitStatus({ 
           success: false, 
-          message: "Failed to load form data. Please refresh the page." 
+          message: "Failed to load companies, but you can still use static categories and PR types." 
         });
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchCompanies();
   }, []);
 
   // Handle text field change
@@ -115,7 +159,13 @@ export default function PressReleaseCreate() {
     // If setting to published and no published_at date, set to current date
     if (status === "published" && !formData.published_at) {
       const now = new Date();
-      updatedFormData.published_at = now.toISOString().slice(0, 16); // Format for datetime-local
+      // Format to YYYY-MM-DDThh:mm for datetime-local input
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      updatedFormData.published_at = `${year}-${month}-${day}T${hours}:${minutes}`;
     }
     
     setFormData(updatedFormData);
@@ -165,7 +215,9 @@ export default function PressReleaseCreate() {
       formDataToSend.append("status", formData.status);
       
       if (formData.published_at) {
-        formDataToSend.append("published_at", formData.published_at);
+        // Convert to ISO format for backend
+        const publishedDate = new Date(formData.published_at);
+        formDataToSend.append("published_at", publishedDate.toISOString());
       }
       
       if (formData.category_id) {
@@ -176,7 +228,8 @@ export default function PressReleaseCreate() {
         formDataToSend.append("featured_image", formData.featured_image);
       }
 
-      // Log FormData for debugging (remove in production)
+      // Log FormData for debugging
+      console.log("Form data being sent:");
       for (let pair of formDataToSend.entries()) {
         console.log(pair[0], pair[1]);
       }
@@ -185,12 +238,12 @@ export default function PressReleaseCreate() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          // Don't set Content-Type header for FormData - browser will set it automatically with boundary
         },
         body: formDataToSend,
       });
 
       const responseData = await response.json();
+      console.log("Response data:", responseData);
       
       if (!response.ok) {
         // Handle validation errors from backend
@@ -212,7 +265,7 @@ export default function PressReleaseCreate() {
 
       setSubmitStatus({ 
         success: true, 
-        message: `Press Release created successfully! Remaining credits: ${responseData.remaining_credits}` 
+        message: `Press Release created successfully! ${responseData.remaining_credits ? `Remaining credits: ${responseData.remaining_credits}` : ''}` 
       });
 
       // Reset form on success
@@ -243,6 +296,18 @@ export default function PressReleaseCreate() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl p-8 text-center">
+          <div className="flex justify-center items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+          <p className="mt-4 text-gray-600">Loading form data...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
@@ -288,13 +353,20 @@ export default function PressReleaseCreate() {
                 } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
               >
                 <option value="">Select Company</option>
-                {companies.map(company => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
-                  </option>
-                ))}
+                {companies.length > 0 ? (
+                  companies.map(company => (
+                    <option key={company.id} value={company.id}>
+                      {company.name || `Company ${company.id}`}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>No companies found. Please create a company first.</option>
+                )}
               </select>
               {errors.company_id && <p className="text-red-600 text-sm mt-1">{errors.company_id}</p>}
+              <p className="text-xs text-gray-500 mt-1">
+                {companies.length === 0 && "You need to create a company first before creating a press release."}
+              </p>
             </div>
 
             <div>
@@ -308,11 +380,15 @@ export default function PressReleaseCreate() {
                 } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
               >
                 <option value="">Select PR Type</option>
-                {prTypes.map(type => (
-                  <option key={type.id} value={type.id}>
-                    {type.name} ({type.credits_required} credits)
-                  </option>
-                ))}
+                {prTypes.length > 0 ? (
+                  prTypes.map(type => (
+                    <option key={type.id} value={type.id}>
+                      {type.name} ({type.credit_cost} credits)
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>No PR types available</option>
+                )}
               </select>
               {errors.pr_type_id && <p className="text-red-600 text-sm mt-1">{errors.pr_type_id}</p>}
             </div>
@@ -361,12 +437,18 @@ export default function PressReleaseCreate() {
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
               >
                 <option value="">Select Category (Optional)</option>
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
+                {categories.length > 0 ? (
+                  categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>No categories available</option>
+                )}
               </select>
+              <p className="text-xs text-gray-500 mt-1">Optional: Select a category for your press release</p>
+              <p className="text-xs text-blue-500 mt-1">Note: Categories are currently displayed statically for demonstration.</p>
             </div>
 
             <div>
@@ -434,6 +516,17 @@ export default function PressReleaseCreate() {
             )}
           </div>
 
+          {/* Demo Note */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <h3 className="text-sm font-medium text-blue-800 mb-2">Demo Information</h3>
+            <ul className="text-xs text-blue-700 space-y-1">
+              <li>• Categories and PR Types are displayed statically for demonstration</li>
+              <li>• In production, these will be fetched from the API</li>
+              <li>• Companies are fetched dynamically from the API</li>
+              <li>• All form data will be submitted to the backend API</li>
+            </ul>
+          </div>
+
           {/* Submit Button */}
           <div className="mt-6 flex justify-end space-x-3">
             <button
@@ -445,9 +538,9 @@ export default function PressReleaseCreate() {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || companies.length === 0}
               className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 text-sm font-medium ${
-                isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800"
+                isSubmitting || companies.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800"
               } transition-colors`}
             >
               {isSubmitting ? (
@@ -458,6 +551,8 @@ export default function PressReleaseCreate() {
                   </svg>
                   Creating...
                 </span>
+              ) : companies.length === 0 ? (
+                "Create Company First"
               ) : (
                 "Create Press Release"
               )}

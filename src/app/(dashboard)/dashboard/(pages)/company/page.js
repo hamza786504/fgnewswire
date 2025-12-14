@@ -2,15 +2,12 @@ import CompaniesTable from "./CompaniesTable";
 
 async function getCompanies() {
   try {
-    const res = await fetch("https://api.glassworld06.com/api/companies", {
-      cache: "no-store",
-    });
-
-    if (!res.ok) throw new Error("Failed to fetch companies");
-
-    const data = await res.json();
-    // API might return data in data property or directly as array
-    return data.data || data || [];
+    // You cannot use localStorage in server components
+    // Instead, you might need to pass the token from a parent component
+    // or handle this differently
+    
+    // For now, we'll return empty array and let client component fetch
+    return [];
   } catch (error) {
     console.error("SSR Fetch Error:", error);
     return [];
@@ -18,6 +15,7 @@ async function getCompanies() {
 }
 
 export default async function CompaniesPage() {
+  // Don't fetch on server since we need authentication
   const companies = await getCompanies();
 
   return <CompaniesTable initialCompanies={companies} />;

@@ -1,16 +1,10 @@
 "use client";
-
-import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 
-export default function GuestPostingSitePage() {
-  const params = useParams();
-  const slug = params.slug;
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [site, setSite] = useState(null);
-  const [error, setError] = useState(null);
+function GuestPostingSiteDetail({ site }) {
+  console.log(site);
+  
   const [showForm, setShowForm] = useState(false);
   const [reviews, setReviews] = useState([
     {
@@ -33,128 +27,7 @@ export default function GuestPostingSitePage() {
     },
   ]);
 
-
   const [newReview, setNewReview] = useState({ name: "", review: "", rating: 5 });
-
-  const parsedImages = site?.images ? JSON.parse(site.images) : [];
-
-
-  // Parse services from the site data
-  const parseServices = () => {
-    if (!site?.services) return { order_types: [], article_niches: [], word_options: [] };
-
-    try {
-      // If services is a string, parse it
-      if (typeof site.services === 'string') {
-        return JSON.parse(site.services);
-      }
-      // If it's already an object, return it
-      return site.services;
-    } catch (e) {
-      console.error('Error parsing services:', e);
-      return { order_types: [], article_niches: [], word_options: [] };
-    }
-  };
-
-  const services = parseServices();
-
-  // Add state for selected services
-  const [selectedServices, setSelectedServices] = useState({
-    order_type: null,
-    article_niche: null,
-    word_option: null
-  });
-
-  // Add state for total price
-  const [totalPrice, setTotalPrice] = useState(0);
-
-  // Calculate total price whenever selections change
-  useEffect(() => {
-    let calculatedTotal = parseFloat(site?.price || 0);
-
-    // Add selected order type price
-    if (selectedServices.order_type) {
-      const orderType = services.order_types?.find(ot => ot.name === selectedServices.order_type);
-      if (orderType?.price) {
-        calculatedTotal += parseFloat(orderType.price);
-      }
-    }
-
-    // Add selected article niche price
-    if (selectedServices.article_niche) {
-      const articleNiche = services.article_niches?.find(an => an.name === selectedServices.article_niche);
-      if (articleNiche?.price) {
-        calculatedTotal += parseFloat(articleNiche.price);
-      }
-    }
-
-    // Add selected word option price
-    if (selectedServices.word_option) {
-      const wordOption = services.word_options?.find(wo => wo.name === selectedServices.word_option);
-      if (wordOption?.price) {
-        calculatedTotal += parseFloat(wordOption.price);
-      }
-    }
-
-    setTotalPrice(calculatedTotal);
-  }, [selectedServices, site, services]);
-
-  // Handler for service changes
-  const handleServiceChange = (serviceType, value) => {
-    setSelectedServices(prev => ({
-      ...prev,
-      [serviceType]: value
-    }));
-  };
-
-  // Format price helper
-  const formatPrice = (price) => {
-    return parseFloat(price || 0).toFixed(2);
-  };
-
-  // Get checkout URL with selected services
-  const getCheckoutUrl = () => {
-    
-
-    return `/dashboard`;
-  };
-
-
-
-  // Fetch site data on component mount
-  useEffect(() => {
-    const fetchSiteData = async () => {
-      try {
-        setIsLoading(true);
-
-
-        const response = await fetch(`https://api.glassworld06.com/api/guest-posting-sites/${slug}`, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch site data: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setSite(data);
-
-        console.log(data);
-
-      } catch (err) {
-        console.error('Failed to fetch site:', err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchSiteData();
-    }
-  }, [slug]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -164,7 +37,9 @@ export default function GuestPostingSitePage() {
     setShowForm(false);
   };
 
-  const averageRating = reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length;
+  const averageRating =
+    reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length;
+
   const ratingCounts = [5, 4, 3, 2, 1].map(
     (star) => reviews.filter((r) => r.rating === star).length
   );
@@ -173,7 +48,8 @@ export default function GuestPostingSitePage() {
   const calculatePrice = () => {
     const basePrice = 150.90;
     const da = site?.metrics?.da || 0;
-
+    
+    // Adjust price based on DA
     if (da >= 80) return (basePrice * 2.5).toFixed(2);
     if (da >= 70) return (basePrice * 2).toFixed(2);
     if (da >= 60) return (basePrice * 1.5).toFixed(2);
@@ -181,72 +57,11 @@ export default function GuestPostingSitePage() {
     return (basePrice * 0.8).toFixed(2);
   };
 
-  // Get main image - WITH STORAGE PATH
-  const baseStorageUrl = "https://api.glassworld06.com/storage/";
-  const mainImage = parsedImages?.[0]?.file
-    ? `${baseStorageUrl}${parsedImages[0].file}`
-    : site?.image
-      ? `${baseStorageUrl}${site.image}`
-      : "https://guestpostlinks.net/wp-content/smush-webp/2021/06/DA50-Package-10-Guest-Posts-Included.png.webp";
+  // Get main image
+  const mainImage = site?.images?.[0]?.file || site?.image || "https://guestpostlinks.net/wp-content/smush-webp/2021/06/DA50-Package-10-Guest-Posts-Included.png.webp";
 
-  // Get additional images for gallery - WITH STORAGE PATH
-  const additionalImages = parsedImages?.slice(1)?.map(img => ({
-    ...img,
-    file: `${baseStorageUrl}${img.file}`  // Add storage path to each image
-  })) || [];
-
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="animate-pulse">
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="w-full lg:w-1/2">
-              <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-              <div className="grid grid-cols-4 gap-2 mt-4">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="aspect-square bg-gray-200 rounded-lg"></div>
-                ))}
-              </div>
-            </div>
-            <div className="w-full lg:w-1/2">
-              <div className="h-10 bg-gray-200 rounded w-3/4 mb-4"></div>
-              <div className="h-6 bg-gray-200 rounded w-1/2 mb-6"></div>
-              <div className="space-y-4">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (error || !site) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Site</h1>
-        <p className="text-gray-600">{error || 'Unable to load the guest posting site details.'}</p>
-        <div className="mt-6 space-x-4">
-          <Link
-            href="/login"
-            className="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Login
-          </Link>
-          <Link
-            href="/guest-posting-sites"
-            className="inline-block bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
-          >
-            Browse All Sites
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // Get additional images for gallery
+  const additionalImages = site?.images?.slice(1) || [];
 
   return (
     <>
@@ -262,7 +77,7 @@ export default function GuestPostingSitePage() {
                 <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
                   <img
                     src={mainImage}
-                    alt={parsedImages?.[0]?.alt || site?.publication || "Guest Posting Site"}
+                    alt={site?.images?.[0]?.alt || site?.publication || "Guest Posting Site"}
                     className="w-full h-full object-contain"
                     width={1080}
                     height={1080}
@@ -274,7 +89,7 @@ export default function GuestPostingSitePage() {
               {/* Image Gallery */}
               {additionalImages.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mt-4">
-                  {additionalImages?.map((img, index) => (
+                  {additionalImages.map((img, index) => (
                     <div key={index} className="aspect-square overflow-hidden rounded-lg bg-gray-100">
                       <img
                         src={img.file}
@@ -316,15 +131,15 @@ export default function GuestPostingSitePage() {
           <div className="w-full lg:w-1/2">
             {/* Product Title */}
             <h1 className="text-2xl md:text-3xl font-bold mb-4">
-              <span className='caplitalize'>Publish Guest Post on</span> {site.website_url} {site?.metrics?.da && `(DA${site.metrics.da}+)`}
+              {site?.publication || "Guest Posting Site"} {site?.metrics?.da && `(DA${site.metrics.da}+)`}
             </h1>
 
             {/* Website URL */}
             {site?.website_url && (
               <div className="mb-4">
-                <a
-                  href={site.website_url}
-                  target="_blank"
+                <a 
+                  href={site.website_url} 
+                  target="_blank" 
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 flex items-center"
                 >
@@ -370,21 +185,21 @@ export default function GuestPostingSitePage() {
                     <span>{feature}</span>
                   </li>
                 )) || (
-                    <>
-                      <li className="flex">
-                        <span className="mr-2">•</span>
-                        <span>High Quality Guest Post</span>
-                      </li>
-                      <li className="flex">
-                        <span className="mr-2">•</span>
-                        <span>Do-Follow Contextual Links</span>
-                      </li>
-                      <li className="flex">
-                        <span className="mr-2">•</span>
-                        <span>Real Traffic Website</span>
-                      </li>
-                    </>
-                  )}
+                  <>
+                    <li className="flex">
+                      <span className="mr-2">•</span>
+                      <span>High Quality Guest Post</span>
+                    </li>
+                    <li className="flex">
+                      <span className="mr-2">•</span>
+                      <span>Do-Follow Contextual Links</span>
+                    </li>
+                    <li className="flex">
+                      <span className="mr-2">•</span>
+                      <span>Real Traffic Website</span>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
 
@@ -404,8 +219,8 @@ export default function GuestPostingSitePage() {
                     <div className="text-2xl font-bold">{site?.metrics?.da || 'N/A'}</div>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full"
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full" 
                       style={{ width: `${Math.min((site?.metrics?.da || 0) * 2, 100)}%` }}
                     ></div>
                   </div>
@@ -423,8 +238,8 @@ export default function GuestPostingSitePage() {
                     <div className="text-2xl font-bold">{site?.metrics?.dr || 'N/A'}</div>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-600 h-2 rounded-full"
+                    <div 
+                      className="bg-green-600 h-2 rounded-full" 
                       style={{ width: `${Math.min((site?.metrics?.dr || 0) * 2, 100)}%` }}
                     ></div>
                   </div>
@@ -478,225 +293,93 @@ export default function GuestPostingSitePage() {
 
             {/* Order Form */}
             <form className="space-y-6">
-              {/* Order Type - DYNAMIC */}
+              {/* Order Type */}
               <div>
                 <label className="block font-medium mb-2">
                   Order Type <span className="text-orange-400">*</span>
                 </label>
                 <div className="space-y-2">
-                  {services.order_types?.length > 0 ? (
-                    services.order_types.map((option, index) => (
-                      <div key={index} className="flex items-center">
-                        <input
-                          type="radio"
-                          id={`order-type-${index}`}
-                          name="order-type"
-                          value={option.name}
-                          checked={selectedServices.order_type === option.name}
-                          onChange={(e) => handleServiceChange('order_type', e.target.value)}
-                          className="mr-2"
-                          required
-                        />
-                        <label htmlFor={`order-type-${index}`} className="text-sm">
-                          {option.name}
-                          {option.price && parseFloat(option.price) > 0 && (
-                            <span className="text-green-600 ml-1">(+${formatPrice(option.price)})</span>
-                          )}
-                        </label>
-                      </div>
-                    ))
-                  ) : (
-                    // Fallback to static options if no dynamic ones
-                    [
-                      "Article Publication (We will publish your article.)",
-                      "Article Writing + Publication (We will write and publish the article.)",
-                      "Link Insertion (Niche Edits) (1 Backlink,Subject to Approval)"
-                    ].map((option, index) => (
-                      <div key={index} className="flex items-center">
-                        <input
-                          type="radio"
-                          id={`order-type-${index}`}
-                          name="order-type"
-                          value={option}
-                          className="mr-2"
-                          defaultChecked={index === 0}
-                        />
-                        <label htmlFor={`order-type-${index}`} className="text-sm">
-                          {option}
-                        </label>
-                      </div>
-                    ))
-                  )}
+                  {(site?.services?.order_types || [
+                    "Article Publication (We will publish your article.)",
+                    "Article Writing + Publication (We will write and publish the article.)",
+                    "Link Insertion (Niche Edits) (1 Backlink,Subject to Approval)"
+                  ]).map((option, index) => (
+                    <div key={index} className="flex items-center">
+                      <input
+                        type="radio"
+                        id={`order-type-${index}`}
+                        name="order-type"
+                        value={option}
+                        className="mr-2"
+                        defaultChecked={index === 0}
+                      />
+                      <label htmlFor={`order-type-${index}`} className="text-sm">
+                        {option}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Article Niche - DYNAMIC */}
+              {/* Article Niche */}
               <div>
                 <label className="block font-medium mb-2">
                   Your Article Niche (Content Type) <span className="text-orange-400">*</span>
                 </label>
                 <div className="space-y-2">
-                  {services.article_niches?.length > 0 ? (
-                    services.article_niches.map((option, index) => (
-                      <div key={index} className="flex items-center">
-                        <input
-                          type="radio"
-                          id={`article-niche-${index}`}
-                          name="article-niche"
-                          value={option.name}
-                          checked={selectedServices.article_niche === option.name}
-                          onChange={(e) => handleServiceChange('article_niche', e.target.value)}
-                          className="mr-2"
-                          required
-                        />
-                        <label htmlFor={`article-niche-${index}`} className="text-sm">
-                          {option.name}
-                          {option.price && parseFloat(option.price) > 0 && (
-                            <span className="text-green-600 ml-1">(+${formatPrice(option.price)})</span>
-                          )}
-                        </label>
-                      </div>
-                    ))
-                  ) : (
-                    // Fallback to static niches if no dynamic ones
-                    (site?.niches?.map(niche => ({ label: niche, price: niche.includes('restricted') ? 150 : 0 })) || [
-                      { label: "General Niche", price: 0 },
-                      { label: "Sports/iGaming, Crypto", price: 150 },
-                      { label: "Pharmacy, Restricted Beverages", price: 150 },
-                      { label: "Loan and Trading", price: 150 }
-                    ]).map((option, index) => (
-                      <div key={index} className="flex items-center">
-                        <input
-                          type="radio"
-                          id={`niche-${index}`}
-                          name="article-niche"
-                          value={option.label}
-                          className="mr-2"
-                          defaultChecked={index === 0}
-                        />
-                        <label htmlFor={`niche-${index}`} className="text-sm">
-                          {option.label}
-                          {option.price > 0 && (
-                            <span className="text-green-600 ml-1">(+${option.price}.00)</span>
-                          )}
-                        </label>
-                      </div>
-                    ))
-                  )}
+                  {(site?.niches?.map(niche => ({ label: niche, price: niche.includes('restricted') ? 150 : 0 })) || [
+                    { label: "General Niche", price: 0 },
+                    { label: "Sports/iGaming, Crypto", price: 150 },
+                    { label: "Pharmacy, Restricted Beverages", price: 150 },
+                    { label: "Loan and Trading", price: 150 }
+                  ]).map((option, index) => (
+                    <div key={index} className="flex items-center">
+                      <input
+                        type="radio"
+                        id={`niche-${index}`}
+                        name="article-niche"
+                        value={option.label}
+                        className="mr-2"
+                        defaultChecked={index === 0}
+                      />
+                      <label htmlFor={`niche-${index}`} className="text-sm">
+                        {option.label}
+                        {option.price > 0 && (
+                          <span className="text-green-600 ml-1">(+${option.price}.00)</span>
+                        )}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Writing Service - DYNAMIC (Word Options) */}
+              {/* Writing Service */}
               <div>
                 <label className="block font-medium mb-2">Article Writing Service</label>
                 <div className="space-y-2">
-                  {services.word_options?.length > 0 ? (
-                    <>
-                      {/* "None" option */}
-                      <div className="flex items-center">
-                        <input
-                          type="radio"
-                          id="word-option-none"
-                          name="writing-service"
-                          value=""
-                          checked={!selectedServices.word_option}
-                          onChange={(e) => handleServiceChange('word_option', '')}
-                          className="mr-2"
-                        />
-                        <label htmlFor="word-option-none" className="text-sm">
-                          None
-                        </label>
-                      </div>
-
-                      {/* Dynamic word options */}
-                      {services.word_options.map((option, index) => (
-                        <div key={index} className="flex items-center">
-                          <input
-                            type="radio"
-                            id={`writing-${index}`}
-                            name="writing-service"
-                            value={option.name}
-                            checked={selectedServices.word_option === option.name}
-                            onChange={(e) => handleServiceChange('word_option', e.target.value)}
-                            className="mr-2"
-                          />
-                          <label htmlFor={`writing-${index}`} className="text-sm">
-                            {option.name}
-                            {option.price && parseFloat(option.price) > 0 && (
-                              <span className="text-green-600 ml-1">(+${formatPrice(option.price)})</span>
-                            )}
-                          </label>
-                        </div>
-                      ))}
-                    </>
-                  ) : (
-                    // Fallback to static options
-                    [
-                      { label: "None", price: 0 },
-                      { label: "600+ Words Article", price: 100 },
-                      { label: "1000+ Words Article", price: 150 },
-                      { label: "1500+ Words Article", price: 200 }
-                    ].map((option, index) => (
-                      <div key={index} className="flex items-center">
-                        <input
-                          type="radio"
-                          id={`writing-${index}`}
-                          name="writing-service"
-                          value={option.label}
-                          className="mr-2"
-                          defaultChecked={index === 0}
-                        />
-                        <label htmlFor={`writing-${index}`} className="text-sm">
-                          {option.label}
-                          {option.price > 0 && (
-                            <span className="text-green-600 ml-1">(+${option.price}.00)</span>
-                          )}
-                        </label>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {/* Price Summary - ADD THIS SECTION */}
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-gray-700">Base Price:</span>
-                  <span className="font-bold">${formatPrice(site?.price || 0)}</span>
-                </div>
-
-                {selectedServices.order_type && (
-                  <div className="flex justify-between items-center text-sm text-gray-600 mb-1">
-                    <span>Order Type ({selectedServices.order_type}):</span>
-                    <span>+${formatPrice(
-                      services.order_types?.find(ot => ot.name === selectedServices.order_type)?.price || 0
-                    )}</span>
-                  </div>
-                )}
-
-                {selectedServices.article_niche && (
-                  <div className="flex justify-between items-center text-sm text-gray-600 mb-1">
-                    <span>Article Niche ({selectedServices.article_niche}):</span>
-                    <span>+${formatPrice(
-                      services.article_niches?.find(an => an.name === selectedServices.article_niche)?.price || 0
-                    )}</span>
-                  </div>
-                )}
-
-                {selectedServices.word_option && (
-                  <div className="flex justify-between items-center text-sm text-gray-600 mb-1">
-                    <span>Writing Service ({selectedServices.word_option}):</span>
-                    <span>+${formatPrice(
-                      services.word_options?.find(wo => wo.name === selectedServices.word_option)?.price || 0
-                    )}</span>
-                  </div>
-                )}
-
-                <div className="border-t border-blue-200 mt-2 pt-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-lg text-gray-800">Total:</span>
-                    <span className="font-bold text-2xl text-blue-600">${totalPrice.toFixed(2)}</span>
-                  </div>
+                  {[
+                    { label: "None", price: 0 },
+                    { label: "600+ Words Article", price: 100 },
+                    { label: "1000+ Words Article", price: 150 },
+                    { label: "1500+ Words Article", price: 200 }
+                  ].map((option, index) => (
+                    <div key={index} className="flex items-center">
+                      <input
+                        type="radio"
+                        id={`writing-${index}`}
+                        name="writing-service"
+                        value={option.label}
+                        className="mr-2"
+                        defaultChecked={index === 0}
+                      />
+                      <label htmlFor={`writing-${index}`} className="text-sm">
+                        {option.label}
+                        {option.price > 0 && (
+                          <span className="text-green-600 ml-1">(+${option.price}.00)</span>
+                        )}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -707,24 +390,17 @@ export default function GuestPostingSitePage() {
                 </p>
               </div>
 
-              {/* Add to Cart - UPDATED */}
+              {/* Add to Cart */}
               <Link
-                href={getCheckoutUrl()}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center transition-colors hover:opacity-90"
-                onClick={(e) => {
-                  // Validate required selections
-                  if (!selectedServices.order_type || !selectedServices.article_niche) {
-                    e.preventDefault();
-                    alert('Please select Order Type and Article Niche before proceeding to checkout.');
-                  }
-                }}
+                href={`/checkout?site=${encodeURIComponent(site?.publication || '')}&price=${calculatePrice()}`}
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-700 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center transition-colors"
               >
                 <svg width="24" height="24" viewBox="0 0 32 32" className="fill-current mr-2">
                   <path d="M25.248 22.4l3.552-14.4h-18.528l-0.96-4.8h-6.112v3.2h3.488l3.2 16h15.36zM24.704 11.2l-1.968 8h-10.24l-1.6-8h13.808z"></path>
                   <path d="M25.6 26.4c0 1.325-1.075 2.4-2.4 2.4s-2.4-1.075-2.4-2.4c0-1.325 1.075-2.4 2.4-2.4s2.4 1.075 2.4 2.4z"></path>
                   <path d="M14.4 26.4c0 1.325-1.075 2.4-2.4 2.4s-2.4-1.075-2.4-2.4c0-1.325 1.075-2.4 2.4-2.4s2.4 1.075 2.4 2.4z"></path>
                 </svg>
-                Add to cart - ${totalPrice.toFixed(2)}
+                Add to cart - ${calculatePrice()}
               </Link>
 
               {/* Money Back Guarantee */}
@@ -897,3 +573,5 @@ export default function GuestPostingSitePage() {
     </>
   );
 }
+
+export default GuestPostingSiteDetail;
