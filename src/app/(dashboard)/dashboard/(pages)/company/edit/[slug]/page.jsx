@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 
-export default function CompanyCreate() {
+import React, { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+
+export default function CompanyEdit() {
   const router = useRouter();
-  
+  const { slug } = useParams();
+
   const [formData, setFormData] = useState({
     name: "",
     contact_person_name: "",
@@ -15,76 +17,95 @@ export default function CompanyCreate() {
     country: "Pakistan",
     state: "",
     city: "",
-    website: ""
+    website: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState({ success: null, message: "" });
 
-  // Handle text field change
+  /* =========================
+     Fetch company by slug
+  ========================== */
+  useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Authentication required");
+
+        const res = await fetch(
+          `https://api.glassworld06.com/api/companies/${slug}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+        
+        console.log(data);
+        
+        
+
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to load company");
+        }
+
+        setFormData({
+          name: data.data.name || "",
+          contact_person_name: data.data.contact_person_name || "",
+          address_1: data.data.address_1 || "",
+          address_2: data.data.address_2 || "",
+          phone_number: data.data.phone_number || "",
+          email: data.data.email || "",
+          country: data.data.country || "Pakistan",
+          state: data.data.state || "",
+          city: data.data.city || "",
+          website: data.data.website || "",
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Unable to load company details");
+        router.push("/dashboard/company");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompany();
+  }, [slug, router]);
+
+  /* =========================
+     Handlers
+  ========================== */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    
-    // Clear error for this field when user starts typing
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     if (errors[name]) {
-      setErrors({ ...errors, [name]: "" });
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  };
-
-  // Validate email format
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Validate URL format
-  const isValidUrl = (url) => {
-    if (!url) return true; // Website is optional
-    try {
-      new URL(url);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  // Validate phone number (basic international format)
-  const isValidPhone = (phone) => {
-    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-    return phoneRegex.test(phone);
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
-    // Required fields validation
-    if (!formData.name.trim()) newErrors.name = "Company name is required.";
-    if (!formData.contact_person_name.trim()) newErrors.contact_person_name = "Contact person name is required.";
-    if (!formData.address_1.trim()) newErrors.address_1 = "Address line 1 is required.";
-    if (!formData.phone_number.trim()) newErrors.phone_number = "Phone number is required.";
-    if (!formData.email.trim()) newErrors.email = "Email is required.";
-    if (!formData.country.trim()) newErrors.country = "Country is required.";
-    if (!formData.city.trim()) newErrors.city = "City is required.";
-    
-    // Format validation
-    if (formData.email && !isValidEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email address.";
-    }
-    
-    if (formData.phone_number && !isValidPhone(formData.phone_number.replace(/\s+/g, ''))) {
-      newErrors.phone_number = "Please enter a valid phone number (e.g., +923001234567).";
-    }
-    
-    if (formData.website && !isValidUrl(formData.website)) {
-      newErrors.website = "Please enter a valid URL (e.g., https://www.example.com).";
-    }
-    
+    if (!formData.name.trim()) newErrors.name = "Company name is required";
+    if (!formData.contact_person_name.trim())
+      newErrors.contact_person_name = "Contact person is required";
+    if (!formData.address_1.trim()) newErrors.address_1 = "Address is required";
+    if (!formData.phone_number.trim()) newErrors.phone_number = "Phone is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    if (!formData.city.trim()) newErrors.city = "City is required";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  /* =========================
+     Update company
+  ========================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -94,96 +115,83 @@ export default function CompanyCreate() {
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authentication token not found. Please log in again.");
-      }
 
-      // Prepare data for submission
-      const submissionData = {
-        name: formData.name,
-        contact_person_name: formData.contact_person_name,
-        address_1: formData.address_1,
-        address_2: formData.address_2 || "",
-        phone_number: formData.phone_number,
-        email: formData.email,
-        country: formData.country,
-        state: formData.state,
-        city: formData.city,
-        website: formData.website || ""
-      };
+      const res = await fetch(
+        `https://api.glassworld06.com/api/companies/${slug}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-      // Log submission data for debugging
-      console.log("Submitting company data:", submissionData);
+      const data = await res.json();
 
-      const response = await fetch("https://api.glassworld06.com/api/companies", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submissionData),
-      });
-
-      const responseData = await response.json();
-      
-      if (!response.ok) {
-        // Handle validation errors from backend
-        if (response.status === 422 && responseData.errors) {
+      if (!res.ok) {
+        if (res.status === 422 && data.errors) {
           const backendErrors = {};
-          Object.keys(responseData.errors).forEach(key => {
-            backendErrors[key] = responseData.errors[key][0];
+          Object.keys(data.errors).forEach((key) => {
+            backendErrors[key] = data.errors[key][0];
           });
           setErrors(backendErrors);
-          throw new Error("Validation failed. Please check the form.");
+          throw new Error("Validation failed");
         }
-        
-        throw new Error(responseData.message || `Failed to create company. Status: ${response.status}`);
+        throw new Error(data.message || "Update failed");
       }
 
-      setSubmitStatus({ 
-        success: true, 
-        message: responseData.message || "Company created successfully!" 
+      setSubmitStatus({
+        success: true,
+        message: "Company updated successfully",
       });
 
-      // Redirect to companies list page after 1.5 seconds
       setTimeout(() => {
         router.push("/dashboard/company");
       }, 1500);
-
     } catch (err) {
-      console.error("Submission error:", err);
-      setSubmitStatus({ 
-        success: false, 
-        message: err.message || "Error creating company. Please try again." 
+      setSubmitStatus({
+        success: false,
+        message: err.message || "Update error",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="p-10 text-center text-gray-600">
+        Loading company details...
+      </div>
+    );
+  }
+
+  /* =========================
+     UI (same as create)
+  ========================== */
   return (
-    <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl p-4 md:p-6">
+    <main className="flex-1 bg-[#ebecf0] min-h-full p-4">
+      <div className="max-w-5xl mx-auto bg-white rounded-3xl p-6">
         {submitStatus.message && (
           <div
-            className={`mb-4 p-3 rounded-md ${
-              submitStatus.success 
-                ? "bg-green-100 text-green-800 border border-green-200" 
-                : "bg-red-100 text-red-800 border border-red-200"
+            className={`mb-4 p-3 rounded ${
+              submitStatus.success
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
             }`}
           >
             {submitStatus.message}
-            {submitStatus.success && (
-              <div className="text-sm mt-1 text-green-700">
-                Redirecting to companies list...
-              </div>
-            )}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <h2 className="text-lg font-semibold text-gray-900 mb-5">Create New Company</h2>
+          <h2 className="text-lg font-semibold mb-5">
+            Edit Company
+          </h2>
 
+          
           {/* Company Name */}
           <div className="mt-5">
             <label className="block text-sm font-medium text-gray-700">Company Name *</label>
@@ -364,17 +372,15 @@ export default function CompanyCreate() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Creating...
+                  Updating...
                 </span>
               ) : (
-                "Create Company"
+                "Update Company"
               )}
             </button>
           </div>
 
-          <div className="mt-4 text-xs text-gray-500">
-            * Required fields
-          </div>
+         
         </form>
       </div>
     </main>

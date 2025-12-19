@@ -273,7 +273,7 @@ export default function CompaniesTable({ initialCompanies }) {
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex gap-2">
                               <Link
-                                href={`/dashboard/company/edit/${company.id}`}
+                                href={`/dashboard/company/edit/${company.slug}`}
                                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
                               >
                                 Edit

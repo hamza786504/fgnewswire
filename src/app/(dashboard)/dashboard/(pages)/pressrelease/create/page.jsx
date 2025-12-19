@@ -55,9 +55,9 @@ export default function PressReleaseCreate() {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          setSubmitStatus({ 
-            success: false, 
-            message: "Authentication token not found. Please log in again." 
+          setSubmitStatus({
+            success: false,
+            message: "Authentication token not found. Please log in again."
           });
           setIsLoading(false);
           return;
@@ -70,19 +70,19 @@ export default function PressReleaseCreate() {
             "Content-Type": "application/json",
           },
         });
-        
+
         if (!companiesRes.ok) {
           console.error("Companies API error:", companiesRes.status);
           throw new Error(`Failed to fetch companies: ${companiesRes.status}`);
         }
-        
+
         const companiesData = await companiesRes.json();
         console.log("Companies data:", companiesData);
-        
+
         // Set static categories and PR types
         setCategories(staticCategories);
         setPrTypes(staticPrTypes);
-        
+
         // Handle companies response
         if (companiesData.data) {
           setCompanies(companiesData.data);
@@ -100,10 +100,10 @@ export default function PressReleaseCreate() {
         // Still set static categories and PR types even if companies fail
         setCategories(staticCategories);
         setPrTypes(staticPrTypes);
-        
-        setSubmitStatus({ 
-          success: false, 
-          message: "Failed to load companies, but you can still use static categories and PR types." 
+
+        setSubmitStatus({
+          success: false,
+          message: "Failed to load companies, but you can still use static categories and PR types."
         });
       } finally {
         setIsLoading(false);
@@ -117,7 +117,7 @@ export default function PressReleaseCreate() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
+
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors({ ...errors, [name]: "" });
@@ -131,61 +131,38 @@ export default function PressReleaseCreate() {
       // Validate file type
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        setErrors({ 
-          ...errors, 
-          featured_image: "Please upload a valid image (JPG, PNG, WebP)" 
+        setErrors({
+          ...errors,
+          featured_image: "Please upload a valid image (JPG, PNG, WebP)"
         });
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setErrors({ 
-          ...errors, 
-          featured_image: "Image size should be less than 5MB" 
+        setErrors({
+          ...errors,
+          featured_image: "Image size should be less than 5MB"
         });
         return;
       }
-      
+
       setFormData({ ...formData, featured_image: file });
       setErrors({ ...errors, featured_image: "" });
     }
   };
 
-  // Handle status change
-  const handleStatusChange = (status) => {
-    const updatedFormData = { ...formData, status };
-    
-    // If setting to published and no published_at date, set to current date
-    if (status === "published" && !formData.published_at) {
-      const now = new Date();
-      // Format to YYYY-MM-DDThh:mm for datetime-local input
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      updatedFormData.published_at = `${year}-${month}-${day}T${hours}:${minutes}`;
-    }
-    
-    setFormData(updatedFormData);
-  };
-
+  
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.title.trim()) newErrors.title = "Title is required.";
     if (!formData.excerpt.trim()) newErrors.excerpt = "Excerpt is required.";
     if (!formData.body.trim()) newErrors.body = "Content is required.";
     if (!formData.pr_type_id) newErrors.pr_type_id = "PR Type is required.";
     if (!formData.company_id) newErrors.company_id = "Company is required.";
-    if (!formData.status) newErrors.status = "Status is required.";
-    
-    // Validate published_at if status is published
-    if (formData.status === "published" && !formData.published_at) {
-      newErrors.published_at = "Published date is required for published status.";
-    }
-    
+
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -213,17 +190,17 @@ export default function PressReleaseCreate() {
       formDataToSend.append("pr_type_id", formData.pr_type_id);
       formDataToSend.append("company_id", formData.company_id);
       formDataToSend.append("status", formData.status);
-      
+
       if (formData.published_at) {
         // Convert to ISO format for backend
         const publishedDate = new Date(formData.published_at);
         formDataToSend.append("published_at", publishedDate.toISOString());
       }
-      
+
       if (formData.category_id) {
         formDataToSend.append("category_id", formData.category_id);
       }
-      
+
       if (formData.featured_image) {
         formDataToSend.append("featured_image", formData.featured_image);
       }
@@ -244,7 +221,7 @@ export default function PressReleaseCreate() {
 
       const responseData = await response.json();
       console.log("Response data:", responseData);
-      
+
       if (!response.ok) {
         // Handle validation errors from backend
         if (response.status === 422 && responseData.errors) {
@@ -255,17 +232,17 @@ export default function PressReleaseCreate() {
           setErrors(backendErrors);
           throw new Error("Validation failed. Please check the form.");
         }
-        
+
         if (response.status === 403) {
           throw new Error(responseData.message || "Insufficient credits to create press release.");
         }
-        
+
         throw new Error(responseData.message || `Failed to create press release. Status: ${response.status}`);
       }
 
-      setSubmitStatus({ 
-        success: true, 
-        message: `Press Release created successfully! ${responseData.remaining_credits ? `Remaining credits: ${responseData.remaining_credits}` : ''}` 
+      setSubmitStatus({
+        success: true,
+        message: `Press Release created successfully! ${responseData.remaining_credits ? `Remaining credits: ${responseData.remaining_credits}` : ''}`
       });
 
       // Reset form on success
@@ -280,16 +257,16 @@ export default function PressReleaseCreate() {
         published_at: "",
         category_id: ""
       });
-      
+
       // Clear file input
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = "";
 
     } catch (err) {
       console.error("Submission error:", err);
-      setSubmitStatus({ 
-        success: false, 
-        message: err.message || "Error creating press release. Please try again." 
+      setSubmitStatus({
+        success: false,
+        message: err.message || "Error adding press release. Please try again."
       });
     } finally {
       setIsSubmitting(false);
@@ -314,9 +291,8 @@ export default function PressReleaseCreate() {
       <div className="max-w-5xl mx-auto bg-white rounded-3xl p-4 md:p-6">
         {submitStatus.message && (
           <div
-            className={`mb-4 p-3 rounded-md ${
-              submitStatus.success ? "bg-green-100 text-green-800 border border-green-200" : "bg-red-100 text-red-800 border border-red-200"
-            }`}
+            className={`mb-4 p-3 rounded-md ${submitStatus.success ? "bg-green-100 text-green-800 border border-green-200" : "bg-red-100 text-red-800 border border-red-200"
+              }`}
           >
             {submitStatus.message}
           </div>
@@ -333,9 +309,8 @@ export default function PressReleaseCreate() {
               value={formData.title}
               onChange={handleChange}
               placeholder="Enter press release title"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${
-                errors.title ? "border-red-500" : "border-gray-300"
-              } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.title ? "border-red-500" : "border-gray-300"
+                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
             />
             {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
           </div>
@@ -348,9 +323,8 @@ export default function PressReleaseCreate() {
                 name="company_id"
                 value={formData.company_id}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${
-                  errors.company_id ? "border-red-500" : "border-gray-300"
-                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
+                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.company_id ? "border-red-500" : "border-gray-300"
+                  } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
               >
                 <option value="">Select Company</option>
                 {companies.length > 0 ? (
@@ -365,7 +339,7 @@ export default function PressReleaseCreate() {
               </select>
               {errors.company_id && <p className="text-red-600 text-sm mt-1">{errors.company_id}</p>}
               <p className="text-xs text-gray-500 mt-1">
-                {companies.length === 0 && "You need to create a company first before creating a press release."}
+                {companies.length === 0 && "You need to create a company first before adding a press release."}
               </p>
             </div>
 
@@ -375,9 +349,8 @@ export default function PressReleaseCreate() {
                 name="pr_type_id"
                 value={formData.pr_type_id}
                 onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${
-                  errors.pr_type_id ? "border-red-500" : "border-gray-300"
-                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
+                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.pr_type_id ? "border-red-500" : "border-gray-300"
+                  } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
               >
                 <option value="">Select PR Type</option>
                 {prTypes.length > 0 ? (
@@ -403,9 +376,8 @@ export default function PressReleaseCreate() {
               value={formData.excerpt}
               onChange={handleChange}
               placeholder="Short description or summary"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${
-                errors.excerpt ? "border-red-500" : "border-gray-300"
-              } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.excerpt ? "border-red-500" : "border-gray-300"
+                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
             ></textarea>
             {errors.excerpt && <p className="text-red-600 text-sm mt-1">{errors.excerpt}</p>}
           </div>
@@ -419,9 +391,8 @@ export default function PressReleaseCreate() {
               value={formData.body}
               onChange={handleChange}
               placeholder="Full press release content"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${
-                errors.body ? "border-red-500" : "border-gray-300"
-              } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.body ? "border-red-500" : "border-gray-300"
+                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
             ></textarea>
             {errors.body && <p className="text-red-600 text-sm mt-1">{errors.body}</p>}
           </div>
@@ -451,50 +422,10 @@ export default function PressReleaseCreate() {
               <p className="text-xs text-blue-500 mt-1">Note: Categories are currently displayed statically for demonstration.</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Status *</label>
-              <div className="mt-2 flex gap-4">
-                <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="status"
-                    checked={formData.status === "draft"}
-                    onChange={() => handleStatusChange("draft")}
-                    className="h-4 w-4 text-blue-600"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Draft</span>
-                </label>
-                <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="status"
-                    checked={formData.status === "published"}
-                    onChange={() => handleStatusChange("published")}
-                    className="h-4 w-4 text-blue-600"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">Published</span>
-                </label>
-              </div>
-              {errors.status && <p className="text-red-600 text-sm mt-1">{errors.status}</p>}
-            </div>
+           
           </div>
 
-          {/* Published Date (conditional) */}
-          {formData.status === "published" && (
-            <div className="mt-5">
-              <label className="block text-sm font-medium text-gray-700">Published Date *</label>
-              <input
-                type="datetime-local"
-                name="published_at"
-                value={formData.published_at}
-                onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${
-                  errors.published_at ? "border-red-500" : "border-gray-300"
-                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
-              />
-              {errors.published_at && <p className="text-red-600 text-sm mt-1">{errors.published_at}</p>}
-            </div>
-          )}
+         
 
           {/* Featured Image */}
           <div className="mt-5">
@@ -539,9 +470,8 @@ export default function PressReleaseCreate() {
             <button
               type="submit"
               disabled={isSubmitting || companies.length === 0}
-              className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 text-sm font-medium ${
-                isSubmitting || companies.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800"
-              } transition-colors`}
+              className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 text-sm font-medium ${isSubmitting || companies.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800"
+                } transition-colors`}
             >
               {isSubmitting ? (
                 <span className="flex items-center">
@@ -549,7 +479,7 @@ export default function PressReleaseCreate() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Creating...
+                  Adding...
                 </span>
               ) : companies.length === 0 ? (
                 "Create Company First"
@@ -560,7 +490,7 @@ export default function PressReleaseCreate() {
           </div>
 
           <div className="mt-4 text-xs text-gray-500">
-            * Required fields. Creating a press release will automatically deduct credits based on the selected PR type.
+            * Required fields. Adding a press release will automatically deduct credits based on the selected PR type.
           </div>
         </form>
       </div>

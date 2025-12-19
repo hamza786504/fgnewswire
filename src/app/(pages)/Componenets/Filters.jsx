@@ -45,10 +45,10 @@ export default function PackagesWithAllFilters({ plans = [] }) {
   const fetchSites = async (filterParams = {}) => {
     try {
       setIsLoading(true);
-      
+
       // Build query string from filters
       const queryParams = new URLSearchParams();
-      
+
       // Add all active filters
       Object.entries(filterParams).forEach(([key, value]) => {
         if (value !== "" && value !== null && value !== undefined) {
@@ -70,30 +70,30 @@ export default function PackagesWithAllFilters({ plans = [] }) {
       }
 
       const queryString = queryParams.toString();
-      const url = queryString 
+      const url = queryString
         ? `https://api.glassworld06.com/api/guest-posting-sites?${queryString}`
         : `https://api.glassworld06.com/api/guest-posting-sites`;
 
       console.log("Fetching from:", url);
-      
+
       const res = await fetch(url);
-      
+
       if (!res.ok) {
         throw new Error(`Failed to fetch sites: ${res.status}`);
       }
-      
+
       const data = await res.json();
-      
+
       // Transform API data to match your table structure
-      const transformedSites = Array.isArray(data) 
-        ? data.map(transformSiteData) 
+      const transformedSites = Array.isArray(data)
+        ? data.map(transformSiteData)
         : (Array.isArray(data.data) ? data.data.map(transformSiteData) : []);
-      
+
       setSites(transformedSites);
-      
+
       // Extract filter options from sites data
       extractFilterOptions(transformedSites);
-      
+
     } catch (error) {
       console.error('Error fetching sites:', error);
     } finally {
@@ -101,45 +101,57 @@ export default function PackagesWithAllFilters({ plans = [] }) {
     }
   };
 
-  // Transform site data for table display
-  const transformSiteData = (site) => {
-    // Parse metrics if it's a string
-    let metrics = {};
-    if (site.metrics && typeof site.metrics === 'string') {
-      try {
-        metrics = JSON.parse(site.metrics);
-      } catch (e) {
-        console.error('Error parsing metrics:', e);
+// Update the transformSiteData function
+const transformSiteData = (site) => {
+  // Parse metrics if it's a string
+  let metrics = {};
+  let traffic = 'N/A';
+  
+  if (site.metrics && typeof site.metrics === 'string') {
+    try {
+      metrics = JSON.parse(site.metrics);
+      // Get traffic from metrics
+      traffic = metrics.ahrefs_traffic || metrics.semrush_traffic || 'N/A';
+      if (traffic !== 'N/A' && typeof traffic === 'number') {
+        traffic = traffic.toLocaleString();
       }
-    } else if (site.metrics) {
-      metrics = site.metrics;
+    } catch (e) {
+      console.error('Error parsing metrics:', e);
     }
-    
-    return {
-      id: site.id,
-      website_url: site.website_url || "",
-      slug: site.slug || site.id,
-      publication: site.publication || site.website_url || "Unknown Publication",
-      da: metrics.da || 0,
-      dr: metrics.dr || 0,
-      price: site.price ? `$${site.price}` : "Contact Us!",
-      tat: "1-3 weeks", // Default, you can add this field to your API
-      link_type: site.link_type || "N/A",
-      sponsored: site.sponsored ? "Yes" : "No",
-      niche: site.niche || "",
-      language: site.language || "",
-      country: site.country || "",
-      sports_allowed: site.sports_allowed || false,
-      indexed: site.indexed || false,
-      do_follow: site.do_follow || false,
-      pharmacy_allowed: site.pharmacy_allowed || false,
-      crypto_allowed: site.crypto_allowed || false,
-      foreign_lang_allowed: site.foreign_lang_allowed || false,
-      link_validity: site.link_validity || "",
-      // Store original for filtering
-      original: site
-    };
+  } else if (site.metrics) {
+    metrics = site.metrics;
+    traffic = metrics.ahrefs_traffic || metrics.semrush_traffic || 'N/A';
+    if (traffic !== 'N/A' && typeof traffic === 'number') {
+      traffic = traffic.toLocaleString();
+    }
+  }
+  
+  return {
+    id: site.id,
+    website_url: site.website_url || "",
+    slug: site.slug || site.id,
+    publication: site.publication || site.website_url || "Unknown Publication",
+    da: metrics.da || 0,
+    dr: metrics.dr || 0,
+    traffic: traffic,
+    price: site.price ? `$${site.price}` : "Contact Us!",
+    tat: "1-3 weeks", // Default TAT - you might want to add this field to your API
+    link_type: site.link_type || "N/A",
+    sponsored: site.sponsored ? "Yes" : "No",
+    niche: site.niche || "",
+    language: site.language || "",
+    country: site.country || "",
+    sports_allowed: site.sports_allowed || false,
+    indexed: site.indexed || false,
+    do_follow: site.do_follow || false,
+    pharmacy_allowed: site.pharmacy_allowed || false,
+    crypto_allowed: site.crypto_allowed || false,
+    foreign_lang_allowed: site.foreign_lang_allowed || false,
+    link_validity: site.link_validity || "",
+    // Store original for filtering and additional data
+    original: site
   };
+};
 
   // Extract unique values for filter dropdowns
   const extractFilterOptions = (sitesData) => {
@@ -147,14 +159,14 @@ export default function PackagesWithAllFilters({ plans = [] }) {
     const languages = new Set();
     const countries = new Set();
     const linkTypes = new Set();
-    
+
     sitesData.forEach(site => {
       if (site.niche) niches.add(site.niche);
       if (site.language) languages.add(site.language);
       if (site.country) countries.add(site.country);
       if (site.link_type && site.link_type !== "N/A") linkTypes.add(site.link_type);
     });
-    
+
     setFilterOptions({
       niches: Array.from(niches).sort(),
       languages: Array.from(languages).sort(),
@@ -177,19 +189,19 @@ export default function PackagesWithAllFilters({ plans = [] }) {
   const applyFilters = () => {
     // Create a clean filters object for API call
     const apiFilters = { ...filters };
-    
+
     // Remove empty values
     Object.keys(apiFilters).forEach(key => {
       if (apiFilters[key] === "" || apiFilters[key] === null || apiFilters[key] === undefined) {
         delete apiFilters[key];
       }
     });
-    
+
     // Remove client-side only filters
     delete apiFilters.searchText;
     delete apiFilters.perPage;
     delete apiFilters.sortBy;
-    
+
     console.log("Applying filters to API:", apiFilters);
     fetchSites(apiFilters);
   };
@@ -219,7 +231,7 @@ export default function PackagesWithAllFilters({ plans = [] }) {
       sortBy: "da_desc",
       searchText: "",
     };
-    
+
     setFilters(clearedFilters);
     fetchSites(); // Fetch without filters
   };
@@ -227,7 +239,7 @@ export default function PackagesWithAllFilters({ plans = [] }) {
   // Apply search filter client-side (or you can implement server-side search)
   const filteredSites = sites.filter(site => {
     if (!filters.searchText) return true;
-    
+
     const searchLower = filters.searchText.toLowerCase();
     return (
       site.website_url?.toLowerCase().includes(searchLower) ||
@@ -569,86 +581,274 @@ export default function PackagesWithAllFilters({ plans = [] }) {
           <p className="mt-2 text-gray-600">Loading guest posting sites...</p>
         </div>
       ) : (
-        /* Publications Table */
         <section className="mb-16 overflow-x-auto">
           <div className="overflow-x-auto bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gradient-to-r from-blue-500 to-purple-700 text-white">
                 <tr>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                    Website / Publication
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Publication
                   </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Category
+                  </th>
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Price
+                  </th>
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
                     DA
                   </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                    Cost
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    DR
                   </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Traffic
+                  </th>
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
                     TAT
                   </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
-                    Link Type
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Region
                   </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
                     Sponsored
                   </th>
-                  <th scope="col" className="px-6 py-4 text-left text-xs font-medium uppercase tracking-wider">
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Indexed
+                  </th>
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Do Follow
+                  </th>
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Example
+                  </th>
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
+                    Guidelines
+                  </th>
+                  <th scope="col" className="px-4 py-4 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">
                     Action
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredSites.length > 0 ? (
-                  filteredSites.map((site, index) => (
-                    <tr key={site.id} className={index % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <span className="text-blue-600 hover:text-purple-700 hover:underline transition-colors">
-                          {site.publication}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {site.da || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        {site.price === 'Contact Us!' ? (
-                          <a 
-                            href="https://worldwidebacklink.spp.io/dashboard" 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-blue-600 hover:text-purple-700 hover:underline transition-colors"
+                  filteredSites.map((site, index) => {
+                    // Parse metrics to get traffic
+                    let traffic = 'N/A';
+                    try {
+                      const metrics = typeof site.original.metrics === 'string'
+                        ? JSON.parse(site.original.metrics)
+                        : site.original.metrics || {};
+                      traffic = metrics.ahrefs_traffic || metrics.semrush_traffic || 'N/A';
+                      if (traffic !== 'N/A' && typeof traffic === 'number') {
+                        traffic = traffic.toLocaleString();
+                      }
+                    } catch (e) {
+                      console.error('Error parsing metrics:', e);
+                    }
+
+                    return (
+                      <tr key={site.id} className={index % 2 === 0 ? 'bg-white' : 'bg-blue-50'}>
+                        {/* 1. Publication */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8">
+                              {site.original.image && site.original.image !== 'placeholder.jpg' ? (
+                                <img
+                                  className="h-8 w-8 rounded-full object-cover"
+                                  src={`https://api.glassworld06.com/storage/${site.original.image}`}
+                                  alt={site.publication}
+                                />
+                              ) : (
+                                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                  <span className="text-blue-600 font-bold">{site.publication.charAt(0)}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="ml-3">
+                              <div className="text-sm font-medium text-gray-900">
+                                <a
+                                  href={site.website_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-purple-700 hover:underline transition-colors"
+                                >
+                                  {site.publication}
+                                </a>
+                              </div>
+                              <div className="text-xs text-gray-500 truncate max-w-[120px]">
+                                {site.website_url}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* 2. Category (Niche) */}
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {site.niche || 'N/A'}
+                          </span>
+                        </td>
+
+                        {/* 3. Price */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                          {site.price === 'Contact Us!' ? (
+                            <a
+                              href="https://worldwidebacklink.spp.io/dashboard"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-purple-700 hover:underline transition-colors"
+                            >
+                              Contact
+                            </a>
+                          ) : (
+                            <span>{site.price}</span>
+                          )}
+                        </td>
+
+                        {/* 4. DA */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-center">
+                          <span className={`inline-flex items-center justify-center h-8 w-8 rounded-full ${site.da >= 50 ? 'bg-green-100 text-green-800 font-bold' : site.da >= 30 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
+                            {site.da || 'N/A'}
+                          </span>
+                        </td>
+
+                        {/* 5. DR */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-center">
+                          <span className={`inline-flex items-center justify-center h-8 w-8 rounded-full ${site.dr >= 50 ? 'bg-green-100 text-green-800 font-bold' : site.dr >= 30 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
+                            {site.dr || 'N/A'}
+                          </span>
+                        </td>
+
+                        {/* 6. Traffic */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">
+                          <div className="flex flex-col">
+                            <span className="font-medium">{traffic}</span>
+                            {traffic !== 'N/A' && (
+                              <span className="text-xs text-gray-500">visits/month</span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* 7. TAT */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700">
+                          <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            {site.tat}
+                          </span>
+                        </td>
+
+                        {/* 8. Region/Country */}
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium">{site.country || 'N/A'}</span>
+                            <span className="text-xs text-gray-500">{site.language || ''}</span>
+                          </div>
+                        </td>
+
+                        {/* 9. Sponsored */}
+                        <td className="px-4 py-4 whitespace-nowrap text-center">
+                          {site.original.sponsored ? (
+                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-100 text-green-800">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100 text-red-800">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 10. Indexed */}
+                        <td className="px-4 py-4 whitespace-nowrap text-center">
+                          {site.original.indexed ? (
+                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-100 text-green-800">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100 text-red-800">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 11. Do Follow */}
+                        <td className="px-4 py-4 whitespace-nowrap text-center">
+                          {site.original.do_follow ? (
+                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-green-100 text-green-800">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100 text-red-800">
+                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 12. Example */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm">
+                          {site.original.example_image && site.original.example_image !== 'sample.jpg' ? (
+                            <a
+                              href={`https://api.glassworld06.com/storage/${site.original.example_image}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-purple-700 hover:underline"
+                            >
+                              View
+                            </a>
+                          ) : (
+                            <span className="text-gray-400">N/A</span>
+                          )}
+                        </td>
+
+                        {/* 13. Guidelines */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm">
+                          {site.original.guidelines_pdf && site.original.guidelines_pdf !== 'guideline.pdf' ? (
+                            <a
+                              href={`https://api.glassworld06.com/storage/${site.original.guidelines_pdf}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-purple-700 hover:underline flex items-center"
+                            >
+                              <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                              PDF
+                            </a>
+                          ) : (
+                            <span className="text-gray-400">N/A</span>
+                          )}
+                        </td>
+
+                        {/* 14. Action */}
+                        <td className="px-4 py-4 whitespace-nowrap text-sm">
+                          <Link
+                            href={`/guest-posting-package/${site.slug}`}
+                            className="inline-block uppercase bg-gradient-to-r from-blue-400 to-purple-600 
+                      hover:from-blue-500 hover:to-purple-700 px-4 py-2 rounded-full text-xs 
+                      font-semibold text-white transition-all duration-300 shadow-lg 
+                      hover:shadow-xl transform hover:-translate-y-1"
                           >
-                            {site.price}
-                          </a>
-                        ) : (
-                          <span>{site.price}</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {site.tat}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {site.link_type}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {site.sponsored}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <Link 
-                          href={`/guest-posting-package/${site.slug}`}
-                          className="inline-block uppercase bg-gradient-to-r from-blue-400 to-purple-600 
-                            hover:from-blue-500 hover:to-purple-700 px-4 py-2 rounded-full text-xs 
-                            font-semibold text-white transition-all duration-300 shadow-lg 
-                            hover:shadow-xl transform hover:-translate-y-1"
-                        >
-                          Buy Now
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
+                            Buy Now
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
-                    <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan="14" className="px-6 py-8 text-center text-gray-500">
                       No guest posting sites found. Please try different filters.
                     </td>
                   </tr>
@@ -656,18 +856,19 @@ export default function PackagesWithAllFilters({ plans = [] }) {
               </tbody>
             </table>
           </div>
-          
+
           {/* View All Publications Button */}
           <div className="flex my-10 items-center justify-center">
-            <Link 
-              href="/signin" 
+            <Link
+              href="/signin"
               className="hidden md:inline-flex ml-6 hover:bg-transparent bg-[#163316] justify-center uppercase bg-gradient-to-r from-blue-400 to-purple-600 hover:from-blue-500 hover:to-purple-700 px-8 py-3 rounded-full text-sm font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-xl transform"
             >
               VIEW ALL PUBLICATIONS
             </Link>
           </div>
         </section>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
