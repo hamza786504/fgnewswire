@@ -82,6 +82,12 @@ function Sidebar() {
                   <span>Guest Posting Sites</span>
                 </Link>
               </li>
+               <li>
+                <Link href="/admin/pr-types" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                  <FaUser className="mr-3" />
+                  <span>Pr Types</span>
+                </Link>
+              </li>
 
 <li>
                 <Link href="/admin/users" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
@@ -90,9 +96,9 @@ function Sidebar() {
                 </Link>
               </li>
               <li>
-                <Link href="/admin/cradits" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                <Link href="/admin/credits" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaUser className="mr-3" />
-                  <span>Cradits</span>
+                  <span>Credits</span>
                 </Link>
               </li>
              

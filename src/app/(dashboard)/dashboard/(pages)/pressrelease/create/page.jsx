@@ -36,82 +36,59 @@ export default function PressReleaseCreate() {
     { id: 10, name: "Travel" }
   ];
 
-  const staticPrTypes = [
-    { id: 1, name: "Standard Press Release", credit_cost: 10 },
-    { id: 2, name: "Premium Press Release", credit_cost: 25 },
-    { id: 3, name: "Corporate Announcement", credit_cost: 15 },
-    { id: 4, name: "Product Launch", credit_cost: 30 },
-    { id: 5, name: "Event Announcement", credit_cost: 20 },
-    { id: 6, name: "Crisis Communication", credit_cost: 40 },
-    { id: 7, name: "Financial Results", credit_cost: 35 },
-    { id: 8, name: "Award Announcement", credit_cost: 15 },
-    { id: 9, name: "Partnership News", credit_cost: 25 },
-    { id: 10, name: "Charity/CSR", credit_cost: 10 }
-  ];
 
-  // Fetch companies on component mount
+
   useEffect(() => {
-    const fetchCompanies = async () => {
+    const fetchInitialData = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
           setSubmitStatus({
             success: false,
-            message: "Authentication token not found. Please log in again."
+            message: "Authentication token not found. Please log in again.",
           });
-          setIsLoading(false);
           return;
         }
 
-        // Fetch companies only
-        const companiesRes = await fetch("https://api.glassworld06.com/api/companies", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
 
-        if (!companiesRes.ok) {
-          console.error("Companies API error:", companiesRes.status);
-          throw new Error(`Failed to fetch companies: ${companiesRes.status}`);
-        }
+        // Fetch companies & PR types in parallel
+        const [companiesRes, prTypesRes] = await Promise.all([
+          fetch("https://api.glassworld06.com/api/companies", { headers }),
+          fetch("https://api.glassworld06.com/api/pr-types", { headers }),
+        ]);
+
+        if (!companiesRes.ok) throw new Error("Failed to fetch companies");
+        if (!prTypesRes.ok) throw new Error("Failed to fetch PR types");
 
         const companiesData = await companiesRes.json();
-        console.log("Companies data:", companiesData);
+        const prTypesData = await prTypesRes.json();
 
-        // Set static categories and PR types
+        // Companies
+        setCompanies(companiesData.data || companiesData || []);
+
+        // PR Types (IMPORTANT)
+        setPrTypes(prTypesData.data || prTypesData || []);
+
+        // Categories (still static)
         setCategories(staticCategories);
-        setPrTypes(staticPrTypes);
-
-        // Handle companies response
-        if (companiesData.data) {
-          setCompanies(companiesData.data);
-        } else if (Array.isArray(companiesData)) {
-          setCompanies(companiesData);
-        } else if (companiesData.status === "success" && companiesData.data) {
-          setCompanies(companiesData.data);
-        } else {
-          console.warn("Unexpected companies response structure:", companiesData);
-          setCompanies([]);
-        }
 
       } catch (error) {
-        console.error("Error fetching companies:", error);
-        // Still set static categories and PR types even if companies fail
-        setCategories(staticCategories);
-        setPrTypes(staticPrTypes);
-
+        console.error(error);
         setSubmitStatus({
           success: false,
-          message: "Failed to load companies, but you can still use static categories and PR types."
+          message: "Failed to load form data. Please try again.",
         });
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCompanies();
+    fetchInitialData();
   }, []);
+
 
   // Handle text field change
   const handleChange = (e) => {
@@ -152,7 +129,7 @@ export default function PressReleaseCreate() {
     }
   };
 
-  
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -212,12 +189,14 @@ export default function PressReleaseCreate() {
       }
 
       const response = await fetch("https://api.glassworld06.com/api/press-releases", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formDataToSend,
-      });
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Accept": "application/json",
+    // Remove "Content-Type" header - it will be set automatically for FormData
+  },
+  body: formDataToSend, // This should be a FormData object
+}); 
 
       const responseData = await response.json();
       console.log("Response data:", responseData);
@@ -418,14 +397,12 @@ export default function PressReleaseCreate() {
                   <option value="" disabled>No categories available</option>
                 )}
               </select>
-              <p className="text-xs text-gray-500 mt-1">Optional: Select a category for your press release</p>
-              <p className="text-xs text-blue-500 mt-1">Note: Categories are currently displayed statically for demonstration.</p>
             </div>
 
-           
+
           </div>
 
-         
+
 
           {/* Featured Image */}
           <div className="mt-5">
