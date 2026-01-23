@@ -31,6 +31,8 @@ export default function UsersTable() {
         if (!response.ok) throw new Error('Failed to fetch users');
 
         const data = await response.json();
+        console.log(data);
+        
 
         console.log(data);
         setUsers(data.data.filter(d => d.role !== "admin") || []);
@@ -77,7 +79,7 @@ export default function UsersTable() {
       setDeletingId(id);
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`https://api.glassworld06.com/api/users/${id}`, {
+      const response = await fetch(`https://api.glassworld06.com/api/users/delete/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

@@ -28,6 +28,7 @@ export default function PagesLayout({ children }) {
       <body
         className={`overflow-x-hidden antialiased`}
       >
+        <WOWInit />
         {/* <WOWInit /> */}
         <AnnouncementBar />
         <Header />

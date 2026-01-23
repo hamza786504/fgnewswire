@@ -1,7 +1,5 @@
-import { FaCheckCircle } from "react-icons/fa";
-import { BsFillPersonBadgeFill, BsPersonLinesFill, BsGraphUp } from "react-icons/bs";
-import { MdOutlineTaskAlt, MdOutlineEmail, MdSms } from "react-icons/md";
-import Button from "./Elements/Button";
+"use client";
+
 const features = [
   {
     title: "Reach Your Audience",
@@ -65,11 +63,20 @@ const features = [
   },
 ];
 
+import { FaCheckCircle } from "react-icons/fa";
+import { BsFillPersonBadgeFill, BsPersonLinesFill, BsGraphUp } from "react-icons/bs";
+import { MdOutlineTaskAlt, MdOutlineEmail, MdSms } from "react-icons/md";
+import Button from "./Elements/Button";
+
 export default function SalesFeaturesSection() {
+
+
   return (
     <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
       <div className="md:max-w-3xl lg:max-w-5xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-12">
+
+        {/* Heading */}
+        <div className="text-center max-w-3xl mx-auto mb-12 wow animate__animated animate__fadeInUp">
           <h2 className="text-3xl sm:text-4xl capitalize font-bold text-gray-900">
             Your News Deserves the <span className="text-[#2563eb]">Spotlight</span>
           </h2>
@@ -78,37 +85,55 @@ export default function SalesFeaturesSection() {
           </p>
         </div>
 
+        {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="group bg-white rounded-xl p-6 border border-gray-100 hover:border-gray-200 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <div className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center mb-5`}>
-                {feature.icon}
+          {features.map((feature, index) => {
+            const animation =
+              index % 3 === 0
+                ? "animate__fadeInLeft"
+                : index % 3 === 1
+                ? "animate__fadeInUp"
+                : "animate__fadeInRight";
+
+            return (
+              <div
+                key={index}
+                className={`group bg-white rounded-xl p-6 border border-gray-100 hover:border-gray-200 transition-all duration-200 shadow-sm hover:shadow-md
+                  wow animate__animated ${animation}`}
+                data-wow-delay={`${index * 0.15}s`}
+              >
+                <div className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center mb-5`}>
+                  {feature.icon}
+                </div>
+
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  {feature.title}
+                </h3>
+
+                <ul className="space-y-3">
+                  {feature.points.map((point, i) => (
+                    <li key={i} className="flex items-start">
+                      <FaCheckCircle className="text-green-500 mt-1 mr-2 flex-shrink-0" />
+                      <span className="text-gray-600">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-6">
+                  <button className="text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent hover:opacity-80 transition-colors">
+                    Explore feature →
+                  </button>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
-              <ul className="space-y-3">
-                {feature.points.map((point, i) => (
-                  <li key={i} className="flex items-start">
-                    <FaCheckCircle className="text-green-500 mt-1 mr-2 flex-shrink-0" />
-                    <span className="text-gray-600">{point}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-6">
-  <button className="text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent hover:opacity-80 transition-colors">
-    Explore feature →
-  </button>
-</div>
-
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div className={`mt-12 wow text-center animate__animated animate__fadeInUp" data-wow-delay="0.8s`}>
-          <Button content="Know More" class="text-start" href="/" />
+        {/* CTA */}
+        <div className="mt-12 text-center wow animate__animated animate__fadeInUp" data-wow-delay="0.6s">
+          <Button content="Know More" href="/" />
         </div>
+
       </div>
     </section>
   );

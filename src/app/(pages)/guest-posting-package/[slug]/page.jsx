@@ -724,7 +724,7 @@ export default function GuestPostingSitePage() {
                   <path d="M25.6 26.4c0 1.325-1.075 2.4-2.4 2.4s-2.4-1.075-2.4-2.4c0-1.325 1.075-2.4 2.4-2.4s2.4 1.075 2.4 2.4z"></path>
                   <path d="M14.4 26.4c0 1.325-1.075 2.4-2.4 2.4s-2.4-1.075-2.4-2.4c0-1.325 1.075-2.4 2.4-2.4s2.4 1.075 2.4 2.4z"></path>
                 </svg>
-                Add to cart - ${totalPrice.toFixed(2)}
+                Buy Now - ${totalPrice.toFixed(2)}
               </Link>
 
               {/* Money Back Guarantee */}

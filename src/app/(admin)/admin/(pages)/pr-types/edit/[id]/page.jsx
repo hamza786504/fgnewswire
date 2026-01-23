@@ -67,11 +67,14 @@ export default function EditPrType() {
         <h2 className="text-lg font-semibold mb-5">Edit PR Type</h2>
 
         <form onSubmit={submit}>
+          <label htmlFor="">Name</label>
           <input
             value={data.name}
             onChange={(e) => setData({ ...data, name: e.target.value })}
             className="w-full mb-4 border px-3 py-2 rounded"
           />
+          <label htmlFor="">Credits</label>
+
           <input
             type="number"
             value={data.credit_cost}

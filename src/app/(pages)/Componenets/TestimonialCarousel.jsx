@@ -104,10 +104,10 @@ const TestimonialCarousel = () => {
       <div className="container mx-auto px-4">
         {/* Heading */}
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-purple-700">
+          <h2 className="text-3xl md:text-4xl font-bold text-purple-700 wow animate__animated animate__fadeInUp">
             What Our Clients Say
           </h2>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-4 text-gray-600 max-w-2xl mx-auto wow animate__animated animate__fadeInUp">
            Our clients trust FG Newswire to deliver real results. From startups to established brands, we&apos;ve helped businesses gain visibility, boost SEO, and build credibility through powerful guest posts and press releases.
           </p>
         </div>

@@ -12,14 +12,14 @@ const Footer = () => {
   return (
     <footer className="pt-10 bg-gradient-to-r from-blue-500 to-purple-700 text-gray-800 bg-left relative">
       <div className="md:max-w-3xl lg:max-w-5xl mx-auto px-4 py-10 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-        <div>
+        <div className='wow animate__animated animate__fadeInUp' data-wow-delay="0.2s">
           <h3 className="text-white text-xl md:text-2xl font-semibold mb-4">FG newswire.</h3>
           <p className="text-sm md:text-base text-white">
             We help businesses and individuals share their stories, press releases, and guest posts on trusted websites to boost visibility, and reach the right audience. All rights reserved.
           </p>
         </div>
 
-        <div>
+        <div className='wow animate__animated animate__fadeInUp' data-wow-delay="0.4s">
           <h3 className="text-white text-xl md:text-2xl font-semibold mb-4">Usefull Links</h3>
           <ul className="space-y-2 text-sm md:text-base text-white">
             <li><Link href="#" className="hover:underline">Home</Link></li>
@@ -32,7 +32,7 @@ const Footer = () => {
         </div>
 
 
-        <div className='space-y-3'>
+        <div className='space-y-3 wow animate__animated animate__fadeInUp' data-wow-delay="0.6s">
           <h3 className="text-white text-xl md:text-2xl font-semibold mb-4">Contact Us</h3>
           <Link href="tel:+923226612073" className="text-white block hover:underline">+923226612073</Link>
           <Link href="mailto:support@fgnewswire.com" className="text-white block hover:underline">support@fgnewswire.com</Link>

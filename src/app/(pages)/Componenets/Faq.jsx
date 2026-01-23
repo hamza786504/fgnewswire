@@ -23,7 +23,7 @@ const Faq = ({faqData}) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 mx-auto mt-8 divide-y divide-neutral-200">
                     {faqData.map((faq,idx) => {
                         return (
-                            <div key={idx} className="py-5">
+                            <div key={idx} className="py-5 wow animate__animated animate__fadeInUp" data-wow-delay={`${idx * 0.3}s`}>
                                 <details className="group">
                                     <summary className="flex cursor-pointer list-none items-center justify-between font-medium">
                                         <span> {faq.question}</span>

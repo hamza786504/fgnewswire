@@ -101,6 +101,12 @@ function Sidebar() {
                   <span>Credits</span>
                 </Link>
               </li>
+              <li>
+                <Link href="/admin/categories" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                  <FaUser className="mr-3" />
+                  <span>Categories</span>
+                </Link>
+              </li>
              
               {/* <li>
                 <Link href="/admin/guest-post" className="flex items-center px-4 py-2 text-black rounded-md text-sm">

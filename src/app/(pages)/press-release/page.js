@@ -13,6 +13,7 @@ async function getPackages() {
       next: { revalidate: 60 } // This works in server components
     });
 
+
     if (!response.ok) {
       throw new Error('Failed to fetch packages');
     }

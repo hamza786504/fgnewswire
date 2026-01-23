@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ ADD
 
 export default function CreatePrType() {
+  const router = useRouter(); // ✅ ADD
+
   const [data, setData] = useState({ name: "", credit_cost: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -38,8 +41,8 @@ export default function CreatePrType() {
       const json = await res.json();
       if (!res.ok) throw json;
 
-      alert("PR Type created");
-      setData({ name: "", credit_cost: "" });
+      // ✅ REDIRECT AFTER SUCCESS
+      router.push("/admin/pr-types");
     } catch (err) {
       if (err.errors) {
         const be = {};
@@ -54,7 +57,7 @@ export default function CreatePrType() {
   };
 
   return (
-    <main className="flex-1 bg-[#ebecf0] p-4">
+    <main className="flex-1 h-full bg-[#ebecf0] p-4">
       <div className="max-w-3xl mx-auto bg-white p-6 rounded-3xl">
         <h2 className="text-lg font-semibold mb-5">Add PR Type</h2>
 

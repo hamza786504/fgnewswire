@@ -60,7 +60,7 @@ function TrustedPartners() {
             <section className="w-full bg-white py-12 px-4 md:px-16">
                 <div className="md:max-w-3xl lg:max-w-5xl mx-auto">
                     <div className="text-center mb-8">
-                        <p className="text-xl md:text-4xl font-semibold tracking-widest text-gray-700">
+                        <p className="text-xl md:text-4xl font-semibold tracking-widest text-gray-700 wow animate__animated animate__fadeInUp">
                             Recognized and trusted as a leading platform.
                         </p>
                     </div>

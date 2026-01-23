@@ -22,19 +22,6 @@ export default function PressReleaseCreate() {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Static data for categories and PR types
-  const staticCategories = [
-    { id: 1, name: "Technology" },
-    { id: 2, name: "Business" },
-    { id: 3, name: "Health & Wellness" },
-    { id: 4, name: "Education" },
-    { id: 5, name: "Finance" },
-    { id: 6, name: "Entertainment" },
-    { id: 7, name: "Sports" },
-    { id: 8, name: "Lifestyle" },
-    { id: 9, name: "Science" },
-    { id: 10, name: "Travel" }
-  ];
 
 
 
@@ -54,26 +41,28 @@ export default function PressReleaseCreate() {
           Authorization: `Bearer ${token}`,
         };
 
-        // Fetch companies & PR types in parallel
-        const [companiesRes, prTypesRes] = await Promise.all([
-          fetch("https://api.glassworld06.com/api/companies", { headers }),
-          fetch("https://api.glassworld06.com/api/pr-types", { headers }),
-        ]);
+const [companiesRes, prTypesRes, categoriesRes] = await Promise.all([
+  fetch("https://api.glassworld06.com/api/companies", { headers }),
+  fetch("https://api.glassworld06.com/api/pr-types", { headers }),
+  fetch("https://api.glassworld06.com/api/categories", { headers }),
+]);
 
-        if (!companiesRes.ok) throw new Error("Failed to fetch companies");
-        if (!prTypesRes.ok) throw new Error("Failed to fetch PR types");
+if (!companiesRes.ok) throw new Error("Failed to fetch companies");
+if (!prTypesRes.ok) throw new Error("Failed to fetch PR types");
+if (!categoriesRes.ok) throw new Error("Failed to fetch categories");
 
-        const companiesData = await companiesRes.json();
-        const prTypesData = await prTypesRes.json();
+const companiesData = await companiesRes.json();
+const prTypesData = await prTypesRes.json();
+const categoriesData = await categoriesRes.json();
 
-        // Companies
-        setCompanies(companiesData.data || companiesData || []);
+// Companies
+setCompanies(companiesData.data || companiesData || []);
 
-        // PR Types (IMPORTANT)
-        setPrTypes(prTypesData.data || prTypesData || []);
+// PR Types
+setPrTypes(prTypesData.data || prTypesData || []);
 
-        // Categories (still static)
-        setCategories(staticCategories);
+// Categories (NOW DYNAMIC ✅)
+setCategories(categoriesData.data || categoriesData || []);
 
       } catch (error) {
         console.error(error);
@@ -422,17 +411,6 @@ export default function PressReleaseCreate() {
                 ✓ {formData.featured_image.name} selected
               </div>
             )}
-          </div>
-
-          {/* Demo Note */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
-            <h3 className="text-sm font-medium text-blue-800 mb-2">Demo Information</h3>
-            <ul className="text-xs text-blue-700 space-y-1">
-              <li>• Categories and PR Types are displayed statically for demonstration</li>
-              <li>• In production, these will be fetched from the API</li>
-              <li>• Companies are fetched dynamically from the API</li>
-              <li>• All form data will be submitted to the backend API</li>
-            </ul>
           </div>
 
           {/* Submit Button */}

@@ -104,10 +104,10 @@ export default function CaseStudiesSection() {
   return (
     <section className="w-full bg-white py-12 px-4 md:px-8">
       <div className="text-center max-w-4xl mx-auto">
-        <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
+        <h2 className="text-2xl md:text-4xl font-bold text-gray-900 wow animate__animated animate__fadeInUp">
           Choose From <span className="text-blue-600">Flexible Plans</span> Made For Every Need
         </h2>
-        <p className="text-sm md:text-base text-gray-600 mt-2">
+        <p className="text-sm md:text-base text-gray-600 mt-2 wow animate__animated animate__fadeInUp">
           Whether you&apos;re a startup or a growing brand, we&apos;ve got you covered.
         </p>
       </div>

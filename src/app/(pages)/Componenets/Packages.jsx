@@ -33,7 +33,7 @@ export default async function PricingSection() {
   return (
     <section className="bg-gray-50 py-12 px-4">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-center text-2xl md:text-3xl font-bold mb-10">
+        <h1 className="text-center text-2xl md:text-3xl font-bold mb-10 wow animate__animated animate__fadeInUp">
           Select a plan whenever you&apos;re ready
         </h1>
 

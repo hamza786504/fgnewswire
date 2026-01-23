@@ -180,13 +180,6 @@ function Sidebar() {
               </li>
 
               <li>
-                <Link href="/dashboard/pressrooms" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
-                  <FaNewspaper className="mr-3" />
-                  <span>Press Room</span>
-                </Link>
-              </li>
-
-              <li>
                 <Link href="/dashboard/balance" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaBalanceScale className="mr-3" />
                   <span>PR Balance</span>
