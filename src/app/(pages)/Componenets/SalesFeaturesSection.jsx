@@ -67,6 +67,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { BsFillPersonBadgeFill, BsPersonLinesFill, BsGraphUp } from "react-icons/bs";
 import { MdOutlineTaskAlt, MdOutlineEmail, MdSms } from "react-icons/md";
 import Button from "./Elements/Button";
+import Link from "next/link";
 
 export default function SalesFeaturesSection() {
 
@@ -120,9 +121,9 @@ export default function SalesFeaturesSection() {
                 </ul>
 
                 <div className="mt-6">
-                  <button className="text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent hover:opacity-80 transition-colors">
+                  <Link href="dashboard/signin" className="text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent hover:opacity-80 transition-colors">
                     Explore feature →
-                  </button>
+                  </Link>
                 </div>
               </div>
             );
@@ -131,7 +132,7 @@ export default function SalesFeaturesSection() {
 
         {/* CTA */}
         <div className="mt-12 text-center wow animate__animated animate__fadeInUp" data-wow-delay="0.6s">
-          <Button content="Know More" href="/" />
+          <Button content="Know More" href="/dashboard/signin" />
         </div>
 
       </div>

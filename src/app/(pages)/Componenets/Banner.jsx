@@ -15,7 +15,7 @@ function Banner() {
         {/* LEFT SECTION */}
         <div className="relative w-full md:w-1/2 text-center md:text-start">
           {/* rocket icon */}
-          <div className="absolute bottom-[0px] md:-left-[40px] md:transform md:-translate-x-1/2 -top-5 md:top-24 w-24">
+          <div className="absolute bottom-[0px] md:-left-[40px] md:transform -translate-x-1/4 md:-translate-x-1/2 -top-5 md:top-24 w-16">
             <img src="/imgs/rocket-n.png" className='w-full' alt="" 
              style={{
               animation: "pulseScale 2s ease-in-out infinite",
@@ -46,7 +46,7 @@ function Banner() {
           </p>
 
           <div
-            className="wow animate__animated animate__fadeInLeft flex justify-center md:justify-start items-center space-x-2 mt-5"
+            className="wow animate__animated animate__fadeInLeft flex flex-col space-y-3 md:space-y-0 md:flex-row justify-center md:justify-start items-center md:space-x-2 mt-5"
             data-wow-delay="0.6s"
           >
             <a
@@ -58,7 +58,7 @@ function Banner() {
             </a>
 
             <a
-              href="/"
+              href="/contact"
               className="px-3 md:px-4 py-[6px] rounded-3xl text-xs sm:text-sm lg:text-base font-normal border-2 text-center text-[#242423] bg-transparent border-[#242423] hover:bg-black hover:border-black hover:text-white transition-all ease-in-out uppercase inline-flex items-center gap-2"
             >
               Request Demo

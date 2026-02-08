@@ -30,6 +30,10 @@ export default function ProfilePage() {
             <label className="font-semibold text-gray-600">Email:</label>
             <p className="text-gray-800">{user.email}</p>
           </div>
+            <div>
+            <label className="font-semibold text-gray-600">Credits:</label>
+            <p className="text-gray-800">{user.credit_balance}</p>
+          </div>
           <div>
             <label className="font-semibold text-gray-600">Account Created:</label>
             <p className="text-gray-800">{new Date(user.created_at).toLocaleDateString()}</p>

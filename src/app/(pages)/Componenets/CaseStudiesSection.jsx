@@ -143,7 +143,7 @@ export default function CaseStudiesSection() {
                     {item.resultText}
                   </p>
                   <a
-                    href={item.link}
+                    href={"/dashboard/signin"}
                     className="bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent text-sm font-semibold hover:underline inline-flex items-center"
                   >
                     View Case Study →

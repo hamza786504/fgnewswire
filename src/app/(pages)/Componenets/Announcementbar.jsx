@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BsInstagram, BsLinkedin, BsPinterest } from 'react-icons/bs';
 import { FaPhone, FaEnvelope, FaLocationDot, FaFacebookF, FaXTwitter, FaInstagram, FaPinterestP, FaYoutube } from 'react-icons/fa6';
 
 export default function AnnouncementBar() {
@@ -9,7 +10,7 @@ export default function AnnouncementBar() {
         {/* Left - Phone */}
         <div style={{ textWrap: "nowrap" }} className="inline-flex items-center gap-2">
           <FaPhone className="text-white" />
-          <span>(000) 000-0000</span>
+          <span>+1 (248) 914-3889</span>
         </div>
 
         {/* Center - Email */}
@@ -29,11 +30,21 @@ export default function AnnouncementBar() {
 
       {/* Social Icons Section */}
       <div className="flex clip-mask-announcementbar max-w-[200px] bg-[#8810c8] py-2.5 ps-10 pe-5 justify-center items-center gap-3 text-white text-[13px] sm:text-sm">
-        <Link href="www.facebook.com" className="hover:scale-110 transition duration-300 ease-in-out"><FaFacebookF className="text-white" /></Link>
-        <Link href="www.facebook.com" className="hover:scale-110 transition duration-300 ease-in-out"><FaXTwitter className="text-white" /></Link>
-        <Link href="www.facebook.com" className="hover:scale-110 transition duration-300 ease-in-out"><FaInstagram className="text-white" /></Link>
-        <Link href="www.facebook.com" className="hover:scale-110 transition duration-300 ease-in-out"><FaPinterestP className="text-white" /></Link>
-        <Link href="www.facebook.com" className="hover:scale-110 transition duration-300 ease-in-out"><FaYoutube className="text-white" /></Link>
+        
+
+
+
+        <Link href="https://www.facebook.com/share/1A24XEG4Zn/" 
+        className="hover:scale-110 transition duration-300 ease-in-out">
+              <FaFacebookF className='text-white' />
+            </Link>
+            <Link href="https://www.instagram.com/fgnewswire?igsh=MXA5Y3AxdXk1aDNneA==" className="hover:scale-110 transition duration-300 ease-in-out">
+              <BsInstagram className='text-white' />
+            </Link>
+            <Link href="https://www.linkedin.com/company/fgnewswire/" 
+            className="hover:scale-110 transition duration-300 ease-in-out font-bold"><BsLinkedin className='text-white' /></Link>
+            <Link href="https://pin.it/1Iu3zyFYy" 
+            className="hover:scale-110 transition duration-300 ease-in-out font-bold"><BsPinterest className='text-white' /></Link>
       </div>
     </div>
   );

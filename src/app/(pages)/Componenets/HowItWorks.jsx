@@ -66,7 +66,7 @@ export default function HowItWorks() {
         </ol>
 
         <div className="mt-12 wow animate__animated animate__fadeInUp" data-wow-delay="0.8s">
-          <Button content="Get Started today" href="/" />
+          <Button content="Sign Up" href="/dashboard/signin" />
         </div>
 
       </div>

@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import { FaFacebookF, FaTwitter } from "react-icons/fa";
-import { BsFillChatDotsFill, BsTwitterX } from "react-icons/bs";
+import { FaFacebookF } from "react-icons/fa";
+import { BsFillChatDotsFill, BsInstagram, BsLinkedin, BsPinterest} from "react-icons/bs";
 import { IoClose, IoRefresh  } from "react-icons/io5";
 import Link from 'next/link';
 
@@ -22,36 +22,37 @@ const Footer = () => {
         <div className='wow animate__animated animate__fadeInUp' data-wow-delay="0.4s">
           <h3 className="text-white text-xl md:text-2xl font-semibold mb-4">Usefull Links</h3>
           <ul className="space-y-2 text-sm md:text-base text-white">
-            <li><Link href="#" className="hover:underline">Home</Link></li>
-            <li><Link href="#" className="hover:underline">Terms of Services</Link></li>
-            <li><Link href="#" className="hover:underline">News Room</Link></li>
-            <li><Link href="#" className="hover:underline">Guidelines</Link></li>
-            <li><Link href="#" className="hover:underline">Privacy Policy</Link></li>
-            <li><Link href="#" className="hover:underline">Contact Us</Link></li>
+            <li><Link href="/" className="hover:underline">Home</Link></li>
+            <li><Link href="/guest-posting-package" className="hover:underline">Guest Posting Package</Link></li>
+            <li><Link href="/press-release" className="hover:underline">Press Release</Link></li>
+            <li><Link href="/guidelines" className="hover:underline">Guidelines</Link></li>
+            <li><Link href="/news-room" className="hover:underline">News Room</Link></li>
+            <li><Link href="/contact" className="hover:underline">Contact Us</Link></li>
           </ul>
         </div>
 
 
         <div className='space-y-3 wow animate__animated animate__fadeInUp' data-wow-delay="0.6s">
           <h3 className="text-white text-xl md:text-2xl font-semibold mb-4">Contact Us</h3>
-          <Link href="tel:+923226612073" className="text-white block hover:underline">+923226612073</Link>
-          <Link href="mailto:support@fgnewswire.com" className="text-white block hover:underline">support@fgnewswire.com</Link>
+          <Link href="tel:+12489143889" className="text-white block hover:underline">+1 (248) 914-3889</Link>
+          <Link href="mailto:info@fgnewswire.com" className="text-white block hover:underline">info@fgnewswire.com</Link>
           <span href="#" className="text-white block hover:underline">Weekdays: 09:00 AM - 7:00 PM</span>
           <div className="flex space-x-3 mt-5">
-            <Link href="www.facebook.com" className="text-lg w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-600 text-white flex items-center justify-center rounded-full">
+            <Link href="https://www.facebook.com/share/1A24XEG4Zn/" className="text-lg w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-600 text-white flex items-center justify-center rounded-full">
               <FaFacebookF />
             </Link>
-            <Link href="www.facebook.com" className="text-white text-lg w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-600 flex items-center justify-center rounded-full">
-              <FaTwitter />
+            <Link href="https://www.instagram.com/fgnewswire?igsh=MXA5Y3AxdXk1aDNneA==" className="text-white text-lg w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-600 flex items-center justify-center rounded-full">
+              <BsInstagram />
             </Link>
-            <Link href="www.facebook.com" className="text-lg w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-600 text-white flex items-center justify-center rounded-full font-bold"><BsTwitterX /></Link>
+            <Link href="https://www.linkedin.com/company/fgnewswire/" className="text-lg w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-600 text-white flex items-center justify-center rounded-full font-bold"><BsLinkedin /></Link>
+            <Link href="https://pin.it/1Iu3zyFYy" className="text-lg w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-600 text-white flex items-center justify-center rounded-full font-bold"><BsPinterest /></Link>
           </div>
         </div>
       </div>
 
       {/* Bottom Line */}
       <div className="md:max-w-3xl lg:max-w-5xl mx-auto border-t text-sm md:text-base text-gray-600 py-4 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-        <p className='text-white'>© Copyright 2025 Zumvu Digital. All Rights Reserved.</p>
+        <p className='text-white'>© Copyright 2026 Fg Newswire. All Rights Reserved.</p>
         <div className="flex space-x-4 mt-2 md:mt-0">
           <Link href="#" className="text-white hover:underline">Terms</Link>
           <Link href="#" className="text-white hover:underline">Privacy</Link>
@@ -80,7 +81,7 @@ const Footer = () => {
           <div className="bg-white rounded-full p-1">
             <img src="/logo.png" alt="Logo" className="w-6 h-6" />
           </div>
-          <h4 className="font-semibold text-sm">Zumvu Chatbot</h4>
+          <h4 className="font-semibold text-sm">FG Newswire</h4>
         </div>
         <div className="flex gap-2">
           <button className="hover:text-gray-200" aria-label="Refresh">

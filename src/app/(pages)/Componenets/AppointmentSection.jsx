@@ -64,7 +64,7 @@ const AppointmentSection = () => {
                     </ul>
 
                     <div className={`mt-12 wow text-start animate__animated animate__fadeInUp" data-wow-delay="0.8s`}>
-                        <Button content="Know More" href="/" />
+                        <Button content="Know More" href="/dashboard/signin" />
                     </div>
                 </div>
 

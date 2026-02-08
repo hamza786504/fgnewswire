@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 export default function BusinessNetworkSection() {
@@ -26,9 +27,9 @@ export default function BusinessNetworkSection() {
         <p className="wow animate__animated animate__fadeInUp text-base sm:text-lg md:text-xl mb-8" data-wow-delay="0.6s">
           Choose a Guest Posting Package or Press Release Plan that fits your goals and let us handle the rest.
         </p>
-        <button className="wow animate__animated animate__zoomIn bg-white text-black font-semibold px-6 py-3 rounded-full capitalize shadow-md hover:bg-gray-200 transition" data-wow-delay="0.8s">
-           impedit quis
-        </button>
+        <Link href={"/dashboard/signin"} className="wow animate__animated animate__zoomIn bg-white text-black font-semibold px-6 py-3 rounded-full capitalize shadow-md hover:bg-gray-200 transition" data-wow-delay="0.8s">
+           Sign Up
+        </Link>
       </div>
     </section>
   );

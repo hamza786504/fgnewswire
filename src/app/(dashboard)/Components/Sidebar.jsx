@@ -173,23 +173,9 @@ function Sidebar() {
               </li>
 
               <li>
-                <Link href="/dashboard/transaction" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                <Link href="/dashboard/transactions" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaWallet className="mr-3" />
                   <span>My Transaction</span>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="/dashboard/balance" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
-                  <FaBalanceScale className="mr-3" />
-                  <span>PR Balance</span>
-                </Link>
-              </li>
-
-              <li>
-                <Link href="/dashboard/guest-post-credit" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
-                  <FaCreditCard className="mr-3" />
-                  <span>Guest Posting Credit</span>
                 </Link>
               </li>
             </ul>

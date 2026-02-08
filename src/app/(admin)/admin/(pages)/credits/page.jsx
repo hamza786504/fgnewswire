@@ -36,7 +36,7 @@ export default function CreditsUsersPage() {
       const json = await response.json();
 
       // API returns users inside `data`
-      setUsers(json.data.filter(d => d.role !== "admin"));
+      setUsers(json.data.filter(d => d.role === "user"));
     } catch (error) {
       console.error(error);
     } finally {
