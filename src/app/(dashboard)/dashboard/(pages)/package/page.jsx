@@ -40,7 +40,7 @@ const Package = async () => {
 
                     <div className="mt-7 grid grid-cols-3 space-y-5">
                         {/* Client component for tabs */}
-                        {allPackages.filter(p => p.type === "press_release").map((plan, idx) => <PlanCard plan={plan} idx={idx} />)}
+                        {allPackages.filter(p => p.type === "press_release").map((plan, idx) => <PlanCard plan={plan} key={idx} idx={idx} />)}
                     </div>
                 </div>
             </div>

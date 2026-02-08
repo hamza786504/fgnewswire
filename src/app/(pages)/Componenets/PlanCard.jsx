@@ -13,6 +13,7 @@ import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 function PlanCard({ plan, idx }) {
     const [selectedPriceIndex, setSelectedPriceIndex] = useState(0);
+    const selectedPrice = plan.price[selectedPriceIndex];
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -47,58 +48,64 @@ function PlanCard({ plan, idx }) {
 
 
 
-    const handleBuyNow = async () => {
-        try {
-            setLoading(true);
+  const handleBuyNow = async () => {
+    try {
+        setLoading(true);
 
-            const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(localStorage.getItem("user"));
 
-            if (!user) {
-                alert("Please login to continue");
-                return;
-            }
-
-            const payload = {
-                name: user.name,
-                email: user.email,
-                mobile: user.mobile || "",
-                country: user.country || "",
-                city: user.city || "",
-                address: user.address || "",
-                item_id: plan.id,          // ✅ package ID
-                item_type: "package",      // ✅ SAME AS guest posting
-                price_index: selectedPriceIndex, // optional (if backend needs it)
-            };
-
-            const response = await fetch(
-                "https://api.glassworld06.com/api/orders",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${user.token}`,
-                    },
-                    body: JSON.stringify(payload),
-                }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                console.error(data);
-                alert("Order placement failed");
-                return;
-            }
-
-            // ✅ success
-            router.push("/dashboard/orders");
-        } catch (err) {
-            console.error(err);
-            alert("Something went wrong");
-        } finally {
-            setLoading(false);
+        if (!user) {
+            alert("Please login to continue");
+            return;
         }
-    };
+
+        const selectedPrice = plan.price[selectedPriceIndex];
+
+        const payload = {
+            name: user.name,
+            email: user.email,
+            mobile: user.mobile || "",
+            country: user.country || "",
+            city: user.city || "",
+            address: user.address || "",
+
+            // ✅ IMPORTANT PART
+            quantity: selectedPrice?.quantity || 1,
+            price: selectedPrice?.price || 0,
+            order_type: "press_release",
+            item_id: plan.id,
+            item_type: "package",
+            price_index: selectedPriceIndex,
+        };
+
+        const response = await fetch(
+            "https://api.glassworld06.com/api/orders",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user.token}`,
+                },
+                body: JSON.stringify(payload),
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error(data);
+            alert("Order placement failed");
+            return;
+        }
+
+        router.push("/dashboard/orders");
+    } catch (err) {
+        console.error(err);
+        alert("Something went wrong");
+    } finally {
+        setLoading(false);
+    }
+};
 
 
     return (
