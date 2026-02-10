@@ -5,7 +5,7 @@ import { FaLongArrowAltRight, FaCheckCircle } from "react-icons/fa";
 function Banner() {
   return (
     <section
-      className="relative w-full h-full flex items-center min-h-screen bg-bottom bg-no-repeat transition-all duration-300 ease-in-out"
+      className="relative w-full h-full flex items-center bg-bottom bg-no-repeat transition-all duration-300 ease-in-out"
       style={{ backgroundImage: "url('/imgs/banner-bg-2b.png')" }}
     >
 
