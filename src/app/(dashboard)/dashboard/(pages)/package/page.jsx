@@ -38,7 +38,7 @@ const Package = async () => {
                     <h1 className="text-2xl font-bold text-start mb-8">Press Release Packages</h1>
 
 
-                    <div className="mt-7 grid grid-cols-3 space-y-5">
+                    <div className="mt-7 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 space-y-5">
                         {/* Client component for tabs */}
                         {allPackages.filter(p => p.type === "press_release").map((plan, idx) => <PlanCard plan={plan} key={idx} idx={idx} />)}
                     </div>
