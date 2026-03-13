@@ -9,6 +9,21 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const guestPostingCredits = transactions
+    .filter(
+      (tx) =>
+        tx.reference?.type === "guest_posting" && Number(tx.amount) > 0
+    )
+    .reduce((sum, tx) => sum + Number(tx.amount), 0);
+
+  const packageCredits = transactions
+    .filter(
+      (tx) =>
+        tx.reference?.type === "package" && Number(tx.amount) > 0
+    )
+    .reduce((sum, tx) => sum + Number(tx.amount), 0);
+
+
   const router = useRouter();
 
   useEffect(() => {
@@ -44,12 +59,9 @@ export default function TransactionsPage() {
         throw new Error(json.message || 'Failed to load transactions');
       }
 
-      // When no history exists, API may return data: []
-      if (Array.isArray(json.data)) {
-        setTransactions([]);
-      } else {
-        setTransactions(json.data.data || []);
-      }
+      // ✅ Correct handling
+      setTransactions(json.data || []);
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -71,6 +83,24 @@ export default function TransactionsPage() {
           <p className="text-4xl font-bold text-green-600">
             {user.credit_balance}
           </p>
+
+          <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-gray-600">Guest Posting Credits</p>
+              <p className="text-xl font-bold text-blue-600">
+                {guestPostingCredits}
+              </p>
+            </div>
+
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+              <p className="text-gray-600">Press Release Credits</p>
+              <p className="text-xl font-bold text-purple-600">
+                {packageCredits}
+              </p>
+            </div>
+
+          </div>
         </div>
 
         {/* TRANSACTIONS */}
@@ -100,34 +130,47 @@ export default function TransactionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {transactions.map(tx => (
+                {transactions.map((tx) => (
                   <tr key={tx.id} className="border-t">
+
                     <td className="p-2 border">
                       {new Date(tx.created_at).toLocaleDateString()}
                     </td>
 
                     <td className="p-2 border">
-                      {tx.description || '-'}
-                      {tx.admin && (
-                        <div className="text-xs text-gray-500">
-                          by {tx.admin.name}
+                      <span className='capitalize'>{tx.description || '-'}</span>
+                      <br />
+                      <span className='capitalize text-xs text-gray-500'>{tx.type.replace('_', ' ')}</span> {' - '}
+                      <span className="text-xs text-gray-500">
+                        {tx.reference?.type === "guest_posting"
+                          ? tx.reference?.website_url
+                          : tx.reference?.name}
+                      </span>
+                    </td>
+
+                    <td className="p-2 border capitalize text-gray-600">
+
+
+                      {tx.reference && (
+                        <div className="mt-1">
+                          {tx.reference.type === 'package'
+                            ? 'Press Release'
+                            : 'Guest Posting'}
                         </div>
                       )}
                     </td>
 
-                    <td className="p-2 border capitalize text-gray-600">
-                      {tx.type.replace('_', ' ')}
+                    <td
+                      className={`p-2 border text-right font-semibold ${Number(tx.amount) >= 0
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                        }`}
+                    >
+                      {Number(tx.amount) > 0
+                        ? `+${tx.amount}`
+                        : tx.amount}
                     </td>
 
-                    <td
-                      className={`p-2 border text-right font-semibold ${
-                        tx.amount >= 0
-                          ? 'text-green-600'
-                          : 'text-red-600'
-                      }`}
-                    >
-                      {tx.amount > 0 ? `+${tx.amount}` : tx.amount}
-                    </td>
                   </tr>
                 ))}
               </tbody>

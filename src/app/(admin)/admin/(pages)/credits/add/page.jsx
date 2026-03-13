@@ -11,6 +11,9 @@ export default function AddCreditPage() {
 
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
+    const [packages, setPackages] = useState([]);
+    const [selectedPackage, setSelectedPackage] = useState('');
+    const [selectedType, setSelectedType] = useState('guest_posting'); // ✅ default type
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -21,6 +24,34 @@ export default function AddCreditPage() {
         }
     }, [userId]);
 
+    // ✅ Fetch all packages once
+    useEffect(() => {
+        const fetchPackages = async () => {
+            try {
+                const response = await fetch(
+                    'https://api.glassworld06.com/api/packages'
+                );
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch packages');
+                }
+
+                const data = await response.json();
+                setPackages(data.data || data || []);
+            } catch (err) {
+                console.error(err);
+                setError('Failed to load packages');
+            }
+        };
+
+        fetchPackages();
+    }, []);
+
+    // ✅ Filter based on selected radio
+    const filteredPackages = packages.filter(
+        (p) => p.type === selectedType
+    );
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -28,6 +59,11 @@ export default function AddCreditPage() {
 
         if (!amount || Number(amount) <= 0) {
             setError('Please enter a valid credit amount.');
+            return;
+        }
+
+        if (!selectedPackage) {
+            setError('Please select a package.');
             return;
         }
 
@@ -46,7 +82,14 @@ export default function AddCreditPage() {
                     body: JSON.stringify({
                         user_id: Number(userId),
                         amount: Number(amount),
-                        description: description || 'Manual credit added by admin',
+                        description:
+                            description || 'Manual credit added by admin',
+                        // ✅ Special case mapping
+                        ref_type:
+                            selectedType === 'press_release'
+                                ? 'package'
+                                : 'guest_posting',
+                        ref_id: Number(selectedPackage), // ✅ dynamic
                     }),
                 }
             );
@@ -57,9 +100,13 @@ export default function AddCreditPage() {
                 throw new Error(data.message || 'Failed to add credits');
             }
 
-            setSuccess(`Credits added successfully. New balance: ${data.balance}`);
+            setSuccess(
+                `Credits added successfully. New balance: ${data.balance}`
+            );
+
             setAmount('');
             setDescription('');
+            setSelectedPackage('');
         } catch (err) {
             setError(err.message);
         } finally {
@@ -70,7 +117,6 @@ export default function AddCreditPage() {
     return (
         <main className="p-6 bg-[#ebecf0] min-h-screen">
             <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow">
-
                 <h1 className="text-2xl font-bold mb-6">
                     Add Credits to User
                 </h1>
@@ -88,6 +134,63 @@ export default function AddCreditPage() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+
+                    {/* ✅ Radio Buttons */}
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            Select Type
+                        </label>
+                        <div className="flex gap-6">
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    value="guest_posting"
+                                    checked={selectedType === 'guest_posting'}
+                                    onChange={(e) => {
+                                        setSelectedType(e.target.value);
+                                        setSelectedPackage('');
+                                    }}
+                                />
+                                Guest Posting
+                            </label>
+
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    value="press_release"
+                                    checked={selectedType === 'press_release'}
+                                    onChange={(e) => {
+                                        setSelectedType(e.target.value);
+                                        setSelectedPackage('');
+                                    }}
+                                />
+                                Press Release
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* ✅ Package Dropdown (Dynamic) */}
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Select Package
+                        </label>
+                        <select
+                            value={selectedPackage}
+                            onChange={(e) =>
+                                setSelectedPackage(e.target.value)
+                            }
+                            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
+                            required
+                        >
+                            <option value="">-- Select a Package --</option>
+                            {filteredPackages.map((pkg) => (
+                                <option key={pkg.id} value={pkg.id}>
+                                    {pkg.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium mb-1">
                             Credit Amount
@@ -133,7 +236,6 @@ export default function AddCreditPage() {
                         </button>
                     </div>
                 </form>
-
             </div>
         </main>
     );

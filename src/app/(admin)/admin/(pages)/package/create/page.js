@@ -9,7 +9,6 @@ export default function PackageCreate() {
     features: [{ text: "", image: null, included: true }], // 🔥 Added included with default true
     demo_report_url: "",
     price: [{ quantity: "", price: "" }],
-    credit: ""
   });
 
   const [errors, setErrors] = useState({});
@@ -81,9 +80,6 @@ export default function PackageCreate() {
       if (!f.text.trim()) newErrors[`feature_text_${i}`] = "Feature text required.";
     });
 
-    if (!formData.credit || isNaN(formData.credit)) {
-      newErrors.credit = "Valid credit are required.";
-    }
 
     formData.price.forEach((item, i) => {
       if (!item.quantity || isNaN(item.quantity))
@@ -114,7 +110,6 @@ const handleSubmit = async (e) => {
     formDataToSend.append("type", formData.type);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("demo_report_url", formData.demo_report_url);
-    formDataToSend.append("credit", formData.credit);
 
     // Add price array
     formData.price.forEach((p, i) => {
@@ -170,7 +165,6 @@ const handleSubmit = async (e) => {
     //   features: [{ text: "", image: null, included: true }],
     //   demo_report_url: "",
     //   price: [{ quantity: "", price: "" }],
-    //   credit: ""
     // });
 
   } catch (err) {
@@ -231,21 +225,6 @@ const handleSubmit = async (e) => {
               </select>
               {errors.type && <p className="text-red-600 text-sm">{errors.type}</p>}
             </div>
-          </div>
-
-          <div className="mt-5">
-            <label className="block text-sm font-medium">Credit *</label>
-            <input
-              name="credit"
-              type="number"
-              value={formData.credit}
-              onChange={handleChange}
-              placeholder="Enter credit"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 ${
-                errors.credit ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-            {errors.credit && <p className="text-red-600 text-sm">{errors.credit}</p>}
           </div>
 
           {/* Description */}

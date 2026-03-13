@@ -5,7 +5,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import {
   FaHome, FaNewspaper, FaChartBar, FaBuilding, FaCube,
   FaWallet, FaTicketAlt, FaGift, FaCreditCard, FaBalanceScale,
-  FaTimes, FaChevronDown
+  FaTimes, FaChevronDown,
+  FaEnvelope
 } from 'react-icons/fa';
 
 function Sidebar() {
@@ -169,6 +170,12 @@ function Sidebar() {
                 <Link href="/dashboard/guest-post-package" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCube className="mr-3" />
                   <span>Guest Posting Package</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/orders" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                  <FaEnvelope className="mr-3" />
+                  <span>My Orders</span>
                 </Link>
               </li>
 
