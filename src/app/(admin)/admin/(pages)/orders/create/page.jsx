@@ -498,7 +498,7 @@ export default function CreateOrder() {
                         })
                       : guestPostingSites.map((site) => (
                           <option key={site.id} value={site.id}>
-                            {site.name} - ${parseFloat(site.price || 0).toFixed(2)}
+                            {site.publication} - ${parseFloat(site.price || 0).toFixed(2)}
                           </option>
                         ))
                     }
