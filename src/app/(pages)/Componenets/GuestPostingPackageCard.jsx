@@ -55,7 +55,7 @@ export default function GuestPostingPackageCard({ limit }) {
         city: user.city || "",
         address: user.address || "",
         item_id: planId,
-        item_type: "guest_posting",
+        item_type: "package",
       };
       console.log(JSON.stringify(payload));
       
