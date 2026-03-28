@@ -5,147 +5,147 @@ import { FaUser, FaBox, FaDollarSign, FaCog } from "react-icons/fa";
 
 export default function CreateOrder() {
   const router = useRouter();
-  
+
   // Form state
   const [formData, setFormData] = useState({
-    // User selection
+    user_type: "existing", // "existing" | "new"
     user_id: "",
-    user_type: "existing", // "existing" or "new"
-    
-    // New user fields
     name: "",
     email: "",
     mobile: "",
     country: "",
     city: "",
     address: "",
-    
-    // Order details
-    item_type: "package", // "package" or "guest_posting"
+
+    item_type: "package", // "package" | "guest_posting"
     item_id: "",
     quantity: 1,
     price_index: 0,
-    
-    // Admin overrides
+
     use_custom_values: false,
     custom_price: "",
     custom_credit: "",
-    
-    // Services
+
     services: {},
   });
 
-  // Dropdown options
+  // Data
   const [users, setUsers] = useState([]);
   const [packages, setPackages] = useState([]);
   const [guestPostingSites, setGuestPostingSites] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  
+
   // UI state
   const [loading, setLoading] = useState(false);
   const [fetchingData, setFetchingData] = useState(true);
   const [errors, setErrors] = useState({});
   const [submitStatus, setSubmitStatus] = useState({ success: null, message: "" });
 
-  // ✅ Fetch initial data
+  // Fetch users, packages, guest posting sites
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         const token = localStorage.getItem("token");
-        
-        // Fetch users (non-admin only)
+        if (!token) throw new Error("No auth token found");
+
+        // Users (filter out admins)
         const usersRes = await fetch("https://api.glassworld06.com/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (!usersRes.ok) throw new Error("Failed to fetch users");
         const usersData = await usersRes.json();
-        setUsers(usersData.data?.filter(u => u.role !== "admin") || []);
-        
-        // Fetch packages - using your packages endpoint
+        setUsers(usersData.data?.filter((u) => u.role !== "admin") || []);
+
+        // Packages
         const packagesRes = await fetch("https://api.glassworld06.com/api/packages", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (!packagesRes.ok) throw new Error("Failed to fetch packages");
         const packagesData = await packagesRes.json();
-        console.log("Fetched packages:", packagesData);
-        setPackages(packagesData || []);
-        
-        // Fetch guest posting sites
+        setPackages(Array.isArray(packagesData) ? packagesData : packagesData.data || []);
+
+        // Guest Posting Sites
         const sitesRes = await fetch("https://api.glassworld06.com/api/guest-posting-sites", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (!sitesRes.ok) throw new Error("Failed to fetch guest posting sites");
         const sitesData = await sitesRes.json();
         setGuestPostingSites(sitesData.data || []);
-        
+
       } catch (err) {
-        console.error("Error fetching data:", err);
-        setSubmitStatus({ 
-          success: false, 
-          message: "Failed to load required data. Please refresh the page." 
+        console.error("Fetch error:", err);
+        setSubmitStatus({
+          success: false,
+          message: "Failed to load data. Please try again later.",
         });
       } finally {
         setFetchingData(false);
       }
     };
-    
+
     fetchInitialData();
   }, []);
 
-  // ✅ Update selected item when item_id or item_type changes
+  // Update selected item when item_id or type changes
   useEffect(() => {
+    if (!formData.item_id) {
+      setSelectedItem(null);
+      return;
+    }
+
+    const id = parseInt(formData.item_id, 10);
+
     if (formData.item_type === "package") {
-      const item = packages.find(p => p.id === parseInt(formData.item_id) || p.slug === formData.item_id);
-      setSelectedItem(item);
-      
-      // Reset price index when package changes
-      if (item && item.price && Array.isArray(item.price)) {
-        setFormData(prev => ({ ...prev, price_index: 0 }));
+      const pkg = packages.find((p) => p.id === id);
+      setSelectedItem(pkg || null);
+
+      // Reset price_index if package changed and has tiers
+      if (pkg?.price && Array.isArray(pkg.price) && pkg.price.length > 1) {
+        setFormData((prev) => ({ ...prev, price_index: 0 }));
+      } else {
+        setFormData((prev) => ({ ...prev, price_index: 0 }));
       }
     } else if (formData.item_type === "guest_posting") {
-      const item = guestPostingSites.find(s => s.id === parseInt(formData.item_id));
-      setSelectedItem(item);
+      const site = guestPostingSites.find((s) => s.id === id);
+      setSelectedItem(site || null);
     }
   }, [formData.item_id, formData.item_type, packages, guestPostingSites]);
 
-  // ✅ Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
-    if (type === "checkbox") {
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-    
-    // Clear error for this field
+    const newValue = type === "checkbox" ? checked : value;
+
+    setFormData((prev) => ({ ...prev, [name]: newValue }));
+
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: null }));
     }
   };
 
-  // ✅ Handle user type change
   const handleUserTypeChange = (type) => {
     setFormData((prev) => ({
       ...prev,
       user_type: type,
-      user_id: "", // Clear selected user when switching to new user
+      user_id: "",
+      name: "",
+      email: "",
     }));
   };
 
-  // ✅ Handle service selection
-  const handleServiceChange = (serviceKey, value) => {
+  const handleServiceChange = (key, value) => {
     setFormData((prev) => ({
       ...prev,
       services: {
         ...prev.services,
-        [serviceKey]: value,
+        [key]: value,
       },
     }));
   };
 
-  // ✅ Validate form
   const validateForm = () => {
     const newErrors = {};
 
-    // User validation
+    // User
     if (formData.user_type === "existing") {
       if (!formData.user_id) newErrors.user_id = "Please select a user";
     } else {
@@ -153,23 +153,23 @@ export default function CreateOrder() {
       if (!formData.email.trim()) {
         newErrors.email = "Email is required";
       } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = "Enter a valid email address";
+        newErrors.email = "Invalid email format";
       }
     }
 
-    // Order validation
+    // Item
     if (!formData.item_id) {
-      newErrors.item_id = `Please select a ${formData.item_type.replace('_', ' ')}`;
+      newErrors.item_id = `Please select a ${formData.item_type.replace("_", " ")}`;
     }
-    
+
     if (!formData.quantity || formData.quantity < 1) {
       newErrors.quantity = "Quantity must be at least 1";
     }
 
-    // Custom values validation
+    // Custom values
     if (formData.use_custom_values) {
-      if (!formData.custom_price || parseFloat(formData.custom_price) < 0) {
-        newErrors.custom_price = "Please enter a valid price";
+      if (!formData.custom_price || Number(formData.custom_price) <= 0) {
+        newErrors.custom_price = "Enter a valid price > 0";
       }
     }
 
@@ -177,70 +177,46 @@ export default function CreateOrder() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Format price display for package options
-  const formatPackagePrice = (pkg, index) => {
-    if (!pkg || !pkg.price || !Array.isArray(pkg.price)) return null;
-    
-    const priceValue = pkg.price[index];
-    if (priceValue === undefined) return null;
-    
-    // Assuming price array represents tiered pricing
-    // You might want to customize this based on your actual price structure
-    const quantity = index + 1; // This is just an example - adjust based on your actual logic
-    return `${quantity} press release${quantity > 1 ? 's' : ''} for $${parseFloat(priceValue).toFixed(2)}`;
-  };
-
-  // ✅ Get package price details
-  const getPackagePriceDetails = (pkg) => {
-    if (!pkg || !pkg.price || !Array.isArray(pkg.price)) return null;
-    
-    return {
-      minPrice: Math.min(...pkg.price.map(p => parseFloat(p))),
-      maxPrice: Math.max(...pkg.price.map(p => parseFloat(p))),
-      count: pkg.price.length
-    };
-  };
-
-  // ✅ Build payload
   const buildPayload = () => {
-    let itemId = formData.item_id;
-    
-    // If it's a package and we have the slug, try to get the ID
-    if (formData.item_type === "package" && selectedItem) {
-      itemId = selectedItem.id; // Use the actual ID from the package data
-    }
-    
     const payload = {
-      item_id: parseInt(itemId),
+      item_id: parseInt(formData.item_id, 10),
       item_type: formData.item_type,
-      quantity: parseInt(formData.quantity),
-      price_index: parseInt(formData.price_index),
-      services: formData.services,
+      quantity: parseInt(formData.quantity, 10),
+      services: Object.keys(formData.services).length > 0 ? formData.services : undefined,
     };
 
-    // Add user info
-    if (formData.user_type === "existing" && formData.user_id) {
-      payload.user_id = parseInt(formData.user_id);
-    } else {
-      payload.name = formData.name;
-      payload.email = formData.email;
-      if (formData.mobile) payload.mobile = formData.mobile;
-      if (formData.country) payload.country = formData.country;
-      if (formData.city) payload.city = formData.city;
-      if (formData.address) payload.address = formData.address;
+    // Price index only for packages (and only if meaningful)
+    if (formData.item_type === "package" && formData.price_index !== 0) {
+      payload.price_index = parseInt(formData.price_index, 10);
     }
 
-    // Add custom values if enabled
+    // User data
+    if (formData.user_type === "existing" && formData.user_id) {
+      payload.user_id = parseInt(formData.user_id, 10);
+    } else {
+      payload.name = formData.name.trim();
+      payload.email = formData.email.trim();
+      if (formData.mobile?.trim()) payload.mobile = formData.mobile.trim();
+      if (formData.country?.trim()) payload.country = formData.country.trim();
+      if (formData.city?.trim()) payload.city = formData.city.trim();
+      if (formData.address?.trim()) payload.address = formData.address.trim();
+    }
+
+    // Admin custom override
     if (formData.use_custom_values) {
       payload.use_custom_values = true;
       if (formData.custom_price) payload.custom_price = parseFloat(formData.custom_price);
-      if (formData.custom_credit) payload.custom_credit = parseInt(formData.custom_credit);
+      if (formData.custom_credit) payload.custom_credit = parseInt(formData.custom_credit, 10);
     }
+
+    // Clean undefined fields
+    Object.keys(payload).forEach((key) => {
+      if (payload[key] === undefined) delete payload[key];
+    });
 
     return payload;
   };
 
-  // ✅ Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -250,11 +226,12 @@ export default function CreateOrder() {
 
     try {
       const token = localStorage.getItem("token");
+      if (!token) throw new Error("Authentication required");
+
       const payload = buildPayload();
+      console.log("Sending payload:", payload);
 
-      console.log("Submitting order:", payload);
-
-      const response = await fetch("https://api.glassworld06.com/api/orders", {
+      const res = await fetch("https://api.glassworld06.com/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -263,25 +240,23 @@ export default function CreateOrder() {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
+      if (!res.ok) {
         throw new Error(data.message || "Failed to create order");
       }
 
-      setSubmitStatus({ 
-        success: true, 
-        message: `Order #${data.order_id} created successfully!` 
+      setSubmitStatus({
+        success: true,
+        message: `Order #${data.order_id || "new"} created successfully!`,
       });
 
-      // Redirect to orders list after short delay
-      setTimeout(() => router.push("/admin/orders"), 1500);
-
+      setTimeout(() => router.push("/admin/orders"), 1800);
     } catch (err) {
-      console.error("Order creation error:", err);
-      setSubmitStatus({ 
-        success: false, 
-        message: err.message || "Error creating order. Please try again." 
+      console.error("Order creation failed:", err);
+      setSubmitStatus({
+        success: false,
+        message: err.message || "Could not create order. Please check your input.",
       });
     } finally {
       setLoading(false);
@@ -290,25 +265,29 @@ export default function CreateOrder() {
 
   if (fetchingData) {
     return (
-      <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
-        <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 text-center">
-          <div className="text-gray-600">Loading required data...</div>
-        </div>
-      </main>
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="text-lg text-gray-600">Loading form data...</div>
+      </div>
     );
   }
 
-  const packagePriceDetails = selectedItem ? getPackagePriceDetails(selectedItem) : null;
+  const showPriceTierSelector =
+    formData.item_type === "package" &&
+    selectedItem?.price &&
+    Array.isArray(selectedItem.price) &&
+    selectedItem.price.length > 1;
 
   return (
-    <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
+    <main className="flex-1 bg-gray-100 min-h-screen p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-3xl p-4 md:p-6">
-          {/* Status Message */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+
           {submitStatus.message && (
             <div
-              className={`mb-6 p-4 rounded-md ${
-                submitStatus.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+              className={`mb-6 p-4 rounded-lg ${
+                submitStatus.success
+                  ? "bg-green-50 text-green-800 border border-green-200"
+                  : "bg-red-50 text-red-800 border border-red-200"
               }`}
             >
               {submitStatus.message}
@@ -316,74 +295,66 @@ export default function CreateOrder() {
           )}
 
           <form onSubmit={handleSubmit}>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Create New Order</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Create New Order</h2>
 
-            {/* User Selection Section */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-                <FaUser className="mr-2 text-blue-600" /> Customer Information
+            {/* ─── CUSTOMER INFORMATION ──────────────────────────────────────── */}
+            <section className="mb-10">
+              <h3 className="text-xl font-semibold mb-5 flex items-center gap-3">
+                <FaUser className="text-blue-600" /> Customer
               </h3>
-              
-              {/* User Type Toggle */}
-              <div className="flex gap-4 mb-6">
-                <label className="flex items-center">
+
+              <div className="flex gap-6 mb-6">
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="user_type"
-                    value="existing"
                     checked={formData.user_type === "existing"}
                     onChange={() => handleUserTypeChange("existing")}
-                    className="mr-2"
+                    className="w-4 h-4"
                   />
-                  <span className="text-sm">Select Existing User</span>
+                  <span>Existing User</span>
                 </label>
-                <label className="flex items-center">
+                <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="user_type"
-                    value="new"
                     checked={formData.user_type === "new"}
                     onChange={() => handleUserTypeChange("new")}
-                    className="mr-2"
+                    className="w-4 h-4"
                   />
-                  <span className="text-sm">Create New User</span>
+                  <span>New Customer</span>
                 </label>
               </div>
 
-              {/* Existing User Dropdown */}
-              {formData.user_type === "existing" && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">Select User *</label>
+              {formData.user_type === "existing" ? (
+                <div>
+                  <label className="block text-sm font-medium mb-2">Select User *</label>
                   <select
                     name="user_id"
                     value={formData.user_id}
                     onChange={handleChange}
-                    className={`w-full rounded-md border px-3 py-2 ${
+                    className={`w-full border rounded-lg px-4 py-2.5 ${
                       errors.user_id ? "border-red-500" : "border-gray-300"
                     }`}
                   >
-                    <option value="">Choose a user</option>
-                    {users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name} ({user.email})
+                    <option value="">— Select user —</option>
+                    {users.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name} — {u.email}
                       </option>
                     ))}
                   </select>
                   {errors.user_id && <p className="text-red-600 text-sm mt-1">{errors.user_id}</p>}
                 </div>
-              )}
-
-              {/* New User Fields */}
-              {formData.user_type === "new" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Full Name *</label>
+                    <label className="block text-sm font-medium mb-1.5">Full Name *</label>
                     <input
-                      type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className={`w-full rounded-md border px-3 py-2 ${
+                      className={`w-full border rounded-lg px-4 py-2.5 ${
                         errors.name ? "border-red-500" : "border-gray-300"
                       }`}
                       placeholder="John Doe"
@@ -391,276 +362,248 @@ export default function CreateOrder() {
                     {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Email *</label>
+                    <label className="block text-sm font-medium mb-1.5">Email *</label>
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full rounded-md border px-3 py-2 ${
+                      className={`w-full border rounded-lg px-4 py-2.5 ${
                         errors.email ? "border-red-500" : "border-gray-300"
                       }`}
-                      placeholder="user@example.com"
+                      placeholder="john@example.com"
                     />
                     {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Mobile</label>
+                    <label className="block text-sm font-medium mb-1.5">Mobile</label>
                     <input
-                      type="text"
                       name="mobile"
                       value={formData.mobile}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2"
-                      placeholder="+1234567890"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5"
+                      placeholder="+1 555 123 4567"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Country</label>
+                    <label className="block text-sm font-medium mb-1.5">Country</label>
                     <input
-                      type="text"
                       name="country"
                       value={formData.country}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2"
-                      placeholder="USA"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">City</label>
+                    <label className="block text-sm font-medium mb-1.5">City</label>
                     <input
-                      type="text"
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2"
-                      placeholder="New York"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-1">Address</label>
+                    <label className="block text-sm font-medium mb-1.5">Address</label>
                     <input
-                      type="text"
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2"
-                      placeholder="Street address"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5"
                     />
                   </div>
                 </div>
               )}
-            </div>
+            </section>
 
-            {/* Order Details Section */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-                <FaBox className="mr-2 text-blue-600" /> Order Details
+            {/* ─── ORDER DETAILS ─────────────────────────────────────────────── */}
+            <section className="mb-10">
+              <h3 className="text-xl font-semibold mb-5 flex items-center gap-3">
+                <FaBox className="text-blue-600" /> Order Details
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Item Type */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Order Type *</label>
+                  <label className="block text-sm font-medium mb-1.5">Order Type *</label>
                   <select
                     name="item_type"
                     value={formData.item_type}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5"
                   >
                     <option value="package">Package</option>
                     <option value="guest_posting">Guest Posting</option>
                   </select>
                 </div>
 
-                {/* Item Selection */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1.5">
                     Select {formData.item_type === "package" ? "Package" : "Site"} *
                   </label>
                   <select
                     name="item_id"
                     value={formData.item_id}
                     onChange={handleChange}
-                    className={`w-full rounded-md border px-3 py-2 ${
+                    className={`w-full border rounded-lg px-4 py-2.5 ${
                       errors.item_id ? "border-red-500" : "border-gray-300"
                     }`}
                   >
-                    <option value="">Choose...</option>
-                    {formData.item_type === "package" 
-                      ? packages.map((pkg) => {
-                          const priceDetails = getPackagePriceDetails(pkg);
-                          return (
-                            <option key={pkg.id || pkg.slug} value={pkg.id || pkg.slug}>
-                              {pkg.name} - {pkg.credit ? ` ${pkg.credit} credits` : ''}
-                            </option>
-                          );
-                        })
-                      : guestPostingSites.map((site) => (
-                          <option key={site.id} value={site.id}>
-                            {site.publication} - ${parseFloat(site.price || 0).toFixed(2)}
+                    <option value="">— Choose —</option>
+
+                    {formData.item_type === "package"
+                      ? packages.map((pkg) => (
+                          <option key={pkg.id} value={pkg.id}>
+                            {pkg.name}
+                            {pkg.credit ? ` (${pkg.credit} credit${pkg.credit > 1 ? "s" : ""})` : ""}
                           </option>
                         ))
-                    }
+                      : guestPostingSites.map((site) => (
+                          <option key={site.id} value={site.id}>
+                            {site.publication} — ${parseFloat(site.price || 0).toFixed(2)}
+                          </option>
+                        ))}
                   </select>
                   {errors.item_id && <p className="text-red-600 text-sm mt-1">{errors.item_id}</p>}
                 </div>
 
-                {/* Quantity */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Quantity *</label>
+                  <label className="block text-sm font-medium mb-1.5">Quantity *</label>
                   <input
                     type="number"
                     name="quantity"
                     value={formData.quantity}
                     onChange={handleChange}
                     min="1"
-                    className={`w-full rounded-md border px-3 py-2 ${
+                    className={`w-full border rounded-lg px-4 py-2.5 ${
                       errors.quantity ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   {errors.quantity && <p className="text-red-600 text-sm mt-1">{errors.quantity}</p>}
                 </div>
 
-                {/* Price Index (for packages with multiple price tiers) */}
-                {formData.item_type === "package" && selectedItem?.price && selectedItem.price.length > 1 && (
+                {showPriceTierSelector && (
                   <div>
-                    <label className="block text-sm font-medium mb-1">Select Price Tier</label>
+                    <label className="block text-sm font-medium mb-1.5">Price Tier</label>
                     <select
                       name="price_index"
                       value={formData.price_index}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5"
                     >
-                      {selectedItem.price.map((price, index) => (
-                        <option key={index} value={index}>
-                          Tier {index + 1}: ${parseFloat(price).toFixed(2)}
-                          {selectedItem.credit ? ` (${selectedItem.credit * (index + 1)} credits)` : ''}
+                      {selectedItem.price.map((price, idx) => (
+                        <option key={idx} value={idx}>
+                          Tier {idx + 1} — ${parseFloat(price).toFixed(2)}
                         </option>
                       ))}
                     </select>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {selectedItem.price.length} price tiers available
-                    </p>
-                  </div>
-                )}
-
-                {/* Show package info */}
-                {formData.item_type === "package" && selectedItem && (
-                  <div className="md:col-span-2 mt-2 p-3 bg-blue-50 rounded-md">
-                    <h4 className="text-sm font-medium text-blue-800 mb-1">Package Details</h4>
-                    <p className="text-xs text-blue-600 mb-1">{selectedItem.description}</p>
-                    {selectedItem.features && selectedItem.features.length > 0 && (
-                      <div className="text-xs text-blue-600">
-                        <span className="font-medium">Features:</span>{' '}
-                        {selectedItem.features.filter(f => f.included).map(f => f.text).join(', ')}
-                      </div>
-                    )}
-                    {selectedItem.demo_report_url && (
-                      <a 
-                        href={selectedItem.demo_report_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-xs text-blue-700 underline mt-1 inline-block"
-                      >
-                        View Demo Report
-                      </a>
-                    )}
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Admin Overrides Section */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-                <FaDollarSign className="mr-2 text-blue-600" /> Admin Overrides
+              {formData.item_type === "package" && selectedItem && (
+                <div className="mt-5 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <h4 className="font-medium text-blue-800 mb-2">Package: {selectedItem.name}</h4>
+                  {selectedItem.description && (
+                    <p className="text-sm text-gray-700 mb-2">{selectedItem.description}</p>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* ─── ADMIN OVERRIDES ───────────────────────────────────────────── */}
+            <section className="mb-10">
+              <h3 className="text-xl font-semibold mb-5 flex items-center gap-3">
+                <FaDollarSign className="text-blue-600" /> Admin Overrides
               </h3>
 
-              <div className="mb-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="use_custom_values"
-                    checked={formData.use_custom_values}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  <span className="text-sm font-medium">Use Custom Price/Credits</span>
-                </label>
-              </div>
+              <label className="flex items-center gap-3 cursor-pointer mb-4">
+                <input
+                  type="checkbox"
+                  name="use_custom_values"
+                  checked={formData.use_custom_values}
+                  onChange={handleChange}
+                  className="w-5 h-5"
+                />
+                <span className="font-medium">Use custom price & credits (admin only)</span>
+              </label>
 
               {formData.use_custom_values && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Custom Price *</label>
+                    <label className="block text-sm font-medium mb-1.5">Custom Price *</label>
                     <input
                       type="number"
                       name="custom_price"
                       value={formData.custom_price}
                       onChange={handleChange}
                       step="0.01"
-                      min="0"
-                      className={`w-full rounded-md border px-3 py-2 ${
+                      min="0.01"
+                      className={`w-full border rounded-lg px-4 py-2.5 ${
                         errors.custom_price ? "border-red-500" : "border-gray-300"
                       }`}
-                      placeholder="0.00"
+                      placeholder="150.00"
                     />
-                    {errors.custom_price && <p className="text-red-600 text-sm mt-1">{errors.custom_price}</p>}
+                    {errors.custom_price && (
+                      <p className="text-red-600 text-sm mt-1">{errors.custom_price}</p>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Custom Credits</label>
+                    <label className="block text-sm font-medium mb-1.5">Custom Credits</label>
                     <input
                       type="number"
                       name="custom_credit"
                       value={formData.custom_credit}
                       onChange={handleChange}
                       min="0"
-                      className="w-full rounded-md border border-gray-300 px-3 py-2"
-                      placeholder="0"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5"
+                      placeholder="30"
                     />
                   </div>
                 </div>
               )}
-            </div>
+            </section>
 
-            {/* Services Section */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-                <FaCog className="mr-2 text-blue-600" /> Additional Services
+            {/* ─── ADDITIONAL SERVICES ───────────────────────────────────────── */}
+            <section className="mb-10">
+              <h3 className="text-xl font-semibold mb-5 flex items-center gap-3">
+                <FaCog className="text-blue-600" /> Additional Services
               </h3>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Word Option</label>
+                <label className="block text-sm font-medium mb-1.5">Word Option</label>
                 <select
+                  value={formData.services.word_option || ""}
                   onChange={(e) => handleServiceChange("word_option", e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5"
                 >
-                  <option value="">Select word count</option>
+                  <option value="">None / Default</option>
                   <option value="500+ Words Article">500+ Words Article</option>
                   <option value="1000+ Words Article">1000+ Words Article</option>
                   <option value="1500+ Words Article">1500+ Words Article</option>
                 </select>
               </div>
-            </div>
+            </section>
 
-            {/* Submit Button */}
-            <div className="mt-8 flex justify-end gap-3">
+            {/* ─── ACTIONS ───────────────────────────────────────────────────── */}
+            <div className="flex justify-end gap-4 mt-10">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-5 py-2 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300"
+                className="px-6 py-2.5 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
               >
                 Cancel
               </button>
+
               <button
                 type="submit"
                 disabled={loading}
-                className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 ${
-                  loading ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800"
+                className={`px-8 py-2.5 text-white font-medium rounded-lg transition ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                 }`}
               >
-                {loading ? "Creating Order..." : "Create Order"}
+                {loading ? "Creating..." : "Create Order"}
               </button>
             </div>
           </form>

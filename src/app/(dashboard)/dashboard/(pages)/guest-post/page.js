@@ -42,7 +42,7 @@ export default function GuestPost() {
 
         // ✅ Keep only guest posting orders
         const guestPostOrders = data.data.filter(order =>
-          order.items.some(item => item.item_type === "package")
+          order.items.some(item => item.item_type === "guest_posting")
         );
 
         setOrders(guestPostOrders);
