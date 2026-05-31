@@ -54,8 +54,8 @@ const Footer = () => {
       <div className="md:max-w-3xl lg:max-w-5xl mx-auto border-t text-sm md:text-base text-gray-600 py-4 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
         <p className='text-white'>© Copyright 2026 Fg Newswire. All Rights Reserved.</p>
         <div className="flex space-x-4 mt-2 md:mt-0">
-          <Link href="#" className="text-white hover:underline">Terms</Link>
-          <Link href="#" className="text-white hover:underline">Privacy</Link>
+          <Link href="/terms-of-services" className="text-white hover:underline">Terms</Link>
+          <Link href="/privacy-policy" className="text-white hover:underline">Privacy</Link>
         </div>
       </div>
 

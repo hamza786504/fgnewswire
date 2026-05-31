@@ -1,134 +1,111 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function PressReleaseCreate() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
+    order_item_id: "",
     title: "",
     excerpt: "",
     body: "",
-    featured_image: null,
-    pr_type_id: "",
     company_id: "",
-    status: "draft",
-    published_at: "",
-    category_id: ""
+    categories: [],
+    featured_image: null,
+    meta_title: "",
+    meta_description: "",
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState({ success: null, message: "" });
-  const [companies, setCompanies] = useState([]);
-  const [prTypes, setPrTypes] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [availableCategories, setAvailableCategories] = useState([]);
+  const [availableOrders, setAvailableOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [selectedPackage, setSelectedPackage] = useState(null);
 
-
-
-
+  // Fetch categories and available orders on mount
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          setSubmitStatus({
-            success: false,
-            message: "Authentication token not found. Please log in again.",
-          });
-          return;
+        
+        // Fetch categories
+        const catRes = await fetch("https://api.glassworld06.com/api/categories", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const catResult = await catRes.json();
+        if (catResult.status === "success") {
+          setAvailableCategories(catResult.data || []);
         }
 
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-
-const [companiesRes, prTypesRes, categoriesRes] = await Promise.all([
-  fetch("https://api.glassworld06.com/api/companies", { headers }),
-  fetch("https://api.glassworld06.com/api/pr-types", { headers }),
-  fetch("https://api.glassworld06.com/api/categories", { headers }),
-]);
-
-if (!companiesRes.ok) throw new Error("Failed to fetch companies");
-if (!prTypesRes.ok) throw new Error("Failed to fetch PR types");
-if (!categoriesRes.ok) throw new Error("Failed to fetch categories");
-
-const companiesData = await companiesRes.json();
-const prTypesData = await prTypesRes.json();
-const categoriesData = await categoriesRes.json();
-
-// Companies
-setCompanies(companiesData.data || companiesData || []);
-
-// PR Types
-setPrTypes(prTypesData.data || prTypesData || []);
-
-// Categories (NOW DYNAMIC ✅)
-setCategories(categoriesData.data || categoriesData || []);
-
-      } catch (error) {
-        console.error(error);
-        setSubmitStatus({
-          success: false,
-          message: "Failed to load form data. Please try again.",
+        // Fetch orders with press release items
+        const ordersRes = await fetch("https://api.glassworld06.com/api/all_orders", {
+          headers: { Authorization: `Bearer ${token}` },
         });
+        const ordersResult = await ordersRes.json();
+        
+        if (ordersResult.status === "success") {
+          console.log(ordersResult.data);
+          // Filter orders that have press_release items
+          // const pressReleaseOrders = [];
+          // ordersResult.data.forEach(order => {
+          //   order.items?.forEach(item => {
+          //     if (item.item_type === "press_release" && item.remaining_credits > 0) {
+          //       pressReleaseOrders.push({
+          //         order_item_id: item.id,
+          //         package_name: item.item?.name || "Press Release Package",
+          //         order_number: order.order_number,
+          //         remaining_credits: item.remaining_credits,
+          //         created_at: order.created_at,
+          //         item_details: item
+          //       });
+          //     }
+          //   });
+          // });
+          setAvailableOrders(ordersResult.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       } finally {
-        setIsLoading(false);
+        setLoadingOrders(false);
       }
     };
-
-    fetchInitialData();
+    fetchData();
   }, []);
 
-
-  // Handle text field change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
-    // Clear error for this field when user starts typing
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: "" });
+    
+    // If order_item_id changes, find the selected package
+    if (name === "order_item_id") {
+      const selected = availableOrders.find(order => order.order_item_id === parseInt(value));
+      setSelectedPackage(selected);
     }
   };
 
-  // Handle file upload
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-      if (!validTypes.includes(file.type)) {
-        setErrors({
-          ...errors,
-          featured_image: "Please upload a valid image (JPG, PNG, WebP)"
-        });
-        return;
+  const handleCategoryChange = (e) => {
+    const options = e.target.options;
+    const selectedValues = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        selectedValues.push(parseInt(options[i].value));
       }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors({
-          ...errors,
-          featured_image: "Image size should be less than 5MB"
-        });
-        return;
-      }
-
-      setFormData({ ...formData, featured_image: file });
-      setErrors({ ...errors, featured_image: "" });
     }
+    setFormData({ ...formData, categories: selectedValues });
   };
 
+  const handleImageChange = (e) => {
+    setFormData({ ...formData, featured_image: e.target.files[0] });
+  };
 
   const validateForm = () => {
     const newErrors = {};
-
+    if (!formData.order_item_id) newErrors.order_item_id = "Please select a purchased press release package.";
     if (!formData.title.trim()) newErrors.title = "Title is required.";
-    if (!formData.excerpt.trim()) newErrors.excerpt = "Excerpt is required.";
-    if (!formData.body.trim()) newErrors.body = "Content is required.";
-    if (!formData.pr_type_id) newErrors.pr_type_id = "PR Type is required.";
-    if (!formData.company_id) newErrors.company_id = "Company is required.";
-
-
+    if (!formData.body.trim()) newErrors.body = "Body content is required.";
+    if (formData.excerpt && formData.excerpt.length > 500) newErrors.excerpt = "Excerpt must be less than 500 characters.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -142,310 +119,295 @@ setCategories(categoriesData.data || categoriesData || []);
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authentication token not found. Please log in again.");
-      }
-
-      // Create FormData object
       const formDataToSend = new FormData();
 
-      // Add text fields
+      // Required fields
+      formDataToSend.append("order_item_id", formData.order_item_id);
       formDataToSend.append("title", formData.title);
-      formDataToSend.append("excerpt", formData.excerpt);
       formDataToSend.append("body", formData.body);
-      formDataToSend.append("pr_type_id", formData.pr_type_id);
-      formDataToSend.append("company_id", formData.company_id);
-      formDataToSend.append("status", formData.status);
+      
+      // Optional fields
+      if (formData.excerpt) formDataToSend.append("excerpt", formData.excerpt);
+      if (formData.company_id) formDataToSend.append("company_id", formData.company_id);
+      if (formData.meta_title) formDataToSend.append("meta_title", formData.meta_title);
+      if (formData.meta_description) formDataToSend.append("meta_description", formData.meta_description);
+      if (formData.featured_image) formDataToSend.append("featured_image", formData.featured_image);
+      
+      // Append categories as array
+      formData.categories.forEach(catId => {
+        formDataToSend.append("categories[]", catId);
+      });
 
-      if (formData.published_at) {
-        // Convert to ISO format for backend
-        const publishedDate = new Date(formData.published_at);
-        formDataToSend.append("published_at", publishedDate.toISOString());
-      }
-
-      if (formData.category_id) {
-        formDataToSend.append("category_id", formData.category_id);
-      }
-
-      if (formData.featured_image) {
-        formDataToSend.append("featured_image", formData.featured_image);
-      }
-
-      // Log FormData for debugging
-      console.log("Form data being sent:");
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0], pair[1]);
-      }
+      console.log(formDataToSend);
+// Log each entry individually
+for (let pair of formDataToSend.entries()) {
+  console.log(pair[0], pair[1]);
+}
 
       const response = await fetch("https://api.glassworld06.com/api/press-releases", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Accept": "application/json",
-    // Remove "Content-Type" header - it will be set automatically for FormData
-  },
-  body: formDataToSend, // This should be a FormData object
-}); 
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
 
       const responseData = await response.json();
-      console.log("Response data:", responseData);
 
       if (!response.ok) {
-        // Handle validation errors from backend
-        if (response.status === 422 && responseData.errors) {
+        if (responseData.errors) {
           const backendErrors = {};
           Object.keys(responseData.errors).forEach(key => {
             backendErrors[key] = responseData.errors[key][0];
           });
           setErrors(backendErrors);
-          throw new Error("Validation failed. Please check the form.");
+          throw new Error("Validation failed from backend");
         }
-
-        if (response.status === 403) {
-          throw new Error(responseData.message || "Insufficient credits to create press release.");
-        }
-
-        throw new Error(responseData.message || `Failed to create press release. Status: ${response.status}`);
+        throw new Error(responseData.message || "Failed to create press release");
       }
 
-      setSubmitStatus({
-        success: true,
-        message: `Press Release created successfully! ${responseData.remaining_credits ? `Remaining credits: ${responseData.remaining_credits}` : ''}`
+      setSubmitStatus({ 
+        success: true, 
+        message: responseData.message || "Press release created successfully!" 
       });
-
-      // Reset form on success
-      setFormData({
-        title: "",
-        excerpt: "",
-        body: "",
-        featured_image: null,
-        pr_type_id: "",
-        company_id: "",
-        status: "draft",
-        published_at: "",
-        category_id: ""
-      });
-
-      // Clear file input
-      const fileInput = document.querySelector('input[type="file"]');
-      if (fileInput) fileInput.value = "";
+      setTimeout(() => router.push("/dashboard/pressrelease"), 1500);
 
     } catch (err) {
-      console.error("Submission error:", err);
+      console.error(err);
       setSubmitStatus({
         success: false,
-        message: err.message || "Error adding press release. Please try again."
+        message: err.message || "Error creating press release. Please try again."
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (isLoading) {
-    return (
-      <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
-        <div className="max-w-5xl mx-auto bg-white rounded-3xl p-8 text-center">
-          <div className="flex justify-center items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-          <p className="mt-4 text-gray-600">Loading form data...</p>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="flex-1 bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
       <div className="max-w-5xl mx-auto bg-white rounded-3xl p-4 md:p-6">
         {submitStatus.message && (
           <div
-            className={`mb-4 p-3 rounded-md ${submitStatus.success ? "bg-green-100 text-green-800 border border-green-200" : "bg-red-100 text-red-800 border border-red-200"
-              }`}
+            className={`mb-4 p-3 rounded-md ${
+              submitStatus.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}
           >
             {submitStatus.message}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
+        <form onSubmit={handleSubmit}>
           <h2 className="text-lg font-semibold text-gray-900 mb-5">Create New Press Release</h2>
 
+          {/* Order Item Selection - Most Important */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium">Select Purchased Package *</label>
+            {loadingOrders ? (
+              <div className="mt-2 text-gray-500">Loading your purchases...</div>
+            ) : availableOrders.length === 0 ? (
+              <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                <p className="text-yellow-800 text-sm">
+                  You don't have any press release packages with available credits.
+                </p>
+                <p className="text-yellow-600 text-xs mt-1">
+                  Please purchase a press release package first.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => router.push("/packages")}
+                  className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+                >
+                  Browse Packages →
+                </button>
+              </div>
+            ) : (
+              <>
+                <select
+                  name="order_item_id"
+                  value={formData.order_item_id}
+                  onChange={handleChange}
+                  className={`mt-1 block w-full rounded-md border px-3 py-2 ${
+                    errors.order_item_id ? "border-red-500" : "border-gray-300"
+                  }`}
+                >
+                  <option>Select a package...</option>
+                    {availableOrders
+  ?.filter((order) => order.item?.item_type === "press_release")
+  .map((order) => (
+    <option key={order.id} value={order.id}>
+      {order.item.name}
+    </option>
+  ))}
+                </select>
+                {errors.order_item_id && <p className="text-red-600 text-sm mt-1">{errors.order_item_id}</p>}
+                
+                {/* Show selected package details */}
+                {selectedPackage && (
+                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <p className="text-sm text-blue-800">
+                      <strong>Selected Package:</strong> {selectedPackage.package_name}
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Order #{selectedPackage.order_number} | Remaining Credits: {selectedPackage.remaining_credits}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
           {/* Title */}
-          <div className="mt-5">
-            <label className="block text-sm font-medium text-gray-700">Title *</label>
+          <div className="mb-5">
+            <label className="block text-sm font-medium">Title *</label>
             <input
               name="title"
               value={formData.title}
               onChange={handleChange}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 ${
+                errors.title ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="Enter press release title"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.title ? "border-red-500" : "border-gray-300"
-                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
             />
             {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
           </div>
 
-          {/* Company and PR Type */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Company *</label>
-              <select
-                name="company_id"
-                value={formData.company_id}
-                onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.company_id ? "border-red-500" : "border-gray-300"
-                  } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
-              >
-                <option value="">Select Company</option>
-                {companies.length > 0 ? (
-                  companies.map(company => (
-                    <option key={company.id} value={company.id}>
-                      {company.name || `Company ${company.id}`}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>No companies found. Please create a company first.</option>
-                )}
-              </select>
-              {errors.company_id && <p className="text-red-600 text-sm mt-1">{errors.company_id}</p>}
-              <p className="text-xs text-gray-500 mt-1">
-                {companies.length === 0 && "You need to create a company first before adding a press release."}
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">PR Type *</label>
-              <select
-                name="pr_type_id"
-                value={formData.pr_type_id}
-                onChange={handleChange}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.pr_type_id ? "border-red-500" : "border-gray-300"
-                  } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
-              >
-                <option value="">Select PR Type</option>
-                {prTypes.length > 0 ? (
-                  prTypes.map(type => (
-                    <option key={type.id} value={type.id}>
-                      {type.name} ({type.credit_cost} credits)
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>No PR types available</option>
-                )}
-              </select>
-              {errors.pr_type_id && <p className="text-red-600 text-sm mt-1">{errors.pr_type_id}</p>}
-            </div>
-          </div>
-
           {/* Excerpt */}
-          <div className="mt-5">
-            <label className="block text-sm font-medium text-gray-700">Excerpt *</label>
+          <div className="mb-5">
+            <label className="block text-sm font-medium">Excerpt (Short Summary)</label>
             <textarea
               name="excerpt"
               rows="2"
               value={formData.excerpt}
               onChange={handleChange}
-              placeholder="Short description or summary"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.excerpt ? "border-red-500" : "border-gray-300"
-                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
-            ></textarea>
-            {errors.excerpt && <p className="text-red-600 text-sm mt-1">{errors.excerpt}</p>}
+              className={`mt-1 block w-full rounded-md border px-3 py-2 ${
+                errors.excerpt ? "border-red-500" : "border-gray-300"
+              }`}
+              placeholder="Brief summary of the press release (max 500 characters)..."
+              maxLength="500"
+            />
+            <div className="flex justify-between mt-1">
+              {errors.excerpt && <p className="text-red-600 text-sm">{errors.excerpt}</p>}
+              <p className="text-xs text-gray-500 ml-auto">
+                {formData.excerpt.length}/500 characters
+              </p>
+            </div>
           </div>
 
-          {/* Content */}
-          <div className="mt-5">
-            <label className="block text-sm font-medium text-gray-700">Content *</label>
+          {/* Body */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium">Body Content *</label>
             <textarea
               name="body"
-              rows="6"
+              rows="10"
               value={formData.body}
               onChange={handleChange}
-              placeholder="Full press release content"
-              className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm ${errors.body ? "border-red-500" : "border-gray-300"
-                } focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
-            ></textarea>
+              className={`mt-1 block w-full rounded-md border px-3 py-2 font-mono text-sm ${
+                errors.body ? "border-red-500" : "border-gray-300"
+              }`}
+              placeholder="Full press release content (HTML supported)..."
+            />
             {errors.body && <p className="text-red-600 text-sm mt-1">{errors.body}</p>}
+            <p className="text-xs text-gray-500 mt-1">
+              You can use HTML tags for formatting: &lt;h1&gt;, &lt;p&gt;, &lt;strong&gt;, etc.
+            </p>
           </div>
 
-          {/* Category and Status */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Category</label>
-              <select
-                name="category_id"
-                value={formData.category_id}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-              >
-                <option value="">Select Category (Optional)</option>
-                {categories.length > 0 ? (
-                  categories.map(category => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>No categories available</option>
-                )}
-              </select>
-            </div>
-
-
+          {/* Company ID (Optional) */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium">Company ID (Optional)</label>
+            <input
+              name="company_id"
+              type="number"
+              value={formData.company_id}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+              placeholder="Enter company ID if applicable"
+            />
+            <p className="text-xs text-gray-500 mt-1">If you have a registered company, enter its ID</p>
           </div>
 
-
+          {/* Categories */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium">Categories</label>
+            <select
+              multiple
+              value={formData.categories.map(id => id.toString())}
+              onChange={handleCategoryChange}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 h-32"
+            >
+              {availableCategories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple categories</p>
+          </div>
 
           {/* Featured Image */}
-          <div className="mt-5">
-            <label className="block text-sm font-medium text-gray-700">Featured Image</label>
-            <div className="mt-1 flex items-center">
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png,.webp"
-                onChange={handleFileChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Supported formats: JPG, PNG, WebP (Max 5MB)</p>
-            {errors.featured_image && <p className="text-red-600 text-sm mt-1">{errors.featured_image}</p>}
-            {formData.featured_image && (
-              <div className="mt-2 text-sm text-green-600">
-                ✓ {formData.featured_image.name} selected
-              </div>
-            )}
+          <div className="mb-5">
+            <label className="block text-sm font-medium">Featured Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            <p className="text-xs text-gray-500 mt-1">Supported formats: JPG, PNG, WEBP</p>
           </div>
 
-          {/* Submit Button */}
-          <div className="mt-6 flex justify-end space-x-3">
+          {/* SEO Fields */}
+          <div className="border-t border-gray-200 pt-5 mt-5">
+            <h3 className="text-md font-medium text-gray-900 mb-4">SEO Settings (Optional)</h3>
+            
+            {/* Meta Title */}
+            <div className="mb-5">
+              <label className="block text-sm font-medium">Meta Title</label>
+              <input
+                name="meta_title"
+                value={formData.meta_title}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                placeholder="SEO title (60 characters recommended)"
+                maxLength="60"
+              />
+            </div>
+
+            {/* Meta Description */}
+            <div className="mb-5">
+              <label className="block text-sm font-medium">Meta Description</label>
+              <textarea
+                name="meta_description"
+                rows="2"
+                value={formData.meta_description}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                placeholder="SEO description (160 characters recommended)"
+                maxLength="160"
+              />
+            </div>
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="mt-6 flex justify-end gap-3">
             <button
               type="button"
-              onClick={() => window.history.back()}
-              className="px-5 py-2 rounded-lg text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors text-sm font-medium"
+              onClick={() => router.push("/dashboard/pressrelease")}
+              className="px-5 py-2 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || companies.length === 0}
-              className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 text-sm font-medium ${isSubmitting || companies.length === 0 ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800"
-                } transition-colors`}
+              disabled={isSubmitting || availableOrders.length === 0}
+              className={`px-5 py-2 rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-700 ${
+                isSubmitting || availableOrders.length === 0
+                  ? "opacity-50 cursor-not-allowed" 
+                  : "hover:from-blue-600 hover:to-purple-800 transition-all"
+              }`}
             >
-              {isSubmitting ? (
-                <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Adding...
-                </span>
-              ) : companies.length === 0 ? (
-                "Create Company First"
-              ) : (
-                "Create Press Release"
-              )}
+              {isSubmitting ? "Creating..." : "Create Press Release"}
             </button>
-          </div>
-
-          <div className="mt-4 text-xs text-gray-500">
-            * Required fields. Adding a press release will automatically deduct credits based on the selected PR type.
           </div>
         </form>
       </div>

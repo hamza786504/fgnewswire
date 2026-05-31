@@ -46,7 +46,7 @@ export default function OrdersPage() {
         throw new Error(json.message || 'Failed to load orders');
       }
       console.log(json.data);
-      
+
 
       setOrders(json.data || []);
 
@@ -92,10 +92,10 @@ export default function OrdersPage() {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="p-2 border text-left">Order</th>
+                  <th className="p-2 border text-left">Package Name</th>
                   <th className="p-2 border text-left">Type</th>
                   <th className="p-2 border text-left">Credits</th>
                   <th className="p-2 border text-left">Price</th>
-                  <th className="p-2 border text-left">Status</th>
                   <th className="p-2 border text-left">Date</th>
                 </tr>
               </thead>
@@ -109,37 +109,26 @@ export default function OrdersPage() {
                     <td className="p-2 border font-medium">
                       {order.order_number}
                     </td>
+                    <td className="p-2 border capitalize">
+                       {order?.item?.name}
+                    </td>
 
                     <td className="p-2 border capitalize">
-                      {order.order_type === 'guest_posting'
+                      {order?.item?.item_type === 'guest_posting'
                         ? 'Guest Posting'
-                        : 'Press Release'}
+                        : order?.item?.item_type === 'press_release'
+                          ? 'Press Release'
+                          : 'N/A'}
                     </td>
 
                     <td className="p-2 border">
-                      {order.total_credit}
+                      {order.item.remaining_credits} out of {order.total_credit} 
                     </td>
 
                     <td className="p-2 border">
                       ${order.total_price}
                     </td>
 
-                    <td className="p-2 border">
-
-                      <span
-                        className={`px-2 py-1 text-xs rounded 
-                        ${
-                          order.status === 'completed'
-                            ? 'bg-green-100 text-green-700'
-                            : order.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-
-                    </td>
 
                     <td className="p-2 border">
                       {new Date(order.created_at).toLocaleDateString()}

@@ -27,6 +27,7 @@ export default function Header() {
   const navLinks = [
     { link: 'Home', href: '/' },
     { link: 'Guest Posting Packages', href: '/guest-posting-package' },
+    { link: 'Premium Publictions', href: '/sites' },
     { link: 'Press Release', href: '/press-release' },
     { link: 'Plans', href: '/plans' },
     { link: 'News Room', href: '/news-room' },

@@ -114,13 +114,13 @@ function Sidebar() {
                 </Link>
               </li>
              
-              {/* <li>
-                <Link href="/admin/guest-post" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+              <li>
+                <Link href="/admin/pressrelease" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCube className="mr-3" />
-                  <span>Guest Posting</span>
+                  <span>Press Releases</span>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/admin/pressrooms" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaNewspaper className="mr-3" />
                   <span>Press Room</span>

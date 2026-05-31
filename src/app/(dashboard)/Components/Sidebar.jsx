@@ -25,9 +25,7 @@ function Sidebar() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-
   })
-
 
   const toggleSubmenu = (menu) => {
     if (activeSubmenu === menu) {
@@ -85,7 +83,7 @@ function Sidebar() {
                   <ul className="ml-8 mt-1 space-y-1">
                     <li>
                       <Link href="/dashboard/pressrelease" className="block px-4 py-2 text-black rounded-md text-sm">
-                        View Press Release
+                        View Press Releases
                       </Link>
                     </li>
                     <li>
@@ -113,24 +111,24 @@ function Sidebar() {
                   <ul className="ml-8 mt-1 space-y-1">
                     <li>
                       <Link href="/dashboard/guest-post" className="block px-4 py-2 text-black rounded-md text-sm">
-                        View All Guest Posts
+                        View Guest Posts
                       </Link>
                     </li>
                     <li>
                       <Link href="/dashboard/guest-post/create" className="block px-4 py-2 text-black rounded-md text-sm">
-                        Create New Guest Post
+                        Add Guest Post
                       </Link>
                     </li>
                   </ul>
                 )}
               </li>
 
-              <li>
+              {/* <li>
                 <Link href="/dashboard/reports" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaChartBar className="mr-3" />
                   <span>Reports</span>
                 </Link>
-              </li>
+              </li> */}
 
               <li>
                 <button
@@ -160,18 +158,79 @@ function Sidebar() {
                 )}
               </li>
 
-              <li>
-                <Link href="/dashboard/package" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+
+               <li>
+                <Link href="/dashboard/package/available" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCube className="mr-3" />
-                  <span>Packages</span>
+                  <span>PR Packages</span>
                 </Link>
               </li>
-              <li>
+
+              {/* Packages Section with Tabs */}
+              {/* <li>
+                <button
+                  onClick={() => toggleSubmenu('packages')}
+                  className="flex items-center justify-between w-full px-4 py-2 text-black rounded-md"
+                >
+                  <div className="flex items-center">
+                    <FaCube className="mr-3" />
+                    <span>PR Packages</span>
+                  </div>
+                  <FaChevronDown className={`text-xs transition-transform ${activeSubmenu === 'packages' ? 'rotate-180' : ''}`} />
+                </button>
+
+                {activeSubmenu === 'packages' && (
+                  <ul className="ml-8 mt-1 space-y-1">
+                    <li>
+                      <Link href="/dashboard/package/available" className="block px-4 py-2 text-black rounded-md text-sm">
+                        Available Packages
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/dashboard/package/my-packages" className="block px-4 py-2 text-black rounded-md text-sm">
+                        My Packages
+                      </Link>
+                    </li>
+                  </ul>
+                )}
+              </li> */}
+
+              {/* Guest Posting Package Section with Tabs */}
+              {/* <li>
+                <button
+                  onClick={() => toggleSubmenu('guestPackages')}
+                  className="flex items-center justify-between w-full px-4 py-2 text-black rounded-md"
+                >
+                  <div className="flex items-center">
+                    <FaCube className="mr-3" />
+                    <span>Guest Posting Package</span>
+                  </div>
+                  <FaChevronDown className={`text-xs transition-transform ${activeSubmenu === 'guestPackages' ? 'rotate-180' : ''}`} />
+                </button>
+
+                {activeSubmenu === 'guestPackages' && (
+                  <ul className="ml-8 mt-1 space-y-1">
+                    <li>
+                      <Link href="/dashboard/guest-post-package/available" className="block px-4 py-2 text-black rounded-md text-sm">
+                        Available Packages
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/dashboard/guest-post-package/my-packages" className="block px-4 py-2 text-black rounded-md text-sm">
+                        My Packages
+                      </Link>
+                    </li>
+                  </ul>
+                )}
+              </li> */}
+
+               <li>
                 <Link href="/dashboard/guest-post-package" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
-                  <FaCube className="mr-3" />
+                  <FaChartBar className="mr-3" />
                   <span>Guest Posting Package</span>
                 </Link>
               </li>
+
               <li>
                 <Link href="/dashboard/orders" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaEnvelope className="mr-3" />

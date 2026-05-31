@@ -63,9 +63,15 @@ function Sidebar() {
             <ul className="space-y-1">
 
               <li>
-                <Link href="/manager/package" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                <Link href="/author/package" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
                   <FaCube className="mr-3" />
                   <span>Packages</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/author/pressrelease" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                  <FaCube className="mr-3" />
+                  <span>Press Release</span>
                 </Link>
               </li>
             </ul>

@@ -3,15 +3,17 @@
 import { useEffect, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import Button from '@/app/(pages)/Componenets/Elements/Button';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 
-export default function PressReleasesTable({ initialPressReleases }) {
+export default function PressReleaseTable({ initialPressReleases }) {
   const [pressReleases, setPressReleases] = useState(initialPressReleases || []);
   const [filteredPressReleases, setFilteredPressReleases] = useState(initialPressReleases || []);
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState('');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedPressRelease, setSelectedPressRelease] = useState(null);
 
   const itemsPerPage = 20;
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,8 +24,8 @@ export default function PressReleasesTable({ initialPressReleases }) {
     const filtered = pressReleases.filter(pr =>
       pr.title?.toLowerCase().includes(term) ||
       pr.excerpt?.toLowerCase().includes(term) ||
-      pr.slug?.toLowerCase().includes(term) ||
-      pr.status?.toLowerCase().includes(term)
+      pr.status?.toLowerCase().includes(term) ||
+      pr.user?.name?.toLowerCase().includes(term)
     );
     setFilteredPressReleases(filtered);
     setCurrentPage(1);
@@ -38,54 +40,87 @@ export default function PressReleasesTable({ initialPressReleases }) {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  // Delete press release
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this press release?")) return;
+  // Get status badge styling
+  const getStatusBadge = (status) => {
+    const statusStyles = {
+      approved: "bg-green-100 text-green-800",
+      draft: "bg-gray-100 text-gray-800",
+      pending: "bg-yellow-100 text-yellow-800",
+      rejected: "bg-red-100 text-red-800"
+    };
+    return statusStyles[status] || "bg-gray-100 text-gray-800";
+  };
+
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "Not published";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+
+    // ✅ Delete handler
+  const handleDeleteClick = (pressRelease) => {
+    setSelectedPressRelease(pressRelease);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedPressRelease) return;
+
+    setDeletingId(selectedPressRelease.slug);
+    setError('');
 
     try {
-      setDeletingId(id);
-      const token = localStorage.getItem("token");
-
-      const res = await fetch(`https://api.glassworld06.com/api/press-releases/${id}`, {
-        method: "DELETE",
-        headers: { 
+       const token = localStorage.getItem("token");
+      if (!token) throw new Error("Token not found");
+      const response = await fetch(`https://api.glassworld06.com/api/press-releases/${selectedPressRelease.slug}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
         },
       });
 
-      if (!res.ok) throw new Error("Failed to delete press release");
+      const data = await response.json();
 
-      const updated = pressReleases.filter((pr) => pr.id !== id);
-      setPressReleases(updated);
-      setFilteredPressReleases(updated);
-
-      alert("Press release deleted successfully!");
-    } catch (e) {
-      console.error("Delete error:", e);
-      alert("Delete failed. Please try again.");
+      if (response.ok) {
+        // Remove the deleted press release from the state
+        setPressReleases(prevReleases => 
+          prevReleases.filter(pr => pr.id !== selectedPressRelease.id)
+        );
+        setShowDeleteModal(false);
+        setSelectedPressRelease(null);
+      } else {
+        setError(data.message || 'Failed to delete press release');
+      }
+    } catch (error) {
+      console.error('Error deleting press release:', error);
+      setError('An error occurred while deleting the press release');
     } finally {
       setDeletingId(null);
     }
   };
 
-  // Get image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/placeholder-image.png';
-    return imagePath.startsWith('http') ? imagePath : `https://api.glassworld06.com${imagePath}`;
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setSelectedPressRelease(null);
+    setError('');
   };
 
   return (
     <main className="flex-1 rounded-bl-4xl bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
       <div className="max-w-7xl mx-auto">
 
-        {/* Header with Add Button */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Manage Press Releases</h1>
           <Button href="/dashboard/pressrelease/create" content="Add Press Release" />
         </div>
 
-        {/* Search Bar */}
+        {/* Search */}
         <div className="mb-4 flex items-center justify-end">
           <div className="flex items-center bg-white border border-gray-300 rounded-md px-2 py-1 w-full md:w-64">
             <BiSearch className="text-gray-400 mr-2" />
@@ -99,97 +134,56 @@ export default function PressReleasesTable({ initialPressReleases }) {
           </div>
         </div>
 
-        {/* Table */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    #
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Image
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Title
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Excerpt
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Published Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {currentItems.length > 0 ? (
-                  currentItems.map((pr, index) => (
-                    <tr key={pr.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {startIndex + index + 1}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0">
-                            <Image
-                              src={getImageUrl(pr.featured_image)}
-                              alt={pr.title}
-                              width={40}
-                              height={40}
-                              className="h-10 w-10 rounded-md object-cover"
-                              unoptimized // For external URLs
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 max-w-xs truncate">
-                          {pr.title}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-500 max-w-xs truncate">
-                          {pr.excerpt || 'No excerpt'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          pr.status === 'published' 
-                            ? 'bg-green-100 text-green-800' 
-                            : pr.status === 'draft'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {pr.status || 'draft'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex gap-2">
-                          <Link
-                            href={`/dashboard/pressrelease/edit/${pr.id}`}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(pr.id)}
-                            disabled={deletingId === pr.id}
-                            className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
-                          >
-                            {deletingId === pr.id ? "Deleting..." : "Delete"}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
+                {currentItems.map((pr, index) => (
+                  <tr key={pr.id}>
+                    <td className="px-6 py-4 text-sm text-gray-900">{startIndex + index + 1}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-xs truncate" title={pr.title}>
+                        {pr.title}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{pr.user?.name || "N/A"}</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className={`capitalize px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadge(pr.status)}`}>
+                        {pr.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{formatDate(pr.created_at)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700">{formatDate(pr.published_at)}</td>
+                    <td className="px-6 py-4 text-sm">
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/dashboard/pressrelease/edit/${pr.slug}`}
+                          className="bg-blue-600 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-700"
+                        >
+                          Edit
+                        </Link>
+
+
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {currentItems.length === 0 && (
                   <tr>
-                    <td colSpan="7" className="px-6 py-8 text-center text-sm text-gray-500">
-                      {searchTerm ? 'No press releases found matching your search.' : 'No press releases available.'}
+                    <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
+                      No press releases found
                     </td>
                   </tr>
                 )}
@@ -200,23 +194,21 @@ export default function PressReleasesTable({ initialPressReleases }) {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6 flex flex-wrap justify-center items-center gap-2">
+          <div className="mt-6 flex justify-center items-center gap-2">
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1 text-sm border rounded-md disabled:opacity-50"
             >
-              Previous
+              Prev
             </button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
               <button
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  currentPage === page 
-                    ? "bg-blue-600 text-white" 
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                className={`px-3 py-1 rounded-md text-sm ${
+                  currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200"
                 }`}
               >
                 {page}
@@ -226,7 +218,7 @@ export default function PressReleasesTable({ initialPressReleases }) {
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1 text-sm border rounded-md disabled:opacity-50"
             >
               Next
             </button>
@@ -234,6 +226,33 @@ export default function PressReleasesTable({ initialPressReleases }) {
         )}
 
       </div>
+
+        {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedPressRelease && (
+        <div className="fixed inset-0 bg-black/10 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete "{selectedPressRelease.title}"? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deletingId === selectedPressRelease.slug}
+                className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50"
+              >
+                {deletingId === selectedPressRelease.slug ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
