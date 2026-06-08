@@ -74,6 +74,12 @@ function Sidebar() {
                   <span>Press Release</span>
                 </Link>
               </li>
+              <li>
+                <Link href="/author/guest-post" className="flex items-center px-4 py-2 text-black rounded-md text-sm">
+                  <FaCube className="mr-3" />
+                  <span>Guest Posts</span>
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>

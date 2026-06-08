@@ -12,13 +12,13 @@ export default function GuestPostTable({ initialPressReleases }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState('');
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedPressRelease, setSelectedPressRelease] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedPressRelease, setSelectedPressRelease] = useState(null);
 
   const itemsPerPage = 20;
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ✅ Search Filter
+  // Search Filter
   useEffect(() => {
     const term = searchTerm.toLowerCase();
     const filtered = pressReleases.filter(pr =>
@@ -51,7 +51,6 @@ export default function GuestPostTable({ initialPressReleases }) {
     return statusStyles[status] || "bg-gray-100 text-gray-800";
   };
 
-
   const formatDate = (dateString) => {
     if (!dateString) return "Not published";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -61,49 +60,53 @@ export default function GuestPostTable({ initialPressReleases }) {
     });
   };
 
+// Updated delete handler - uses slug instead of ID
+const handleDeleteClick = (pressRelease) => {
+  setSelectedPressRelease(pressRelease);
+  setShowDeleteModal(true);
+  setError('');
+};
 
-    // ✅ Delete handler
-  const handleDeleteClick = (pressRelease) => {
-    setSelectedPressRelease(pressRelease);
-    setShowDeleteModal(true);
-  };
+// Updated confirm delete - uses slug in API URL
+const confirmDelete = async () => {
+  if (!selectedPressRelease) return;
 
-  const confirmDelete = async () => {
-    if (!selectedPressRelease) return;
+  setDeletingId(selectedPressRelease.id);
+  setError('');
 
-    setDeletingId(selectedPressRelease.slug);
-    setError('');
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token not found");
+    
+    // Use slug instead of ID in the API endpoint
+    const response = await fetch(`https://api.glassworld06.com/api/guest-posts/${selectedPressRelease.slug}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    try {
-       const token = localStorage.getItem("token");
-      if (!token) throw new Error("Token not found");
-      const response = await fetch(`https://api.glassworld06.com/api/press-releases/${selectedPressRelease.slug}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    const data = await response.json();
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Remove the deleted press release from the state
-        setPressReleases(prevReleases => 
-          prevReleases.filter(pr => pr.id !== selectedPressRelease.id)
-        );
-        setShowDeleteModal(false);
-        setSelectedPressRelease(null);
-      } else {
-        setError(data.message || 'Failed to delete press release');
-      }
-    } catch (error) {
-      console.error('Error deleting press release:', error);
-      setError('An error occurred while deleting the press release');
-    } finally {
-      setDeletingId(null);
+    if (response.ok) {
+      // Remove the deleted press release from the state
+      setPressReleases(prevReleases => 
+        prevReleases.filter(pr => pr.id !== selectedPressRelease.id)
+      );
+      setShowDeleteModal(false);
+      setSelectedPressRelease(null);
+      setError('');
+    } else {
+      setError(data.message || 'Failed to delete press release');
     }
-  };
+  } catch (error) {
+    console.error('Error deleting press release:', error);
+    setError('An error occurred while deleting the press release');
+  } finally {
+    setDeletingId(null);
+  }
+};
 
   const cancelDelete = () => {
     setShowDeleteModal(false);
@@ -114,12 +117,6 @@ export default function GuestPostTable({ initialPressReleases }) {
   return (
     <main className="flex-1 rounded-bl-4xl bg-[#ebecf0] min-h-full p-4 md:pb-6 md:px-4">
       <div className="max-w-7xl mx-auto">
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Manage Guest Posts</h1>
-          <Button href="/dashboard/guest-post/create" content="Add Guest Posts" />
-        </div>
-
         {/* Search */}
         <div className="mb-4 flex items-center justify-end">
           <div className="flex items-center bg-white border border-gray-300 rounded-md px-2 py-1 w-full md:w-64">
@@ -167,14 +164,19 @@ export default function GuestPostTable({ initialPressReleases }) {
                     <td className="px-6 py-4 text-sm text-gray-700">{formatDate(pr.published_at)}</td>
                     <td className="px-6 py-4 text-sm">
                       <div className="flex gap-2">
-                        <Link
-                          href={`/dashboard/guest-post/edit/${pr.slug}`}
-                          className="bg-blue-600 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-700"
+                        <Link 
+                          href={`/author/guest-post/edit/${pr.slug || pr.id}`}
+                          className="bg-blue-600 text-white px-3 py-1 rounded-md text-xs hover:bg-blue-700 transition-colors"
                         >
                           Edit
                         </Link>
-
-
+                        <button 
+                          type="button"
+                          onClick={() => handleDeleteClick(pr)}
+                          className="bg-red-600 text-white px-3 py-1 rounded-md text-xs hover:bg-red-700 transition-colors"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -183,7 +185,7 @@ export default function GuestPostTable({ initialPressReleases }) {
                 {currentItems.length === 0 && (
                   <tr>
                     <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
-                      No Guest Post found
+                      No Guest Post Found
                     </td>
                   </tr>
                 )}
@@ -198,7 +200,7 @@ export default function GuestPostTable({ initialPressReleases }) {
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-3 py-1 text-sm border rounded-md disabled:opacity-50"
+              className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 hover:bg-gray-100 transition-colors"
             >
               Prev
             </button>
@@ -207,8 +209,8 @@ export default function GuestPostTable({ initialPressReleases }) {
               <button
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200"
+                className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                  currentPage === page ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
                 }`}
               >
                 {page}
@@ -218,36 +220,44 @@ export default function GuestPostTable({ initialPressReleases }) {
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 text-sm border rounded-md disabled:opacity-50"
+              className="px-3 py-1 text-sm border rounded-md disabled:opacity-50 hover:bg-gray-100 transition-colors"
             >
               Next
             </button>
           </div>
         )}
-
       </div>
 
-        {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedPressRelease && (
-        <div className="fixed inset-0 bg-black/10 bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
+            
+            {/* Error message display */}
+            {error && (
+              <div className="mb-4 p-2 bg-red-100 text-red-700 rounded text-sm">
+                {error}
+              </div>
+            )}
+            
             <p className="text-gray-700 mb-6">
-              Are you sure you want to delete "{selectedPressRelease.title}"? This action cannot be undone.
+              Are you sure you want to delete "<span className="font-semibold">{selectedPressRelease.title}</span>"? This action cannot be undone.
             </p>
+            
             <div className="flex justify-end gap-3">
               <button
                 onClick={cancelDelete}
-                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                disabled={deletingId === selectedPressRelease.slug}
-                className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50"
+                disabled={deletingId === selectedPressRelease.id}
+                className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {deletingId === selectedPressRelease.slug ? 'Deleting...' : 'Delete'}
+                {deletingId === selectedPressRelease.id ? 'Deleting...' : 'Delete'}
               </button>
             </div>
           </div>

@@ -71,7 +71,7 @@ export default function PackagesTable({ initialPackages }) {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Manage Packages</h1>
-          <Button href="/manager/create" content="Add Package" />
+          <Button href="/author/create" content="Add Package" />
         </div>
 
         {/* Search */}
@@ -111,7 +111,7 @@ export default function PackagesTable({ initialPackages }) {
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <Link
-                          href={`/manager/edit/${pkg.slug}`}
+                          href={`/author/edit/${pkg.slug}`}
                           className="bg-blue-600 text-white px-3 py-1 rounded-md text-xs"
                         >
                           Edit

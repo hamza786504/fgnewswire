@@ -54,7 +54,7 @@ export default function Header() {
     localStorage.removeItem("token");
     localStorage.removeItem("token_expiry");
     localStorage.removeItem("user");
-    router.replace("/manager/signin");
+    router.replace("/author/signin");
   };
 
   return (

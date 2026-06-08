@@ -47,22 +47,7 @@ export default function GuestPostCreate() {
 
         if (ordersResult.status === "success") {
           console.log(ordersResult.data);
-          // Filter orders that have press_release items
-          // const pressReleaseOrders = [];
-          // ordersResult.data.forEach(order => {
-          //   order.items?.forEach(item => {
-          //     if (item.item_type === "press_release" && item.remaining_credits > 0) {
-          //       pressReleaseOrders.push({
-          //         order_item_id: item.id,
-          //         package_name: item.item?.name || "Press Release Package",
-          //         order_number: order.order_number,
-          //         remaining_credits: item.remaining_credits,
-          //         created_at: order.created_at,
-          //         item_details: item
-          //       });
-          //     }
-          //   });
-          // });
+          
           console.log(ordersResult.data);
           setAvailableOrders(ordersResult.data);
         }
@@ -103,7 +88,7 @@ export default function GuestPostCreate() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.order_item_id) newErrors.order_item_id = "Please select a purchased press release package.";
+    if (!formData.order_item_id) newErrors.order_item_id = "Please select a purchased guest post package.";
     if (!formData.title.trim()) newErrors.title = "Title is required.";
     if (!formData.body.trim()) newErrors.body = "Body content is required.";
     if (formData.excerpt && formData.excerpt.length > 500) newErrors.excerpt = "Excerpt must be less than 500 characters.";
@@ -144,6 +129,7 @@ export default function GuestPostCreate() {
       for (let pair of formDataToSend.entries()) {
         console.log(pair[0], pair[1]);
       }
+      
 
       const response = await fetch("https://api.glassworld06.com/api/guest-posts", {
         method: "POST",
@@ -171,7 +157,7 @@ export default function GuestPostCreate() {
         success: true,
         message: responseData.message || "Press release created successfully!"
       });
-      setTimeout(() => router.push("/dashboard/pressrelease"), 1500);
+      setTimeout(() => router.push("/dashboard/guest-post"), 1500);
 
     } catch (err) {
       console.error(err);
@@ -197,7 +183,7 @@ export default function GuestPostCreate() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <h2 className="text-lg font-semibold text-gray-900 mb-5">Create New Press Release</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-5">Create New Guest Post</h2>
 
           {/* Order Item Selection - Most Important */}
           <div className="mb-5">
@@ -207,10 +193,10 @@ export default function GuestPostCreate() {
             ) : availableOrders.length === 0 ? (
               <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                 <p className="text-yellow-800 text-sm">
-                  You don't have any press release packages with available credits.
+                  You don't have any guest post packages with available credits.
                 </p>
                 <p className="text-yellow-600 text-xs mt-1">
-                  Please purchase a press release package first.
+                  Please purchase a guest post package first.
                 </p>
                 <button
                   type="button"
@@ -266,7 +252,7 @@ export default function GuestPostCreate() {
               onChange={handleChange}
               className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.title ? "border-red-500" : "border-gray-300"
                 }`}
-              placeholder="Enter press release title"
+              placeholder="Enter Guest Post title"
             />
             {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
           </div>
@@ -281,7 +267,7 @@ export default function GuestPostCreate() {
               onChange={handleChange}
               className={`mt-1 block w-full rounded-md border px-3 py-2 ${errors.excerpt ? "border-red-500" : "border-gray-300"
                 }`}
-              placeholder="Brief summary of the press release (max 500 characters)..."
+              placeholder="Brief summary of the Guest Post (max 500 characters)..."
               maxLength="500"
             />
             <div className="flex justify-between mt-1">
@@ -302,7 +288,7 @@ export default function GuestPostCreate() {
               onChange={handleChange}
               className={`mt-1 block w-full rounded-md border px-3 py-2 font-mono text-sm ${errors.body ? "border-red-500" : "border-gray-300"
                 }`}
-              placeholder="Full press release content (HTML supported)..."
+              placeholder="Full guest post content (HTML supported)..."
             />
             {errors.body && <p className="text-red-600 text-sm mt-1">{errors.body}</p>}
             <p className="text-xs text-gray-500 mt-1">
@@ -390,7 +376,7 @@ export default function GuestPostCreate() {
           <div className="mt-6 flex justify-end gap-3">
             <button
               type="button"
-              onClick={() => router.push("/dashboard/pressrelease")}
+              onClick={() => router.push("/dashboard/guest-post")}
               className="px-5 py-2 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors"
             >
               Cancel

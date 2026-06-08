@@ -41,7 +41,7 @@ export default function SignIn() {
         localStorage.setItem("user", JSON.stringify(user));
 
         // ✅ Redirect to manager dashboard
-        router.push("/author/");
+        router.push("/author/package");
       } else {
         setError(data.message || "Invalid email or password.");
       }
