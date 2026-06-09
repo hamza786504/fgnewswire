@@ -24,7 +24,7 @@ export default function EditGuestPost() {
   const [availableCategories, setAvailableCategories] = useState([]);
   const [existingImage, setExistingImage] = useState(null);
 
-  // Fetch press release and categories
+  // Fetch guest post and categories
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,8 +36,8 @@ export default function EditGuestPost() {
           return;
         }
         
-        // Fetch press release details by slug with Bearer token
-        const pressRes = await fetch(`https://api.glassworld06.com/api/press-releases/${slug}`, {
+        // Fetch guest post details by slug with Bearer token
+        const pressRes = await fetch(`https://api.glassworld06.com/api/guest-posts/${slug}`, {
           headers: { 
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export default function EditGuestPost() {
         }
         
         if (!pressRes.ok) {
-          throw new Error("Failed to fetch press release");
+          throw new Error("Failed to fetch guest posts");
         }
         
         const pressResult = await pressRes.json();
@@ -85,7 +85,7 @@ export default function EditGuestPost() {
 
       } catch (err) {
         console.error(err);
-        setSubmitStatus({ success: false, message: "Failed to load press release details." });
+        setSubmitStatus({ success: false, message: "Failed to load guest posts details." });
       } finally {
         setLoading(false);
       }
@@ -163,7 +163,7 @@ export default function EditGuestPost() {
         formDataToSend.append("categories[]", catId);
       });
 
-      const response = await fetch(`https://api.glassworld06.com/api/press-releases/${slug}`, {
+      const response = await fetch(`https://api.glassworld06.com/api/guest-posts/${slug}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -186,20 +186,20 @@ export default function EditGuestPost() {
           setErrors(backendErrors);
           throw new Error("Validation failed from backend");
         }
-        throw new Error(responseData.message || "Failed to update press release");
+        throw new Error(responseData.message || "Failed to update guest posts");
       }
 
       setSubmitStatus({ 
         success: true, 
-        message: responseData.message || "Press release updated successfully!" 
+        message: responseData.message || "Guest posts updated successfully!" 
       });
-      setTimeout(() => router.push("/admin/pressrelease"), 1500);
+      setTimeout(() => router.push("/dashboard/guest-posts"), 1500);
 
     } catch (err) {
       console.error(err);
       setSubmitStatus({
         success: false,
-        message: err.message || "Error updating press release. Please try again."
+        message: err.message || "Error updating guest post. Please try again."
       });
     } finally {
       setIsSubmitting(false);
@@ -212,7 +212,7 @@ export default function EditGuestPost() {
         <div className="max-w-5xl mx-auto bg-white rounded-3xl p-4 md:p-6">
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-2 text-gray-600">Loading press release details...</span>
+            <span className="ml-2 text-gray-600">Loading guest posts details...</span>
           </div>
         </div>
       </main>
@@ -244,7 +244,7 @@ export default function EditGuestPost() {
 
         <form onSubmit={handleSubmit}>
           <div className="flex justify-between items-center mb-5">
-            <h2 className="text-lg font-semibold text-gray-900">Edit Press Release</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Edit Guest Posts</h2>
           </div>
 
           {/* Title */}
@@ -257,7 +257,7 @@ export default function EditGuestPost() {
               className={`mt-1 block w-full rounded-md border px-3 py-2 ${
                 errors.title ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter press release title"
+              placeholder="Enter Guest Post title"
             />
             {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
           </div>
@@ -273,7 +273,7 @@ export default function EditGuestPost() {
               className={`mt-1 block w-full rounded-md border px-3 py-2 ${
                 errors.excerpt ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Brief summary of the press release (max 500 characters)..."
+              placeholder="Brief summary of the guest post (max 500 characters)..."
               maxLength="500"
             />
             <div className="flex justify-between mt-1">
@@ -295,7 +295,7 @@ export default function EditGuestPost() {
               className={`mt-1 block w-full rounded-md border px-3 py-2 font-mono text-sm ${
                 errors.body ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Full press release content (HTML supported)..."
+              placeholder="Full guest post content (HTML supported)..."
             />
             {errors.body && <p className="text-red-600 text-sm mt-1">{errors.body}</p>}
             <p className="text-xs text-gray-500 mt-1">
@@ -314,7 +314,7 @@ export default function EditGuestPost() {
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
               placeholder="Enter company ID if applicable"
             />
-            <p className="text-xs text-gray-500 mt-1">Associated company ID for this press release</p>
+            <p className="text-xs text-gray-500 mt-1">Associated company ID for this guest post</p>
           </div>
 
           {/* Categories */}
@@ -442,7 +442,7 @@ export default function EditGuestPost() {
           <div className="mt-6 flex justify-end gap-3">
             <button
               type="button"
-              onClick={() => router.push("/dashboard/pressrelease")}
+              onClick={() => router.push("/dashboard/guest-posts")}
               className="px-5 py-2 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors"
             >
               Cancel
@@ -454,7 +454,7 @@ export default function EditGuestPost() {
                 isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:from-blue-600 hover:to-purple-800 transition-all"
               }`}
             >
-              {isSubmitting ? "Updating..." : "Update Press Release"}
+              {isSubmitting ? "Updating..." : "Update Guest Post"}
             </button>
           </div>
         </form>

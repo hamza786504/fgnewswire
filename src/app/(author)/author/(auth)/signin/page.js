@@ -40,7 +40,7 @@ export default function SignIn() {
         localStorage.setItem("token_expiry", Date.now() + expires_in * 1000);
         localStorage.setItem("user", JSON.stringify(user));
 
-        // ✅ Redirect to manager dashboard
+        // ✅ Redirect to author dashboard
         router.push("/author/package");
       } else {
         setError(data.message || "Invalid email or password.");
